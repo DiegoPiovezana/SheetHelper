@@ -1,0 +1,13 @@
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\SheetHelper.dll
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\SheetHelper.pdb
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.DataSet.dll
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.dll
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.pdb
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.xml
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.DataSet.pdb
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\bin\Release\ExcelDataReader.DataSet.xml
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\obj\Release\SheetHelper.csproj.AssemblyReference.cache
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\obj\Release\SheetHelper.csproj.CoreCompileInputs.cache
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\obj\Release\SheetHelper.csproj.CopyComplete
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\obj\Release\SheetHelper.dll
+C:\Users\diego.g.piovezana\Arquivos\Programming\SANTODEVS\SheetHelper\SheetHelper\obj\Release\SheetHelper.pdb
