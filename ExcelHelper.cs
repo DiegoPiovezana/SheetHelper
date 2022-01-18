@@ -5,14 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 
 namespace SheetHelper
 {
 
-    public static class ExcelConvert
+    public static class ExcelHelper
     {
         /// <summary>
         /// Encerra todos os processos do Excel
@@ -53,7 +52,7 @@ namespace SheetHelper
 
         #region Summary
         /// <summary>
-        /// Realiza a conversão do arquivo Excel (.xlsx, .xls, .xlsb, .csv ou .txt) localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
+        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
         /// </summary>
         /// <param name="origin">Diretorio + nome do arquivo de origem + formato. Ex.: "C:\\Users\\ArquivoExcel.xlsx"</param>
@@ -63,7 +62,7 @@ namespace SheetHelper
         /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }"</param>
         #endregion
-        public static bool ConvertExcel(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
+        public static bool Converter(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
         {
 
             // Abre o arquivo
@@ -142,7 +141,7 @@ namespace SheetHelper
 
         #region Summary
         /// <summary>
-        /// Realiza a conversão do arquivo Excel (.xlsx, .xls, .xlsb, .csv ou .txt) localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
+        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// com tratativa de exceçoes para o usuário final (arquivo inexistente no diretorio ou aberto durante a conversão)
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
         /// </summary>
@@ -153,7 +152,7 @@ namespace SheetHelper
         /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
         #endregion
-        public static bool ConvertExcelExcept(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
+        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
@@ -162,7 +161,7 @@ namespace SheetHelper
 
             try
             {
-                return ConvertExcel(origin, destiny, sheet, separator, header, columns);
+                return Converter(origin, destiny, sheet, separator, header, columns);
             }
 
             catch (Exception e)
