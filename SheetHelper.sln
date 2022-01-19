@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheetHelper", "SheetHelper\SheetHelper.csproj", "{CD5BF382-712E-4986-A18E-8E44CAFB2FEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD5BF382-712E-4986-A18E-8E44CAFB2FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD5BF382-712E-4986-A18E-8E44CAFB2FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD5BF382-712E-4986-A18E-8E44CAFB2FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD5BF382-712E-4986-A18E-8E44CAFB2FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33A6E774-E2CD-402F-AFE9-07E9376D5C05}
+	EndGlobalSection
+EndGlobal
