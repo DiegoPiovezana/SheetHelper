@@ -68,7 +68,6 @@ namespace SheetHelper
             }
         }
 
-
         private static DataSet ReadCSV(FileStream stream)
         {
             // Realiza a leitura do arquivo Excel CSV
@@ -95,11 +94,11 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
+        /// <param name="header">Tamanho do cabeçalho a ser retirado (0 para manter a primeira linha). Ex.: 1</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         #endregion
-        public static bool Converter(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
+        public static bool Converter(string origin, string destiny, int sheet, string separator, int header, string[] columns)
         {
 
             // Abre o arquivo
@@ -134,10 +133,19 @@ namespace SheetHelper
                     // Obtem a aba desejada
                     DataTable table = result.Tables[sheet];
 
-                    // Se deseja incluir cabeçalho, salva os nomes das colunas
-                    if (header) output.AppendLine(String.Join(separator, table.Columns.Cast<DataColumn>().ToList()));
+                    // Se deseja incluir cabeçalho (primeira linha)
+                    if (header == 0)
+                        // Salva os nomes das colunas
+                        output.AppendLine(String.Join(separator, table.Columns.Cast<DataColumn>().ToList()));
+                    else
+                        // Remove as demais linhas do cabeçalho de acordo com a quantidade desejada
+                        for (int i = 1; i < header; i++)
+                        { // A partir da 2ª linha
+                            DataRow dr = table.Rows[0]; // Remove a linha do topo
+                            table.Rows.Remove(dr);
+                        }
 
-                    // Salva todas as linhas
+                    // Salva todas as linhas não removidas
                     foreach (DataRow dr in table.Rows)
                     {
                         var row = dr.ItemArray.Select(f => f.ToString()).ToList();
@@ -190,10 +198,10 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
+        /// <param name="header">Informe o tamanho do cabeçalho a ser retirado (0 para manter a primeira linha). Ex.: 1</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
+        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, int header, string[] columns)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
