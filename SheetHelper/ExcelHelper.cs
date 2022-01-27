@@ -10,7 +10,9 @@ using System.Threading;
 
 namespace SheetHelper
 {
-
+    /// <summary>
+    /// Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel
+    /// </summary>
     public static class ExcelHelper
     {
         /// <summary>
@@ -49,11 +51,45 @@ namespace SheetHelper
             return columnsASCII;
         }
 
+        private static DataSet ReadXLS(FileStream stream)
+        {
+            // Formato de detecção automática, suporta: 
+            //   - Arquivos Excel binários (formato 2.0-2003; *.xls) 
+            //   - Arquivos Excel OpenXml (formato 2007; *.xlsx, *.xlsb)
+            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            {
+                DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                {
+                    ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+
+                });
+
+                return result;
+            }
+        }
+
+
+        private static DataSet ReadCSV(FileStream stream)
+        {
+            // Realiza a leitura do arquivo Excel CSV
+            using (var reader = ExcelReaderFactory.CreateCsvReader(stream))
+            {
+                DataSet result = reader.AsDataSet();
+
+                return result;
+            }
+        }
+
+
+
+
+
 
         #region Summary
         /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
-        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
+        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
+        /// Utilize o método "ConverterExcept" para realizar a conversão e tratar algumas exceções!
         /// </summary>
         /// <param name="origin">Diretorio + nome do arquivo de origem + formato. Ex.: "C:\\Users\\ArquivoExcel.xlsx"</param>
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
@@ -61,6 +97,7 @@ namespace SheetHelper
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
         /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }"</param>
+        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         #endregion
         public static bool Converter(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
         {
@@ -72,74 +109,78 @@ namespace SheetHelper
                 File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
                 File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
 
-                // Realiza a leitura do arquivo Excel
-                using (var reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
+
+                DataSet result = null;
+                string format = Path.GetExtension(origin);
+
+                // .xlsx, .xls, .xlsb, .csv ou .txt;
+                switch (Path.GetExtension(origin))
                 {
-                    DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    case ".csv":
+                        result = ReadCSV(stream);
+                        break;
+
+                    default: // .xlsx, .xls, .xlsb
+                        result = ReadXLS(stream);
+                        break;
+                }
+
+
+                // Se existir abas na planilha e a desejada estiver correta
+                if (result.Tables.Count > 0 && sheet > -1 && sheet < result.Tables.Count)
+                {
+                    StringBuilder output = new StringBuilder();
+
+                    // Obtem a aba desejada
+                    DataTable table = result.Tables[sheet];
+
+                    // Se deseja incluir cabeçalho, salva os nomes das colunas
+                    if (header) output.AppendLine(String.Join(separator, table.Columns.Cast<DataColumn>().ToList()));
+
+                    // Salva todas as linhas
+                    foreach (DataRow dr in table.Rows)
                     {
-                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
-                    });
+                        var row = dr.ItemArray.Select(f => f.ToString()).ToList();
 
-                    // Se existir abas na planilha e a desejada estiver correta
-                    if (result.Tables.Count > 0 && sheet > -1 && sheet < result.Tables.Count)
-                    {
-                        StringBuilder output = new StringBuilder();
-
-                        // Obtem a aba desejada
-                        DataTable table = result.Tables[sheet];
-
-                        // Se deseja incluir cabeçalho
-                        if (header)
-                            // Salva os nomes das colunas
-                            output.AppendLine(String.Join(separator, table.Columns.Cast<DataColumn>().ToList()));
-
-                        // Salva todas as linhas
-                        foreach (DataRow dr in table.Rows)
+                        if (columns == null || columns.Length == 0) // Se colunas nao especificadas
                         {
-                            var row = dr.ItemArray.Select(f => f.ToString()).ToList();
+                            output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas
+                        }
 
-                            if (columns == null || columns.Length == 0) // Se colunas nao especificadas
+                        else
+                        {
+                            StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha
+                            int[] columnsASCII = DefineColunms(columns);
+
+                            foreach (int column in columnsASCII) // Para cada coluna
                             {
-                                output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas
-                            }
 
-                            else
-                            {
-                                StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha
-                                int[] columnsASCII = DefineColunms(columns);
-
-                                foreach (int column in columnsASCII) // Para cada coluna
-                                {
-
-
-                                    // Seleciona a coluna considerando tabela ASCII e adiciona separadamente
-                                    //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
-                                    rowSelected.Append(row[column]).Append(separator);
-
-                                }
-
-                                output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas
+                                // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                                
+                                rowSelected.Append(row[column]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
 
                             }
 
+                            output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas
 
                         }
 
-                        // Escreve o novo arquivo convertido (substitui se ja existente)
-                        File.WriteAllText(destiny, output.ToString());
-                        return true;
                     }
-                    else
-                    {
-                        throw new Exception("Erro ao selecionar a aba desejada");
-                    }
+
+                    // Escreve o novo arquivo convertido (substitui se ja existente)
+                    File.WriteAllText(destiny, output.ToString());
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Erro ao selecionar a aba desejada");
                 }
             }
-
-
         }
 
-        #region Summary
+
+
+
+
         /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// com tratativa de exceçoes para o usuário final (arquivo inexistente no diretorio ou aberto durante a conversão)
@@ -151,7 +192,7 @@ namespace SheetHelper
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
         /// <param name="header">"true" para manter o cabeçalho, "false" para retirá-lo. Ex.: "false"</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
-        #endregion
+        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, bool header, string[] columns)
         {
 
@@ -224,8 +265,12 @@ namespace SheetHelper
                             goto again; // Tenta realizar a conversão novamente
                         }
 
-
                         return false;
+
+
+                    case string b when b.Contains("Invalid file signature"): // Se arquivo em formato não suportado
+                        throw new Exception($"Erro! Sem suporte para converter arquivos de origem '{Path.GetExtension(origin)}'.");
+
 
                     default: // Para outros tipos de Exception
 
@@ -236,3 +281,4 @@ namespace SheetHelper
         }
     }
 }
+
