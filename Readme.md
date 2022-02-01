@@ -3,7 +3,7 @@
 
 Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/>
 
-![alt text](https://github.com/SANTODEVS/SheetHelper/blob/master/Images/SheetHelper.png?raw=true)
+<img src="https://github.com/SANTODEVS/SheetHelper/blob/master/Images/SheetHelper.png?raw=true" width=30% height=30%>
 
 RECURSOS DISPONÍVEIS: <br/>
 ✔ Compatível com leitura de arquivos .xlsx, .xls, .xlsb e .csv; <br/>
@@ -24,5 +24,4 @@ Faz uso da biblioteca [ExcelDataReader](https://github.com/ExcelDataReader/Excel
 
 
 CONVERSÕES POSSÍVEIS: <br/>
-![alt text](https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/Conversions.png?raw=true)
-
+<img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/Conversions.png?raw=true" width=50% height=50%>
