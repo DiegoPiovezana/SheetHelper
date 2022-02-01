@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace SheetHelper
 {
@@ -213,7 +213,7 @@ namespace SheetHelper
 
 
             #region Se arquivo nao localizado            
-            catch (FileNotFoundException fnfEx) when (fnfEx.ToString().Contains("not find file") || fnfEx.ToString().Contains("arquivo não encontrado"))
+            catch (FileNotFoundException nffEx) when (nffEx.ToString().Contains("not find file") || nffEx.ToString().Contains("localizar o arquivo"))
             {
                 var result3 = MessageBox.Show(
                                    "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
@@ -278,9 +278,9 @@ namespace SheetHelper
             #endregion
 
             #region Se arquivo em formato não suportado
-            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.ToString().Contains("Invalid file signature") || heEx.ToString().Contains("Assinatura de arquivo inválida"))
+            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.ToString().Contains("Invalid file") || heEx.ToString().Contains("not a valid OpenXml file"))
             {
-                throw new Exception($"Erro! Sem suporte para converter arquivos de origem '{Path.GetExtension(origin)}'.");
+                throw new Exception($"Erro! Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
 
             }
             #endregion
