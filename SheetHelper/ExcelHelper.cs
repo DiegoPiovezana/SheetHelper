@@ -52,6 +52,40 @@ namespace SheetHelper
         }
 
         /// <summary>
+        /// Recebe as linhas em string, e retorna um vetor de inteiros com a primeira e última linha
+        /// </summary>
+        public static int[] DefineRows(string rows, int limitRows)
+        {
+
+            if (!rows.Contains(":"))
+                throw new Exception("Use a ':' to define the first and last row!");
+
+            string[] rowsArray = rows.Split(':');
+
+            if (rowsArray[0].Equals("")) // Se primeira linha não definida
+                rowsArray[0] = "1"; // Então, deseja-se converter desde a primeira linha
+
+            if (rowsArray[1].Equals("")) // Se última linha não definida
+                rowsArray[1] = limitRows.ToString(); // Então, deseja-se converter até a última linha
+
+
+            if (Int32.Parse(rowsArray[0]) < 1 || Int32.Parse(rowsArray[0]) > limitRows)
+                throw new Exception($"Start row out of bounds (min 1, max {limitRows})!");
+
+            if (Int32.Parse(rowsArray[1]) < 1 || Int32.Parse(rowsArray[1]) > limitRows)
+                throw new Exception($"Last row out of bounds (min 1, max {limitRows})!");
+
+            if (Int32.Parse(rowsArray[0]) > Int32.Parse(rowsArray[1]))
+                throw new Exception($"Start row must be less than the last row!");
+
+
+            int[] rowsNumber = { Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1]) };
+
+            return rowsNumber;
+        }
+
+
+        /// <summary>
         /// Realiza a leitura de arquivos .xls, .xlsx e .xlsb
         /// </summary>
         private static DataSet ReadXLS(FileStream stream)
@@ -96,10 +130,10 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="header">Tamanho do cabeçalho a ser retirado (0 para manter a primeira linha). Ex.: 1</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }"</param>
+        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, int sheet, string separator, int header, string[] columns)
+        public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows)
         {
 
             // Abre o arquivo
@@ -125,7 +159,6 @@ namespace SheetHelper
                         break;
                 }
 
-
                 // Se existir abas na planilha e a desejada estiver correta
                 if (result.Tables.Count > 0 && sheet > -1 && sheet < result.Tables.Count)
                 {
@@ -134,22 +167,14 @@ namespace SheetHelper
                     // Obtem a aba desejada
                     DataTable table = result.Tables[sheet];
 
-                    // Se deseja incluir cabeçalho (primeira linha)
-                    if (header == 0)
-                        // Salva os nomes das colunas
-                        output.AppendLine(String.Join(separator, table.Columns.Cast<DataColumn>().ToList()));
-                    else
-                        // Remove as demais linhas do cabeçalho de acordo com a quantidade desejada
-                        for (int i = 1; i < header; i++)
-                        { // A partir da 2ª linha
-                            DataRow dr = table.Rows[0]; // Remove a linha do topo
-                            table.Rows.Remove(dr);
-                        }
+                    // Define qual será a primeira e última linha a ser convertida
+                    int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
 
-                    // Salva todas as linhas não removidas
-                    foreach (DataRow dr in table.Rows)
+                    // Salva todas as linhas mediante início e fim               
+                    for (int i = rowsNumber[0]; i <= rowsNumber[1]; i++)
                     {
-                        var row = dr.ItemArray.Select(f => f.ToString()).ToList();
+
+                        var row = table.Rows[i - 2].ItemArray.Select(f => f.ToString()).ToList();
 
                         if (columns == null || columns.Length == 0) // Se colunas nao especificadas
                         {
@@ -196,10 +221,10 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="header">Informe o tamanho do cabeçalho a ser retirado (0 para manter a primeira linha). Ex.: 1</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
+        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, int header, string[] columns)
+        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, string[] columns, string rows)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
@@ -208,13 +233,14 @@ namespace SheetHelper
 
             try
             {
-                return Converter(origin, destiny, sheet, separator, header, columns);
+                return Converter(origin, destiny, sheet, separator, columns, rows);
             }
 
 
-            #region Se arquivo nao localizado            
-            catch (FileNotFoundException nffEx) when (nffEx.ToString().Contains("not find file") || nffEx.ToString().Contains("localizar o arquivo"))
+            #region Se arquivo nao localizado        
+            catch (FileNotFoundException nffEx) when (nffEx.HResult.Equals(-2147024894))
             {
+
                 var result3 = MessageBox.Show(
                                    "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
                                    + "\n\n" + origin,
@@ -233,8 +259,9 @@ namespace SheetHelper
             #endregion
 
             #region Se arquivo esta em uso
-            catch (IOException eiEx) when (eiEx.ToString().Contains("being used by another process") || eiEx.ToString().Contains("sendo usado por outro processo"))
+            catch (IOException eiEx) when (eiEx.HResult.Equals(-2147024864))
             {
+
                 countOpen++; // Contador de tentativas com falha de arquivo aberto
 
                 if (countOpen >= 2) // Se necessario forçar o fechamento do Excel (a partir do 2 caso)
@@ -278,8 +305,9 @@ namespace SheetHelper
             #endregion
 
             #region Se arquivo em formato não suportado
-            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.ToString().Contains("Invalid file") || heEx.ToString().Contains("not a valid OpenXml file"))
+            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
             {
+
                 throw new Exception($"Erro! Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
 
             }
