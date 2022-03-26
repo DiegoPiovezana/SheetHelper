@@ -141,8 +141,8 @@ namespace SheetHelper
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
-            // TODO: Corrigir inclusão de cabeçalho ao converter de CSV
-
+            // TODO: Modularizar etapas da conversão
+            // TODO: Tratativa para arquivos compactados
 
 
             if (separator != null)
@@ -164,7 +164,7 @@ namespace SheetHelper
                 DataSet result = null;
 
                 // Realiza a leitura do arquivo
-                switch (Path.GetExtension(origin)) // TODO: txt?
+                switch (Path.GetExtension(origin))
                 {
                     case ".csv": // .csv 
                         result = ReadCSV(stream);
@@ -192,23 +192,33 @@ namespace SheetHelper
 
                     List<string> row = null;
                     int[] columnsASCII = null;
+                    int i = rowsNumber[0]; // Primeira linha a ser convertida
 
-                    // Se deseja incluir cabeçalho
-                    if (rowsNumber[0] == 1)
+                    if (!Path.GetExtension(origin).Equals(".csv")) // A tratativa para o cabeçalho csv é diferente
                     {
-                        var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
-                        row = new List<string>(colunsData.Count);
+                        // Se deseja incluir cabeçalho
+                        if (rowsNumber[0] == 1)
+                        {
+                            var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
+                            row = new List<string>(colunsData.Count);
 
-                        foreach (var item in colunsData) // Realiza a conversão das Listas
-                            row.Add(item.ToString());
+                            foreach (var item in colunsData) // Realiza a conversão das Listas
+                                row.Add(item.ToString());
+                        }
+                        else
+                            row = table.Rows[rowsNumber[0] - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
                     }
-                    else
-                        row = table.Rows[rowsNumber[0] - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                    else // Se for CSV, elimina cabeçalho 'Column' e considera index 0
+                    {
+                        row = table.Rows[rowsNumber[0] - 1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                        i += 1;
+                    }
 
                     // Se deseja selecionar colunas específicas
-                    if (columns != null && columns.Length != 0)
+                    if (columns != null && columns.Length != 0) // null OR {}
                     {
                         columnsASCII = DefineColunms(columns);
+
                     }
 
                     pgbar.Value += 5; // 50 (tratativas)
@@ -217,7 +227,7 @@ namespace SheetHelper
                     double percPrg = countPercPrg;
 
                     // Salva todas as demais linhas mediante início e fim         
-                    for (int i = rowsNumber[0]; i <= rowsNumber[1]; i++) // Para cada linha da planilha
+                    for (; i <= rowsNumber[1]; i++) // Para cada linha da planilha
                     {
                         if (columnsASCII == null) // Se colunas não especificadas
                         {
