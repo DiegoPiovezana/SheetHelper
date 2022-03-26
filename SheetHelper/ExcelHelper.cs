@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -56,6 +57,10 @@ namespace SheetHelper
         /// </summary>
         public static int[] DefineRows(string rows, int limitRows)
         {
+            if (rows == null || rows.Equals("")) // Se linhas não especificadas           
+                return new[] { 1, limitRows }; // Converte todas as linhas
+                                               
+            rows = rows.Trim();
 
             if (!rows.Contains(":"))
                 throw new Exception("Use a ':' to define the first and last row!");
@@ -70,18 +75,17 @@ namespace SheetHelper
 
 
             if (Int32.Parse(rowsArray[0]) < 1 || Int32.Parse(rowsArray[0]) > limitRows)
-                throw new Exception($"Start row out of bounds (min 1, max {limitRows})!");
+                throw new Exception($"A primeira linha está fora do limite (min 1, max {limitRows})!");
 
             if (Int32.Parse(rowsArray[1]) < 1 || Int32.Parse(rowsArray[1]) > limitRows)
-                throw new Exception($"Last row out of bounds (min 1, max {limitRows})!");
+                throw new Exception($"Última linha fora dos limites (min 1, max {limitRows})!");
 
             if (Int32.Parse(rowsArray[0]) > Int32.Parse(rowsArray[1]))
-                throw new Exception($"Start row must be less than the last row!");
+                throw new Exception($"A linha inicial deve ser menor que a última linha!");
 
 
-            int[] rowsNumber = { Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1]) };
+            return new[] {Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1])};
 
-            return rowsNumber;
         }
 
 
@@ -121,6 +125,7 @@ namespace SheetHelper
 
 
 
+
         /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
@@ -130,11 +135,26 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }"</param>
+        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'E', 'C' }"</param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
+        /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows)
+        public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
+            // TODO: Corrigir inclusão de cabeçalho ao converter de CSV
+            // TODO: Última linha não convertida 
+            // TODO: Verificar incrementador
+
+
+
+
+            if (separator != null)
+                separator = separator.Trim();
+            else
+                throw new Exception("Separador inválido!");
+
+            if (pgbar == null)
+                pgbar = new ProgressBar();
 
             // Abre o arquivo
             using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
@@ -142,22 +162,23 @@ namespace SheetHelper
 
                 File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
                 File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
-
+                pgbar.Value += 5; // 5       
 
                 DataSet result = null;
-                string format = Path.GetExtension(origin);
 
-                // .xlsx, .xls, .xlsb, .csv ou .txt;
-                switch (Path.GetExtension(origin))
+                // Realiza a leitura do arquivo
+                switch (Path.GetExtension(origin)) // TODO: txt?
                 {
-                    case ".csv":
+                    case ".csv": // .csv 
                         result = ReadCSV(stream);
                         break;
 
-                    default: // .xlsx, .xls, .xlsb
+                    default: // .xlsx, .xls, .xlsb, .xlsm
                         result = ReadXLS(stream);
                         break;
                 }
+
+                pgbar.Value += 30; // 35 (pós leitura do arquivo)
 
                 // Se existir abas na planilha e a desejada estiver correta
                 if (result.Tables.Count > 0 && sheet > -1 && sheet < result.Tables.Count)
@@ -166,42 +187,77 @@ namespace SheetHelper
 
                     // Obtem a aba desejada
                     DataTable table = result.Tables[sheet];
+                    pgbar.Value += 5; // 40
 
                     // Define qual será a primeira e última linha a ser convertida
                     int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
+                    pgbar.Value += 5; // 45                
 
-                    // Salva todas as linhas mediante início e fim               
-                    for (int i = rowsNumber[0]; i <= rowsNumber[1]; i++)
+                    List<string> row = null;
+                    int[] columnsASCII = null;
+
+                    // Se deseja incluir cabeçalho
+                    if (rowsNumber[0] == 1)
                     {
+                        var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
+                        row = new List<string>(colunsData.Count);
 
-                        var row = table.Rows[i - 2].ItemArray.Select(f => f.ToString()).ToList();
+                        foreach (var item in colunsData) // Realiza a conversão das Listas
+                            row.Add(item.ToString());
+                    }
+                    else
+                        row = table.Rows[rowsNumber[0] - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
 
-                        if (columns == null || columns.Length == 0) // Se colunas nao especificadas
+                    // Se deseja selecionar colunas específicas
+                    if (columns != null && columns.Length != 0)
+                    {
+                        columnsASCII = DefineColunms(columns);
+                    }
+
+                    pgbar.Value += 5; // 50 (tratativas)
+
+                    double percPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
+
+                    // Salva todas as demais linhas mediante início e fim         
+                    for (int i = rowsNumber[0]; i < rowsNumber[1]; i++) // Para cada linha da planilha
+                    {
+                        if (columnsASCII == null) // Se colunas não especificadas
                         {
-                            output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas
+                            output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas da linha                            
                         }
 
-                        else
+                        else // Se colunas especificadas
                         {
-                            StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha
-                            int[] columnsASCII = DefineColunms(columns);
+                            StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha                            
 
-                            foreach (int column in columnsASCII) // Para cada coluna
+                            foreach (int column in columnsASCII) // Para cada coluna das linhas
                             {
-
-                                // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                                
+                                // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                               
                                 rowSelected.Append(row[column]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
-
                             }
 
-                            output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas
-
+                            output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
                         }
 
+                        if (percPrg >= 1) // Se aplicável, carrega
+                        {
+                            pgbar.Value += (int)percPrg; // 90
+                            percPrg -= (int)percPrg;
+                        }
+                        else
+                        {
+                            percPrg += percPrg;
+                        }
+
+                        // Obtem a próxima linha
+                        row = table.Rows[i - 1].ItemArray.Select(f => f.ToString()).ToList();
                     }
+
+                    pgbar.Value += (90 - pgbar.Value);
 
                     // Escreve o novo arquivo convertido (substitui se ja existente)
                     File.WriteAllText(destiny, output.ToString());
+                    pgbar.Value += 10; // 100
                     return true;
                 }
                 else
@@ -221,10 +277,11 @@ namespace SheetHelper
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
         /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'C', 'E' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
+        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'E', 'C' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
+        /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, string[] columns, string rows)
+        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
@@ -233,7 +290,7 @@ namespace SheetHelper
 
             try
             {
-                return Converter(origin, destiny, sheet, separator, columns, rows);
+                return Converter(origin, destiny, sheet, separator, columns, rows, pgbar);
             }
 
 
