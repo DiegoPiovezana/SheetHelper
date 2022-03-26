@@ -59,7 +59,7 @@ namespace SheetHelper
         {
             if (rows == null || rows.Equals("")) // Se linhas não especificadas           
                 return new[] { 1, limitRows }; // Converte todas as linhas
-                                               
+
             rows = rows.Trim();
 
             if (!rows.Contains(":"))
@@ -84,7 +84,7 @@ namespace SheetHelper
                 throw new Exception($"A linha inicial deve ser menor que a última linha!");
 
 
-            return new[] {Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1])};
+            return new[] { Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1]) };
 
         }
 
@@ -142,9 +142,6 @@ namespace SheetHelper
         public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
             // TODO: Corrigir inclusão de cabeçalho ao converter de CSV
-            // TODO: Última linha não convertida 
-            // TODO: Verificar incrementador
-
 
 
 
@@ -216,10 +213,11 @@ namespace SheetHelper
 
                     pgbar.Value += 5; // 50 (tratativas)
 
-                    double percPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
+                    double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
+                    double percPrg = countPercPrg;
 
                     // Salva todas as demais linhas mediante início e fim         
-                    for (int i = rowsNumber[0]; i < rowsNumber[1]; i++) // Para cada linha da planilha
+                    for (int i = rowsNumber[0]; i <= rowsNumber[1]; i++) // Para cada linha da planilha
                     {
                         if (columnsASCII == null) // Se colunas não especificadas
                         {
@@ -239,21 +237,22 @@ namespace SheetHelper
                             output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
                         }
 
-                        if (percPrg >= 1) // Se aplicável, carrega
+                        if (countPercPrg >= 1) // Se aplicável, carrega
                         {
-                            pgbar.Value += (int)percPrg; // 90
-                            percPrg -= (int)percPrg;
+                            pgbar.Value += (int)countPercPrg; // 90                                                               
+                            countPercPrg -= (int)countPercPrg;
                         }
-                        else
-                        {
-                            percPrg += percPrg;
-                        }
+
+                        countPercPrg += percPrg; // Incrementa contador da ProgressBar
+
+                        if (i >= rowsNumber[1]) // Se última linha, interrompe obtenção da próxima linha
+                            break;
 
                         // Obtem a próxima linha
                         row = table.Rows[i - 1].ItemArray.Select(f => f.ToString()).ToList();
                     }
 
-                    pgbar.Value += (90 - pgbar.Value);
+                    pgbar.Value += (90 - pgbar.Value); // Se necessário, completa até 90%
 
                     // Escreve o novo arquivo convertido (substitui se ja existente)
                     File.WriteAllText(destiny, output.ToString());
