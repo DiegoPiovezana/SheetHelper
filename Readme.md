@@ -6,9 +6,9 @@ Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/
 <img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/SheetHelper.png?raw=true" width=50% height=50%>
 
 ## RECURSOS DISPONÍVEIS: <br/>
-✔ Compatível com leitura de arquivos .xlsx, .xls, .xlsb e .csv; <br/>
+✔ Compatível com leitura de arquivos .xlsx, .xlsm, .xls, .xlsb, .csv, entre outros; <br/>
 ✔ Contém tratativas de exceções para o usuário final (utilize o método ConverterExcept)¹; <br/>
-✔ Possibilidade de exclusão de cabeçalho; <br/>
+✔ Possibilita definir a primeira e última linha que serão convertidas; <br/>
 ✔ Substitui arquivo se já convertido; <br/>
 ✔ Possibilidade de escolher a aba desejada para conversão; <br/>
 ✔ Se arquivo está sendo usado por outro processo, oferece opção para encerrar o Excel; <br/>
@@ -16,14 +16,15 @@ Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/
 ✔ Opção para escolha do nome do arquivo, local de destino e formato a ser salvo; <br/>
 ✔ Opção para alterar delimitador; <br/>
 ✔ Possibilidade de escolha de colunas a serem convertidas; <br/>
-✔ Capacidade de definir um tamanho personalizado para o cabeçalho (escolha da linha de início).<br/>
+✔ Capacidade de realizar carregamento de Progress Bar;<br/>
+✔ Suporte a descompactação de arquivos .GZ e .ZIP.<br/>
 
 Faz uso da biblioteca [ExcelDataReader versão 3.7.0](https://github.com/ExcelDataReader/ExcelDataReader) <br/>
 
 ¹ Arquivo inexistente no diretorio de origem ou aberto durante a conversão. 
 <br/><br/>
 
-## CONVERSÕES POSSÍVEIS: <br/>
+## PRINCIPAIS CONVERSÕES POSSÍVEIS: <br/>
 <img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/Conversions.png?raw=true" width=65% height=65%>
 <br/>
 
@@ -38,15 +39,15 @@ namespace WindowsFormsAppNetFrameworkMain
     {
         static void Main()
         {
-            string origem = "C:\\Users\\Usuario\\Arquivos\\Excel_original.xlsx";
-            string destino = "C:\\Users\\Usuario\\Arquivos\\Excel_convertido.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Teste.xlsx.gz";
+            string destino = "C:\\Users\\diego\\Desktop\\Lixo\\Teste.txt";
 
-            int aba = 1; // Utilize 0 para a primeira aba
+            int aba = 0; // Utilize 0 para a primeira aba
             string separador = ";";
-            int cabecalho = 2; // Remove a primeira e segunda linha da planilha
-            string[] colunas = { }; // ou null, para converter todas as colunas
-             
-            bool retorno = ExcelHelper.ConverterExcept(origem, destino, aba, separador, cabecalho, colunas);
+            string[] colunas = {"A", "C", "B"}; // ou null, para converter todas as colunas
+            string linhas = "2:"; // Ex.: extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
+
+            bool retorno = ExcelHelper.ConverterExcept(origem, destino, aba, separador, colunas, linhas, null);
 
             if (retorno) MessageBox.Show("O arquivo foi convertido com sucesso!");
             else MessageBox.Show("Não foi possível converter o arquivo!");
