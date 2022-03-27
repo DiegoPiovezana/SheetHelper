@@ -34,6 +34,21 @@
             Realiza a leitura de arquivos .csv
             </summary>
         </member>
+        <member name="M:SheetHelper.ExcelHelper.UnGZ(System.IO.FileStream,System.String)">
+            <summary>
+            Descompacta arquivo .GZ
+            </summary>
+            <param name="compressedFileStream">Arquivo obtido através do método File.Open. </param> 
+            <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). Ex.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
+        </member>
+        <member name="M:SheetHelper.ExcelHelper.UnZIP(System.String,System.String)">
+            <summary>
+            Descompacta um arquivo .ZIP
+            </summary>
+            <param name="zipFile">Local e nome do arquivo compactado. Ex.: 'C:\\Arquivos\\Relatorio.zip</param>
+            <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado. Ex.: 'C:\\Arquivos\\'</param>
+            <returns></returns>
+        </member>
         <member name="M:SheetHelper.ExcelHelper.Converter(System.String,System.String,System.Int32,System.String,System.String[],System.String,System.Windows.Forms.ProgressBar)">
             <summary>
             Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>

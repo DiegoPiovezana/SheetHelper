@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace SheetHelper
 {
@@ -124,6 +126,51 @@ namespace SheetHelper
         }
 
 
+        /// <summary>
+        /// Descompacta arquivo .GZ
+        /// </summary>
+        /// <param name="compressedFileStream">Arquivo obtido através do método File.Open. </param> 
+        /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). Ex.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
+        public static string UnGZ(FileStream compressedFileStream, string pathDestiny)
+        {
+            string fileConverted;
+
+            if (Path.GetExtension(pathDestiny) == "") // Se formato a ser convertido não especificado, tenta obter do nome
+            {
+                string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "");
+                string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
+                fileConverted = $"{pathDestiny}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
+            }
+            else
+            {
+                fileConverted = pathDestiny;
+            }
+
+            //FileStream compressedFileStream = File.Open(compressedFileName, FileMode.Open); // "compressed.xlsx.gz"
+            FileStream outputFileStream = File.Create(fileConverted); // "decompressed.xlsx"
+            var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
+            decompressor.CopyTo(outputFileStream);
+
+            // Encerra uso dos arquivos
+            compressedFileStream.Close();
+            outputFileStream.Close();
+
+            return File.Exists(fileConverted) ? fileConverted : null;
+        }
+
+        /// <summary>
+        /// Descompacta um arquivo .ZIP
+        /// </summary>
+        /// <param name="zipFile">Local e nome do arquivo compactado. Ex.: 'C:\\Arquivos\\Relatorio.zip</param>
+        /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado. Ex.: 'C:\\Arquivos\\'</param>
+        /// <returns></returns>
+        public static string UnZIP(string zipFile, string pathDestiny)
+        {
+            if (!File.Exists(zipFile)) // Se conversão não realizada anteriormente          
+                ZipFile.ExtractToDirectory(zipFile, Path.GetDirectoryName(pathDestiny));                        
+                        
+            return Path.GetDirectoryName(pathDestiny);
+        }
 
 
         /// <summary>
@@ -140,10 +187,7 @@ namespace SheetHelper
         /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
-        {
-            // TODO: Modularizar etapas da conversão
-            // TODO: Tratativa para arquivos compactados
-
+        {         
 
             if (separator != null)
                 separator = separator.Trim();
@@ -152,6 +196,8 @@ namespace SheetHelper
 
             if (pgbar == null)
                 pgbar = new ProgressBar();
+
+            restart:
 
             // Abre o arquivo
             using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
@@ -166,6 +212,23 @@ namespace SheetHelper
                 // Realiza a leitura do arquivo
                 switch (Path.GetExtension(origin))
                 {
+                    case ".gz":
+                        origin = UnGZ(stream, Path.GetDirectoryName(destiny)+"\\");
+                        if (Path.GetExtension(origin) != Path.GetExtension(destiny)) // Se conversão não final
+                            goto restart;
+                        break;
+
+                    case ".zip":
+                        stream.Close();
+                        origin = UnZIP(origin, $"{Path.GetDirectoryName(destiny)}\\{Path.GetFileNameWithoutExtension(origin)}\\");
+
+                        IEnumerable<string> files = Directory.EnumerateFiles(origin);
+                        origin = files.First(); // Obtem o arquivo que foi convertido                        
+
+                        if (Path.GetExtension(origin) != Path.GetExtension(destiny)) // Se conversão não final
+                            goto restart;
+                        break;
+
                     case ".csv": // .csv 
                         result = ReadCSV(stream);
                         break;
@@ -218,13 +281,14 @@ namespace SheetHelper
                     if (columns != null && columns.Length != 0) // null OR {}
                     {
                         columnsASCII = DefineColunms(columns);
-
                     }
 
                     pgbar.Value += 5; // 50 (tratativas)
 
                     double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
                     double percPrg = countPercPrg;
+
+                    table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
 
                     // Salva todas as demais linhas mediante início e fim         
                     for (; i <= rowsNumber[1]; i++) // Para cada linha da planilha
@@ -247,16 +311,13 @@ namespace SheetHelper
                             output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
                         }
 
-                        if (countPercPrg >= 1) // Se aplicável, carrega
+                        if (countPercPrg >= 1) // Se aplicável, carrega a ProgressBar
                         {
                             pgbar.Value += (int)countPercPrg; // 90                                                               
                             countPercPrg -= (int)countPercPrg;
                         }
 
-                        countPercPrg += percPrg; // Incrementa contador da ProgressBar
-
-                        if (i >= rowsNumber[1]) // Se última linha, interrompe obtenção da próxima linha
-                            break;
+                        countPercPrg += percPrg; // Incrementa contador da ProgressBar                        
 
                         // Obtem a próxima linha
                         row = table.Rows[i - 1].ItemArray.Select(f => f.ToString()).ToList();
