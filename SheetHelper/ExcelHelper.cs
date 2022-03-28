@@ -166,10 +166,23 @@ namespace SheetHelper
         /// <returns></returns>
         public static string UnZIP(string zipFile, string pathDestiny)
         {
-            if (!File.Exists(zipFile)) // Se conversão não realizada anteriormente          
-                ZipFile.ExtractToDirectory(zipFile, Path.GetDirectoryName(pathDestiny));                        
-                        
-            return Path.GetDirectoryName(pathDestiny);
+            string directoryZIP = $"{pathDestiny}\\CnvrtdZIP\\";
+            string directoryDestiny = pathDestiny;
+
+            // Realiza a extração para um novo diretório
+            ZipFile.ExtractToDirectory(zipFile, directoryZIP);
+
+            IEnumerable<string> files = Directory.EnumerateFiles(directoryZIP);
+            string fileLocation = files.First(); // Obtem o local do arquivo 
+            string fileDestiny = $"{directoryDestiny}\\{Path.GetFileName(fileLocation)}"; // Local destinatário do arquivo
+
+            if (File.Exists(fileDestiny)) // Se arquivo existente, apaga
+                File.Delete(fileDestiny);
+
+            File.Move(fileLocation, fileDestiny); // Move-o para o local de destino            
+            Directory.Delete(directoryZIP); // Deleta o diretorio criado anteriormente
+
+            return $"{directoryDestiny}\\{Path.GetFileName(fileLocation)}";
         }
 
 
@@ -187,7 +200,7 @@ namespace SheetHelper
         /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
-        {         
+        {
 
             if (separator != null)
                 separator = separator.Trim();
@@ -213,21 +226,14 @@ namespace SheetHelper
                 switch (Path.GetExtension(origin))
                 {
                     case ".gz":
-                        origin = UnGZ(stream, Path.GetDirectoryName(destiny)+"\\");
-                        if (Path.GetExtension(origin) != Path.GetExtension(destiny)) // Se conversão não final
-                            goto restart;
-                        break;
+                        origin = UnGZ(stream, Path.GetDirectoryName(destiny) + "\\");
+                        goto restart;
 
                     case ".zip":
                         stream.Close();
-                        origin = UnZIP(origin, $"{Path.GetDirectoryName(destiny)}\\{Path.GetFileNameWithoutExtension(origin)}\\");
+                        origin = UnZIP(origin, Path.GetDirectoryName(destiny));
+                        goto restart;
 
-                        IEnumerable<string> files = Directory.EnumerateFiles(origin);
-                        origin = files.First(); // Obtem o arquivo que foi convertido                        
-
-                        if (Path.GetExtension(origin) != Path.GetExtension(destiny)) // Se conversão não final
-                            goto restart;
-                        break;
 
                     case ".csv": // .csv 
                         result = ReadCSV(stream);
