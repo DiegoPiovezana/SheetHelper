@@ -38,7 +38,7 @@
             <summary>
             Descompacta arquivo .GZ
             </summary>
-            <param name="compressedFileStream">Arquivo obtido através do método File.Open. </param> 
+            <param name="compressedFileStream">Arquivo  a ser convertido obtido através do método File.Open. </param> 
             <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). Ex.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
         </member>
         <member name="M:SheetHelper.ExcelHelper.UnZIP(System.String,System.String)">

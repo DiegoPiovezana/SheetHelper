@@ -129,7 +129,7 @@ namespace SheetHelper
         /// <summary>
         /// Descompacta arquivo .GZ
         /// </summary>
-        /// <param name="compressedFileStream">Arquivo obtido através do método File.Open. </param> 
+        /// <param name="compressedFileStream">Arquivo  a ser convertido obtido através do método File.Open. </param> 
         /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). Ex.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
         public static string UnGZ(FileStream compressedFileStream, string pathDestiny)
         {
@@ -137,7 +137,7 @@ namespace SheetHelper
 
             if (Path.GetExtension(pathDestiny) == "") // Se formato a ser convertido não especificado, tenta obter do nome
             {
-                string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "");
+                string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
                 string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
                 fileConverted = $"{pathDestiny}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
             }
@@ -215,7 +215,6 @@ namespace SheetHelper
             // Abre o arquivo
             using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
             {
-
                 File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
                 File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
                 pgbar.Value += 5; // 5       
@@ -223,7 +222,7 @@ namespace SheetHelper
                 DataSet result = null;
 
                 // Realiza a leitura do arquivo
-                switch (Path.GetExtension(origin))
+                switch (Path.GetExtension(origin).ToLower())
                 {
                     case ".gz":
                         origin = UnGZ(stream, Path.GetDirectoryName(destiny) + "\\");
@@ -234,8 +233,9 @@ namespace SheetHelper
                         origin = UnZIP(origin, Path.GetDirectoryName(destiny));
                         goto restart;
 
-
-                    case ".csv": // .csv 
+                    case ".rpt":
+                    case ".txt":
+                    case ".csv":
                         result = ReadCSV(stream);
                         break;
 
@@ -262,9 +262,11 @@ namespace SheetHelper
                     List<string> row = null;
                     int[] columnsASCII = null;
                     int i = rowsNumber[0]; // Primeira linha a ser convertida
+                    string extension = Path.GetExtension(origin);
 
-                    if (!Path.GetExtension(origin).Equals(".csv")) // A tratativa para o cabeçalho csv é diferente
-                    {
+                    if (!extension.Equals(".csv") && !extension.Equals(".rpt")) // A tratativa para o cabeçalho csv é diferente
+                    { // Se não for CSV
+
                         // Se deseja incluir cabeçalho
                         if (rowsNumber[0] == 1)
                         {
@@ -274,8 +276,11 @@ namespace SheetHelper
                             foreach (var item in colunsData) // Realiza a conversão das Listas
                                 row.Add(item.ToString());
                         }
-                        else
+                        else // Se não deseja incluir cabeçalho
+                        {
                             row = table.Rows[rowsNumber[0] - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                        }
+
                     }
                     else // Se for CSV, elimina cabeçalho 'Column' e considera index 0
                     {
