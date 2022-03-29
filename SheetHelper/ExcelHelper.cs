@@ -285,8 +285,8 @@ namespace SheetHelper
                     }
                     else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
                     {
-                        //if (!extension.Equals(".csv"))
-                        if (rows == null || rows.Trim().Equals("") || rows.Trim().Equals(":"))
+                        //if (!extension.Equals(".csv"))                       
+                        if (rowsNumber[1] == table.Rows.Count + 1) // Se automaticamente alterado para última linha
                             throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
 
                         // Realiza a leitura da primeira linha (cabeçalho)
