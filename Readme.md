@@ -6,7 +6,7 @@ Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/
 <img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/SheetHelper.png?raw=true" width=50% height=50%>
 
 ## RECURSOS DISPONÍVEIS: <br/>
-✔ Compatível com leitura de arquivos .xlsx, .xlsm, .xls, .xlsb, .csv, entre outros; <br/>
+✔ Compatível com leitura de arquivos .xlsx, .xlsm, .xls, .xlsb, .csv, .txt, .rpt, entre outros; <br/>
 ✔ Contém tratativas de exceções para o usuário final (utilize o método ConverterExcept)¹; <br/>
 ✔ Possibilita definir a primeira e última linha que serão convertidas; <br/>
 ✔ Substitui arquivo se já convertido; <br/>
