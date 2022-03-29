@@ -262,9 +262,10 @@ namespace SheetHelper
                     List<string> row = null;
                     int[] columnsASCII = null;
                     int i = rowsNumber[0]; // Primeira linha a ser convertida
+                    int j = 0;
                     string extension = Path.GetExtension(origin);
 
-                    if (!extension.Equals(".csv") && !extension.Equals(".rpt")) // A tratativa para o cabeçalho csv é diferente
+                    if (!extension.Equals(".csv") && !extension.Equals(".rpt") && !extension.Equals(".txt")) // A tratativa para o cabeçalho csv é diferente
                     { // Se não for CSV
 
                         // Se deseja incluir cabeçalho
@@ -282,10 +283,16 @@ namespace SheetHelper
                         }
 
                     }
-                    else // Se for CSV, elimina cabeçalho 'Column' e considera index 0
+                    else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
                     {
+                        //if (!extension.Equals(".csv"))
+                        if (rows == null || rows.Trim().Equals("") || rows.Trim().Equals(":"))
+                            throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
+
+                        // Realiza a leitura da primeira linha (cabeçalho)
                         row = table.Rows[rowsNumber[0] - 1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
-                        i += 1;
+                        i += 1; // Próxima leitura será a 2ª linha
+                        j += 1;
                     }
 
                     // Se deseja selecionar colunas específicas
@@ -302,7 +309,7 @@ namespace SheetHelper
                     table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
 
                     // Salva todas as demais linhas mediante início e fim         
-                    for (; i <= rowsNumber[1]; i++) // Para cada linha da planilha
+                    for (; i <= rowsNumber[1] + j; i++) // Para cada linha da planilha
                     {
                         if (columnsASCII == null) // Se colunas não especificadas
                         {

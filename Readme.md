@@ -39,12 +39,12 @@ namespace WindowsFormsAppNetFrameworkMain
     {
         static void Main()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Teste.xlsx.gz";
-            string destino = "C:\\Users\\diego\\Desktop\\Lixo\\Teste.txt";
+            string origem = "C:\\Users\\diego\\Arquivos\\Relatorio.xlsx.gz";
+            string destino = "C:\\Users\\diego\\Arquivos\\Relatorio.csv";
 
             int aba = 0; // Utilize 0 para a primeira aba
             string separador = ";";
-            string[] colunas = {"A", "C", "B"}; // ou null, para converter todas as colunas
+            string[] colunas = {"A", "C", "b"}; // ou null, para converter todas as colunas
             string linhas = "2:"; // Ex.: extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
 
             bool retorno = ExcelHelper.ConverterExcept(origem, destino, aba, separador, colunas, linhas, null);
