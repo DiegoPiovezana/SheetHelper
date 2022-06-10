@@ -30,6 +30,44 @@ namespace SheetHelper
 
         }
 
+        /// <summary>
+        /// Recebe o nome da coluna e retorna o índice na planilha
+        /// </summary>
+        /// <param name="columnName">Nome da coluna. Ex.: "A"</param>
+        /// <returns>Índice</returns>
+        public static int GetIndexColumn(string columnName)
+        {
+            int sum = 0;
+
+            foreach (var character in columnName)
+            {
+                sum *= 26;
+                sum += (character - 'A' + 1);
+            }
+
+            return sum; // Ex.: A = 1, Z = 26, AA = 27
+        }
+
+        /// <summary>
+        /// Obtem o nome (ex.: "AB") da coluna mediante índice
+        /// </summary>
+        /// <param name="columnNumber"> Índice da coluna</param>
+        /// <returns></returns>
+        public static string GetNameColumn(int columnNumber)
+        {
+            string columnName = String.Empty;
+
+            while (columnNumber > 0)
+            {
+                int modulo = (columnNumber - 1) % 26;
+                columnName = Convert.ToChar('A' + modulo) + columnName;
+                columnNumber = (columnNumber - modulo) / 26;
+            }
+
+            return columnName;
+        }
+
+
         /// <summary>
         /// Recebe as colunas em string, converte para caracter e retorna em ASCII correspondente
         /// </summary>
@@ -38,21 +76,66 @@ namespace SheetHelper
             int[] columnsASCII = new int[columns.Length];
 
             for (int i = 0; i < columns.Length; i++) // Para cada coluna
-            {
-                string column = columns[i].ToUpper();
-                int sum = 0;
-
-                foreach (var character in column)
-                {
-                    sum *= 26;
-                    sum += (character - 'A' + 1);
-                }
-                columnsASCII[i] = sum - 1;
-
+            {                               
+                columnsASCII[i] = GetIndexColumn(columns[i].ToUpper());
             }
 
             return columnsASCII;
         }
+
+        /// <summary>
+        /// Define o índice de todas as colunas que serão convertidas
+        /// </summary>
+        /// <param name="columns">Colunas a serem convertidas. Ex.: "B:H"</param>
+        /// <param name="lastColumnName">Última coluna da planilha (limite máximo de colunas). Ex.: "AZ"</param>
+        /// <returns>Vetor com todos os índices das colunas a serem convertidas</returns>
+        /// <exception cref="Exception"></exception>
+        private static int[] DefineColunms(string columns, string lastColumnName)
+        {
+            int indexLastColumn = GetIndexColumn(lastColumnName);
+
+            if (columns == null || columns.Equals("")) // Se coluna não especificadas           
+                return new[] { 0, indexLastColumn }; // Converte todas as colunas
+
+            columns = columns.Trim();
+
+            if (!columns.Contains(":"))
+                throw new Exception("Use um ':' para definir a primeira e última coluna!");
+
+            string[] rowsArray = columns.Split(':'); // Ex.: {"A","Z"}
+
+            if (rowsArray[0].Equals("")) // Se primeira coluna não definida
+                rowsArray[0] = "A"; // Então, deseja-se converter desde a primeira coluna
+
+            if (rowsArray[1].Equals("")) // Se última coluna não definida
+                rowsArray[1] = lastColumnName; // Então, deseja-se converter até a última coluna
+
+
+            if (GetIndexColumn(rowsArray[0]) <= 0 || GetIndexColumn(rowsArray[0]) > indexLastColumn)
+                throw new Exception($"A primeira coluna está fora do limite (min A, max {lastColumnName})!");
+
+            if (GetIndexColumn(rowsArray[1]) <= 0 || GetIndexColumn(rowsArray[1]) > indexLastColumn)
+                throw new Exception($"Última coluna fora dos limites (min A, max {lastColumnName})!");
+
+            if (GetIndexColumn(rowsArray[0]) > GetIndexColumn(rowsArray[1])) // Para este caso (incrementador)
+                throw new Exception($"A coluna inicial deve vir antes da última coluna!");
+
+            int firstColumn = GetIndexColumn(rowsArray[0]);
+            int lastColumn = GetIndexColumn(rowsArray[1]);
+            int[] columnsIndex = new int[lastColumn - firstColumn + 1];
+            int count = 0;
+
+            // Preenche o vetor com os índices de todas as colunas que serão convertidas
+            for (int index = firstColumn; index <= lastColumn; index++)
+            {
+                columnsIndex[count] = index;
+                count++;
+            }
+
+            return columnsIndex;
+        }
+
+
 
         /// <summary>
         /// Recebe as linhas em string, e retorna um vetor de inteiros com a primeira e última linha
@@ -186,6 +269,12 @@ namespace SheetHelper
         }
 
 
+        //public static string GetColumns(int row, bool fill)
+        //{
+
+        //}
+
+
         /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
@@ -201,6 +290,10 @@ namespace SheetHelper
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
+            // {"X", "V"}
+            // "A:G"
+            // {"A:G"}
+
 
             if (separator != null)
                 separator = separator.Trim();
@@ -298,7 +391,15 @@ namespace SheetHelper
                     // Se deseja selecionar colunas específicas
                     if (columns != null && columns.Length != 0) // null OR {}
                     {
-                        columnsASCII = DefineColunms(columns);
+                        if (columns[0].Contains(":"))
+                        { // Se primeira celula do array. Ex.: {"A:G"}
+                            columnsASCII = DefineColunms(columns[0], GetNameColumn(row.Count()));
+                        }
+                        else
+                        { // Se colunas definidas individualmente. Ex.: {"A", "B"}
+                            columnsASCII = DefineColunms(columns);
+                        }
+
                     }
 
                     pgbar.Value += 5; // 50 (tratativas)
@@ -323,7 +424,7 @@ namespace SheetHelper
                             foreach (int column in columnsASCII) // Para cada coluna das linhas
                             {
                                 // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                               
-                                rowSelected.Append(row[column]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
+                                rowSelected.Append(row[column-1]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
                             }
 
                             output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
@@ -352,6 +453,7 @@ namespace SheetHelper
                 {
                     throw new Exception("Erro ao selecionar a aba desejada");
                 }
+
             }
         }
 
