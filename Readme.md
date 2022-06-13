@@ -10,11 +10,12 @@ Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/
 ✔ Contém tratativas de exceções para o usuário final (utilize o método ConverterExcept)¹; <br/>
 ✔ Possibilita definir a primeira e última linha que serão convertidas; <br/>
 ✔ Substitui arquivo se já convertido; <br/>
-✔ Possibilidade de escolher a aba desejada para conversão; <br/>
+✔ Possibilidade de escolher a aba desejada para conversão utilizando índice ou nome; <br/>
 ✔ Se arquivo está sendo usado por outro processo, oferece opção para encerrar o Excel; <br/>
 ✔ É possível escolher o formato do arquivo a ser convertido; <br/>
 ✔ Opção para escolha do nome do arquivo, local de destino e formato a ser salvo; <br/>
 ✔ Permitido alterar o delimitador; <br/>
+✔ Suporta conversão de colunas, linhas e abas ocultas; <br/>
 ✔ Possibilidade de escolha de colunas a serem convertidas; <br/>
 ✔ Capacidade de realizar carregamento de Progress Bar;<br/>
 ✔ Suporte a descompactação de arquivos .GZ e .ZIP.<br/>
@@ -51,7 +52,6 @@ namespace WindowsFormsAppNetFrameworkMain
 
             if (retorno) MessageBox.Show("O arquivo foi convertido com sucesso!");
             else MessageBox.Show("Não foi possível converter o arquivo!");
-
         }
     }
 }
