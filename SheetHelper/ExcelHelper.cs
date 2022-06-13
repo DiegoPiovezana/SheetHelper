@@ -18,6 +18,12 @@ namespace SheetHelper
     /// </summary>
     public static class ExcelHelper
     {
+        private static int _i;
+        private static int _j;
+
+
+
+
         /// <summary>
         /// Encerra todos os processos do Excel
         /// </summary>
@@ -76,7 +82,7 @@ namespace SheetHelper
             int[] columnsASCII = new int[columns.Length];
 
             for (int i = 0; i < columns.Length; i++) // Para cada coluna
-            {                               
+            {
                 columnsASCII[i] = GetIndexColumn(columns[i].ToUpper());
             }
 
@@ -274,45 +280,95 @@ namespace SheetHelper
 
         //}
 
+        private static bool ValidateString(string[] strings)
+        {
+            foreach (string str in strings)
+            {
+                if (string.IsNullOrEmpty(str))
+                    throw new Exception($"'{str}' inválido!");
+            }
+            return true;
+        }
 
         /// <summary>
-        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
-        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
-        /// Utilize o método "ConverterExcept" para realizar a conversão e tratar algumas exceções!
+        /// Obtem a aba desejada
         /// </summary>
-        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. Ex.: "C:\\Users\\ArquivoExcel.xlsx"</param>
-        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
-        /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
-        /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'E', 'C' }"</param>
-        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
-        /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
-        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
+        /// <param name="sheet">Nome ou índice da aba desejada</param>
+        /// <param name="result">Dataset da planilha</param>    
+        /// <exception cref="Exception">Erro ao localizar aba</exception>
+        private static DataTable GetTable(string sheet, DataSet result)
         {
-            // {"X", "V"}
-            // "A:G"
-            // {"A:G"}
+            if (int.TryParse(sheet, out int sh)) // Se informado índice da aba desejada
+            {
+                // Se existir abas na planilha e a desejada estiver correta
+                if (result.Tables.Count <= 0 || sh <= -1 || sh > result.Tables.Count)
+                {
+                    throw new Exception("Erro ao selecionar a aba desejada! Verifique se o índice da aba está correto.");
+                }
 
+                return result.Tables[sh - 1]; // Obtem a aba desejada
 
-            if (separator != null)
-                separator = separator.Trim();
+            } // Se nome da aba for informado
             else
-                throw new Exception("Separador inválido!");
+            {
+                if (!result.Tables.Contains(sheet)) // Se nome da aba não localizado
+                {
+                    throw new Exception($"Não foi possível encontrar a aba '{sheet}' desejada! Verifique se o nome da aba está correto.");
+                }
 
-            if (pgbar == null)
-                pgbar = new ProgressBar();
+                return result.Tables[sheet]; // Obtem a aba desejada
+            }
+        }
 
-            restart:
+        private static List<string> GetFirstRow(string extension, DataTable table)
+        {
+            List<string> row;
+
+            if (!extension.Equals(".csv") && !extension.Equals(".rpt") && !extension.Equals(".txt")) // A tratativa para o cabeçalho csv é diferente
+            { // Se não for CSV
+
+                // Se deseja incluir cabeçalho
+                if (_i == 1)
+                {
+                    var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
+                    row = new List<string>(colunsData.Count);
+
+                    foreach (var item in colunsData) // Realiza a conversão das Listas
+                        row.Add(item.ToString());
+                }
+                else // Se não deseja incluir cabeçalho
+                {
+                    row = table.Rows[_i - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                }
+
+            }
+            else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
+            {
+                //if (!extension.Equals(".csv"))                       
+                if (_i == table.Rows.Count + 1) // Se automaticamente alterado para última linha
+                    throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
+
+                // Realiza a leitura da primeira linha (cabeçalho)
+                row = table.Rows[_i - 1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                _i += 1; // Próxima leitura será a 2ª linha
+                _j += 1;
+            }
+
+            return row;
+        }
+
+        /// <summary>
+        /// Abre o arquivo e realiza a leitura
+        /// </summary>       
+        private static DataSet GetDataSet(string origin, string destiny)
+        {
+
+        restart:
 
             // Abre o arquivo
             using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
             {
-                File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
-                File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
-                pgbar.Value += 5; // 5       
-
-                DataSet result = null;
+                DataSet result;
 
                 // Realiza a leitura do arquivo
                 switch (Path.GetExtension(origin).ToLower())
@@ -337,125 +393,14 @@ namespace SheetHelper
                         break;
                 }
 
-                pgbar.Value += 30; // 35 (pós leitura do arquivo)
-
-                // Se existir abas na planilha e a desejada estiver correta
-                if (result.Tables.Count > 0 && sheet > -1 && sheet < result.Tables.Count)
-                {
-                    StringBuilder output = new StringBuilder();
-
-                    // Obtem a aba desejada
-                    DataTable table = result.Tables[sheet];
-                    pgbar.Value += 5; // 40
-
-                    // Define qual será a primeira e última linha a ser convertida
-                    int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
-                    pgbar.Value += 5; // 45                
-
-                    List<string> row = null;
-                    int[] columnsASCII = null;
-                    int i = rowsNumber[0]; // Primeira linha a ser convertida
-                    int j = 0;
-                    string extension = Path.GetExtension(origin);
-
-                    if (!extension.Equals(".csv") && !extension.Equals(".rpt") && !extension.Equals(".txt")) // A tratativa para o cabeçalho csv é diferente
-                    { // Se não for CSV
-
-                        // Se deseja incluir cabeçalho
-                        if (rowsNumber[0] == 1)
-                        {
-                            var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
-                            row = new List<string>(colunsData.Count);
-
-                            foreach (var item in colunsData) // Realiza a conversão das Listas
-                                row.Add(item.ToString());
-                        }
-                        else // Se não deseja incluir cabeçalho
-                        {
-                            row = table.Rows[rowsNumber[0] - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
-                        }
-
-                    }
-                    else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
-                    {
-                        //if (!extension.Equals(".csv"))                       
-                        if (rowsNumber[1] == table.Rows.Count + 1) // Se automaticamente alterado para última linha
-                            throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
-
-                        // Realiza a leitura da primeira linha (cabeçalho)
-                        row = table.Rows[rowsNumber[0] - 1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
-                        i += 1; // Próxima leitura será a 2ª linha
-                        j += 1;
-                    }
-
-                    // Se deseja selecionar colunas específicas
-                    if (columns != null && columns.Length != 0) // null OR {}
-                    {
-                        if (columns[0].Contains(":"))
-                        { // Se primeira celula do array. Ex.: {"A:G"}
-                            columnsASCII = DefineColunms(columns[0], GetNameColumn(row.Count()));
-                        }
-                        else
-                        { // Se colunas definidas individualmente. Ex.: {"A", "B"}
-                            columnsASCII = DefineColunms(columns);
-                        }
-
-                    }
-
-                    pgbar.Value += 5; // 50 (tratativas)
-
-                    double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
-                    double percPrg = countPercPrg;
-
-                    table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
-
-                    // Salva todas as demais linhas mediante início e fim         
-                    for (; i <= rowsNumber[1] + j; i++) // Para cada linha da planilha
-                    {
-                        if (columnsASCII == null) // Se colunas não especificadas
-                        {
-                            output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas da linha                            
-                        }
-
-                        else // Se colunas especificadas
-                        {
-                            StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha                            
-
-                            foreach (int column in columnsASCII) // Para cada coluna das linhas
-                            {
-                                // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                               
-                                rowSelected.Append(row[column-1]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
-                            }
-
-                            output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
-                        }
-
-                        if (countPercPrg >= 1) // Se aplicável, carrega a ProgressBar
-                        {
-                            pgbar.Value += (int)countPercPrg; // 90                                                               
-                            countPercPrg -= (int)countPercPrg;
-                        }
-
-                        countPercPrg += percPrg; // Incrementa contador da ProgressBar                        
-
-                        // Obtem a próxima linha
-                        row = table.Rows[i - 1].ItemArray.Select(f => f.ToString()).ToList();
-                    }
-
-                    pgbar.Value += (90 - pgbar.Value); // Se necessário, completa até 90%
-
-                    // Escreve o novo arquivo convertido (substitui se ja existente)
-                    File.WriteAllText(destiny, output.ToString());
-                    pgbar.Value += 10; // 100
-                    return true;
-                }
-                else
-                {
-                    throw new Exception("Erro ao selecionar a aba desejada");
-                }
-
+                return result;
             }
+
+
+
+
         }
+
 
 
         /// <summary>
@@ -465,13 +410,13 @@ namespace SheetHelper
         /// </summary>
         /// <param name="origin">Diretorio + nome do arquivo de origem + formato. Ex.: "C:\\Users\\ArquivoExcel.xlsx"</param>
         /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
-        /// <param name="sheet">Aba da planilha a ser convertida. Ex.: 1 (segunda aba)</param>
+        /// <param name="sheet">Aba da planilha a ser convertida. Ex.: "1" (primeira aba) ou "NomeAba"</param>
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: "{ 'A', 'b', 'E', 'C' }. Passe null ou um vetor vazio caso precise de todas as colunas convertidas"</param>
+        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
         /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool ConverterExcept(string origin, string destiny, int sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
+        public static bool ConverterExcept(string origin, string destiny, string sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
@@ -562,6 +507,129 @@ namespace SheetHelper
 
 
         }
+
+
+
+        /// <summary>
+        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
+        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
+        /// Utilize o método "ConverterExcept" para realizar a conversão e tratar algumas exceções!
+        /// </summary>
+        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. Ex.: "C:\\Users\\ArquivoExcel.xlsx"</param>
+        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. Ex.: "C:\\Users\\ArquivoExcel.csv"</param>
+        /// <param name="sheet">Aba da planilha a ser convertida. Ex.: "1" (primeira aba) ou "NomeAba"</param>
+        /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
+        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
+        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
+        /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
+        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
+        public static bool Converter(string origin, string destiny, string sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
+        {
+
+            ValidateString(new string[] { origin, destiny, sheet, separator, rows, columns[0] });
+
+
+            if (pgbar == null)
+                pgbar = new ProgressBar();
+
+
+            File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
+            File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
+            pgbar.Value += 5; // 5 
+
+            DataSet result = GetDataSet(origin, destiny);
+
+            pgbar.Value += 30; // 35 (pós leitura do arquivo)
+
+            // Obtem a aba a ser convertida
+            DataTable table = GetTable(sheet, result);
+
+            StringBuilder output = new StringBuilder();
+
+            pgbar.Value += 5; // 40
+
+            // Define qual será a primeira e última linha a ser convertida
+            int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
+            pgbar.Value += 5; // 45                
+
+
+            int[] columnsASCII = null;
+            _i = rowsNumber[0]; // Primeira linha a ser convertida
+            _j = 0; // Deslocamento
+
+            List<string> row = GetFirstRow(Path.GetExtension(origin), table);
+
+
+            // Se deseja selecionar colunas específicas
+            if (columns != null && columns.Length != 0) // null OR {}
+            {
+                if (columns[0].Contains(":"))
+                { // Se primeira celula do array. Ex.: {"A:G"}
+                    columnsASCII = DefineColunms(columns[0], GetNameColumn(row.Count()));
+                }
+                else
+                { // Se colunas definidas individualmente. Ex.: {"A", "B"}
+                    columnsASCII = DefineColunms(columns);
+                }
+
+            }
+
+            pgbar.Value += 5; // 50 (tratativas)
+
+            double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
+            double percPrg = countPercPrg;
+
+            table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
+
+
+            // Salva todas as demais linhas mediante início e fim         
+            for (; _i <= rowsNumber[1] + _j; _i++) // Para cada linha da planilha
+            {
+                if (columnsASCII == null) // Se colunas não especificadas
+                {
+                    output.AppendLine(String.Join(separator, row)); // Adiciona toda as colunas da linha                            
+                }
+
+                else // Se colunas especificadas
+                {
+                    StringBuilder rowSelected = new StringBuilder(); // Armazena as colunas selecionadas da linha                            
+
+                    foreach (int column in columnsASCII) // Para cada coluna das linhas
+                    {
+                        // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                               
+                        rowSelected.Append(row[column - 1]).Append(separator); //rowSelected.Append(row[Convert.ToInt32(Char.ToUpper(column)) - 65]).Append(separator);
+                    }
+
+                    output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
+                }
+
+                if (countPercPrg >= 1) // Se aplicável, carrega a ProgressBar
+                {
+                    pgbar.Value += (int)countPercPrg; // 90                                                               
+                    countPercPrg -= (int)countPercPrg;
+                }
+
+                countPercPrg += percPrg; // Incrementa contador da ProgressBar                        
+
+                // Obtem a próxima linha
+                row = table.Rows[_i - 1].ItemArray.Select(f => f.ToString()).ToList();
+            }
+
+
+
+            pgbar.Value += (90 - pgbar.Value); // Se necessário, completa até 90%
+
+            // Escreve o novo arquivo convertido (substitui se ja existente)
+            File.WriteAllText(destiny, output.ToString());
+            pgbar.Value += 10; // 100
+            return true;
+
+
+
+        }
+
+
+
     }
 }
 

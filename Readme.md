@@ -12,9 +12,9 @@ Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/
 ✔ Substitui arquivo se já convertido; <br/>
 ✔ Possibilidade de escolher a aba desejada para conversão; <br/>
 ✔ Se arquivo está sendo usado por outro processo, oferece opção para encerrar o Excel; <br/>
-✔ Opção para escolha do formato do arquivo a ser convertido; <br/>
+✔ É possível escolher o formato do arquivo a ser convertido; <br/>
 ✔ Opção para escolha do nome do arquivo, local de destino e formato a ser salvo; <br/>
-✔ Opção para alterar delimitador; <br/>
+✔ Permitido alterar o delimitador; <br/>
 ✔ Possibilidade de escolha de colunas a serem convertidas; <br/>
 ✔ Capacidade de realizar carregamento de Progress Bar;<br/>
 ✔ Suporte a descompactação de arquivos .GZ e .ZIP.<br/>
@@ -42,9 +42,9 @@ namespace WindowsFormsAppNetFrameworkMain
             string origem = "C:\\Users\\diego\\Arquivos\\Relatorio.xlsx.gz";
             string destino = "C:\\Users\\diego\\Arquivos\\Relatorio.csv";
 
-            int aba = 0; // Utilize 0 para a primeira aba
+            string aba = "1"; // Utilize "1" para a primeira aba (índice ou nome)
             string separador = ";";
-            string[] colunas = {"A", "C", "b"}; // ou null, para converter todas as colunas
+            string[] colunas = {"A", "C", "b"}; // ou null, para converter todas as colunas ou {"A:BC"} para intervalo de colunas
             string linhas = "2:"; // Ex.: extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
 
             bool retorno = ExcelHelper.ConverterExcept(origem, destino, aba, separador, colunas, linhas, null);
