@@ -40,7 +40,7 @@ namespace SheetHelper
         /// Recebe o nome da coluna e retorna o índice na planilha
         /// </summary>
         /// <param name="columnName">Nome da coluna. Ex.: "A"</param>
-        /// <returns>Índice</returns>
+        /// <returns>Índice. Ex.: "A" = 1</returns>
         public static int GetIndexColumn(string columnName)
         {
             int sum = 0;
