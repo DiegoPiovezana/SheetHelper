@@ -1,7 +1,0 @@
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\obj\Debug\SheetHelper.csproj.AssemblyReference.cache
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\obj\Debug\SheetHelper.csproj.CoreCompileInputs.cache
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\bin\Release\SheetHelper.xml
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\bin\Release\SheetHelper.dll
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\bin\Release\SheetHelper.pdb
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\obj\Debug\SheetHelper.dll
-A:\Arquivados\2022\Programação\SheetHelper\SheetHelper\SheetHelper\obj\Debug\SheetHelper.pdb
