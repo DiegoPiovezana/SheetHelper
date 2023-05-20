@@ -1,18 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Xml;
 using ExcelDataReader.Core.OpenXmlFormat.BinaryFormat;
-using ExcelDataReader.Core.OpenXmlFormat.Records;
 using ExcelDataReader.Core.OpenXmlFormat.XmlFormat;
-#if !NET20
-using System.IO.Compression;
-#endif
 
 namespace ExcelDataReader.Core.OpenXmlFormat
 {
-    internal partial class ZipWorker : IDisposable
+    internal sealed partial class ZipWorker : IDisposable
     {
         private const string FileSharedStrings = "xl/sharedStrings.{0}";
         private const string FileStyles = "xl/styles.{0}";
@@ -26,9 +23,6 @@ namespace ExcelDataReader.Core.OpenXmlFormat
         {
             IgnoreComments = true, 
             IgnoreWhitespace = true,
-#if !NETSTANDARD1_3
-            XmlResolver = null,
-#endif
         };
 
         private readonly Dictionary<string, ZipArchiveEntry> _entries;
@@ -54,13 +48,13 @@ namespace ExcelDataReader.Core.OpenXmlFormat
         /// <summary>
         /// Gets the shared strings reader.
         /// </summary>
-        public RecordReader GetSharedStringsReader()
+        public RecordReader GetSharedStringsReader(XmlProperNamespaces properNamespaces)
         {
-            var entry = FindEntry(string.Format(FileSharedStrings, Format));
+            var entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileSharedStrings, Format));
             if (entry != null)
-                return new XmlSharedStringsReader(XmlReader.Create(entry.Open(), XmlSettings));
+                return new XmlSharedStringsReader(XmlReader.Create(entry.Open(), XmlSettings), properNamespaces);
 
-            entry = FindEntry(string.Format(FileSharedStrings, BinFormat));
+            entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileSharedStrings, BinFormat));
             if (entry != null)
                 return new BiffSharedStringsReader(entry.Open());
 
@@ -70,13 +64,13 @@ namespace ExcelDataReader.Core.OpenXmlFormat
         /// <summary>
         /// Gets the styles reader.
         /// </summary>
-        public RecordReader GetStylesReader()
+        public RecordReader GetStylesReader(XmlProperNamespaces properNamespaces)
         {
-            var entry = FindEntry(string.Format(FileStyles, Format));
+            var entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileStyles, Format));
             if (entry != null)
-                return new XmlStylesReader(XmlReader.Create(entry.Open(), XmlSettings));
+                return new XmlStylesReader(XmlReader.Create(entry.Open(), XmlSettings), properNamespaces);
 
-            entry = FindEntry(string.Format(FileStyles, BinFormat));
+            entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileStyles, BinFormat));
             if (entry != null)
                 return new BiffStylesReader(entry.Open());
 
@@ -86,20 +80,20 @@ namespace ExcelDataReader.Core.OpenXmlFormat
         /// <summary>
         /// Gets the workbook reader.
         /// </summary>
-        public RecordReader GetWorkbookReader()
+        public RecordReader GetWorkbookReader(XmlProperNamespaces properNamespaces)
         {
-            var entry = FindEntry(string.Format(FileWorkbook, Format));
+            var entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileWorkbook, Format));
             if (entry != null)
-                return new XmlWorkbookReader(XmlReader.Create(entry.Open(), XmlSettings));
+                return new XmlWorkbookReader(XmlReader.Create(entry.Open(), XmlSettings), properNamespaces);
 
-            entry = FindEntry(string.Format(FileWorkbook, BinFormat));
+            entry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileWorkbook, BinFormat));
             if (entry != null)
                 return new BiffWorkbookReader(entry.Open());
 
             throw new Exceptions.HeaderException(Errors.ErrorZipNoOpenXml);
         }
 
-        public RecordReader GetWorksheetReader(string sheetPath)
+        public RecordReader GetWorksheetReader(string sheetPath, XmlProperNamespaces properNamespaces)
         {
             // its possible sheetPath starts with /xl. in this case trim the /
             // see the test "Issue_11522_OpenXml"
@@ -113,7 +107,7 @@ namespace ExcelDataReader.Core.OpenXmlFormat
             {
                 return Path.GetExtension(sheetPath) switch
                 {
-                    ".xml" => new XmlWorksheetReader(XmlReader.Create(zipEntry.Open(), XmlSettings)),
+                    ".xml" => new XmlWorksheetReader(XmlReader.Create(zipEntry.Open(), XmlSettings), properNamespaces),
                     ".bin" => new BiffWorksheetReader(zipEntry.Open()),
                     _ => null,
                 };
@@ -128,11 +122,11 @@ namespace ExcelDataReader.Core.OpenXmlFormat
         /// <returns>The rels stream.</returns>
         public Stream GetWorkbookRelsStream()
         {
-            var zipEntry = FindEntry(string.Format(FileRels, Format));
+            var zipEntry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileRels, Format));
             if (zipEntry != null)
                 return zipEntry.Open();
 
-            zipEntry = FindEntry(string.Format(FileRels, BinFormat));
+            zipEntry = FindEntry(string.Format(CultureInfo.InvariantCulture, FileRels, BinFormat));
             if (zipEntry != null)
                 return zipEntry.Open();
 

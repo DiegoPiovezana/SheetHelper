@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ExcelDataReader.Core.NumberFormat;
 using ExcelDataReader.Log;
 
 namespace ExcelDataReader.Core.BinaryFormat
 {
     /// <summary>
-    /// Represents Worksheet section in workbook
+    /// Represents Worksheet section in workbook.
     /// </summary>
-    internal class XlsWorksheet : IWorksheet
+    internal sealed class XlsWorksheet : IWorksheet
     {
         public XlsWorksheet(XlsWorkbook workbook, XlsBiffBoundSheet refSheet, Stream stream)
         {
@@ -35,14 +34,14 @@ namespace ExcelDataReader.Core.BinaryFormat
         }
 
         /// <summary>
-        /// Gets the worksheet name
+        /// Gets the worksheet name.
         /// </summary>
         public string Name { get; }
 
         public string CodeName { get; private set; }
 
         /// <summary>
-        /// Gets the visibility of worksheet
+        /// Gets the visibility of worksheet.
         /// </summary>
         public string VisibleState { get; }
 
@@ -91,7 +90,7 @@ namespace ExcelDataReader.Core.BinaryFormat
         public IEnumerable<Row> ReadRows()
         {
             var rowIndex = 0;
-            using (var biffStream = new XlsBiffStream(Stream, (int)DataOffset, Workbook.BiffVersion, null, Workbook.SecretKey, Workbook.Encryption))
+            using (var biffStream = new XlsBiffStream(Stream, (int)DataOffset, Workbook.BiffVersion, BIFFTYPE.Worksheet, secretKey: Workbook.SecretKey, encryption: Workbook.Encryption))
             {
                 foreach (var rowBlock in ReadWorksheetRows(biffStream))
                 {
@@ -109,7 +108,7 @@ namespace ExcelDataReader.Core.BinaryFormat
         /// <summary>
         /// Find how many rows to read at a time and their offset in the file.
         /// If rows are stored sequentially in the file, returns a block size of up to 32 rows.
-        /// If rows are stored non-sequentially, the block size may extend up to the entire worksheet stream
+        /// If rows are stored non-sequentially, the block size may extend up to the entire worksheet stream.
         /// </summary>
         private void GetBlockSize(int startRow, out int blockRowCount, out int minOffset, out int maxOffset)
         {
@@ -255,7 +254,7 @@ namespace ExcelDataReader.Core.BinaryFormat
         }
 
         /// <summary>
-        /// Reads additional records if needed: a string record might follow a formula result
+        /// Reads additional records if needed: a string record might follow a formula result.
         /// </summary>
         private Cell ReadSingleCell(XlsBiffStream biffStream, XlsBiffBlankCell cell, int xfIndex)
         {
@@ -432,7 +431,7 @@ namespace ExcelDataReader.Core.BinaryFormat
 
         private void ReadWorksheetGlobals()
         {
-            using (var biffStream = new XlsBiffStream(Stream, (int)DataOffset, Workbook.BiffVersion, null, Workbook.SecretKey, Workbook.Encryption))
+            using (var biffStream = new XlsBiffStream(Stream, (int)DataOffset, Workbook.BiffVersion, BIFFTYPE.Worksheet, secretKey: Workbook.SecretKey, encryption: Workbook.Encryption))
             {
                 // Check the expected BOF record was found in the BIFF stream
                 if (biffStream.BiffVersion == 0 || biffStream.BiffType != BIFFTYPE.Worksheet)
@@ -453,12 +452,12 @@ namespace ExcelDataReader.Core.BinaryFormat
                 var rec = biffStream.Read();
                 var columnWidths = new List<Column>();
 
-                while (rec != null && !(rec is XlsBiffEof))
+                while (rec != null && rec is not XlsBiffEof)
                 {
                     switch (rec)
                     {
                         case XlsBiffDimensions dims:
-                            FieldCount = dims.LastColumn;
+                            // FieldCount = dims.LastColumn;
                             RowCount = (int)dims.LastRow;
                             break;
                         case XlsBiffDefaultRowHeight defaultRowHeightRecord:
@@ -513,7 +512,14 @@ namespace ExcelDataReader.Core.BinaryFormat
                             maxRowCountFromRowRecord = Math.Max(maxRowCountFromRowRecord, row.RowIndex + 1);
                             break;
                         case XlsBiffBlankCell cell:
-                            maxCellColumn = Math.Max(maxCellColumn, cell.ColumnIndex + 1);
+                            if (!cell.IsEmpty)
+                            {
+                                if (cell is XlsBiffMulRKCell mcell)
+                                    maxCellColumn = Math.Max(maxCellColumn, mcell.LastColumnIndex + 1);
+                                else
+                                    maxCellColumn = Math.Max(maxCellColumn, cell.ColumnIndex + 1);
+                            }
+
                             maxRowCount = Math.Max(maxRowCount, cell.RowIndex + 1);
                             if (ixfeOffset != -1)
                             {
@@ -523,7 +529,7 @@ namespace ExcelDataReader.Core.BinaryFormat
 
                             SetMinMaxRowOffset(cell.RowIndex, recordOffset, maxRowCount - 1);
                             break;
-                        case XlsBiffRecord ixfe when rec.Id == BIFFRECORDTYPE.IXFE:
+                        case XlsBiffRecord when rec.Id == BIFFRECORDTYPE.IXFE:
                             ixfeOffset = recordOffset; 
                             break;
                     }
@@ -549,8 +555,7 @@ namespace ExcelDataReader.Core.BinaryFormat
                 if (mergeCells.Count > 0)
                     MergeCells = mergeCells.ToArray();
 
-                if (FieldCount < maxCellColumn)
-                    FieldCount = maxCellColumn;
+                FieldCount = maxCellColumn;
 
                 maxRowCount = Math.Max(maxRowCount, maxRowCountFromRowRecord);
                 if (RowCount < maxRowCount)
@@ -593,12 +598,12 @@ namespace ExcelDataReader.Core.BinaryFormat
             rowOffset.MaxOverlapRowIndex = Math.Max(maxOverlapRow, rowOffset.MaxOverlapRowIndex);
         }
 
-        internal class XlsRowBlock
+        internal sealed class XlsRowBlock
         {
             public Dictionary<int, Row> Rows { get; set; }
         }
 
-        internal class XlsRowOffset
+        internal sealed class XlsRowOffset
         {
             public XlsBiffRow Record { get; set; }
 

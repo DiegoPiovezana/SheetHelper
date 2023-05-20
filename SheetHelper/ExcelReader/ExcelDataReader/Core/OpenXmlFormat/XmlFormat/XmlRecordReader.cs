@@ -10,10 +10,13 @@ namespace ExcelDataReader.Core.OpenXmlFormat.XmlFormat
     {
         private IEnumerator<Record> _enumerator;
 
-        public XmlRecordReader(XmlReader reader)
+        public XmlRecordReader(XmlReader reader, XmlProperNamespaces properNamespaces)
         {
             Reader = reader;
+            ProperNamespaces = properNamespaces;
         }
+
+        public XmlProperNamespaces ProperNamespaces { get; set; }
 
         protected XmlReader Reader { get; }
 
@@ -32,13 +35,8 @@ namespace ExcelDataReader.Core.OpenXmlFormat.XmlFormat
         protected override void Dispose(bool disposing)
         {
             _enumerator?.Dispose();
-#if NET20
-            if (disposing)
-                Reader.Close();
-#else
             if (disposing)
                 Reader.Dispose();
-#endif
         }
     }
 }

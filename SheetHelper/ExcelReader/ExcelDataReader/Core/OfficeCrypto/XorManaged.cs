@@ -7,7 +7,7 @@ namespace ExcelDataReader.Core.OfficeCrypto
     /// Minimal Office "XOR Deobfuscation Method 1" implementation compatible
     /// with System.Security.Cryptography.SymmetricAlgorithm.
     /// </summary>
-    internal class XorManaged : SymmetricAlgorithm
+    internal sealed class XorManaged : SymmetricAlgorithm
     {
         private static byte[] padArray = new byte[]
         {
@@ -106,7 +106,7 @@ namespace ExcelDataReader.Core.OfficeCrypto
         }
 
         /// <summary>
-        /// Generates a 16 byte obfuscation array based on the POI/LibreOffice implementations
+        /// Generates a 16 byte obfuscation array based on the POI/LibreOffice implementations.
         /// </summary>
         internal static byte[] CreateXorArray_Method1(byte[] passwordBytes)
         {
@@ -132,7 +132,7 @@ namespace ExcelDataReader.Core.OfficeCrypto
             return (byte)(((b << shift) | (b >> (8 - shift))) & 0xFF);
         }
 
-        internal class XorTransform : ICryptoTransform
+        internal sealed class XorTransform : ICryptoTransform
         {
             public XorTransform(byte[] key, int xorArrayIndex)
             {

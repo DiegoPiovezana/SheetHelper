@@ -42,7 +42,7 @@ namespace ExcelDataReader.Core.OpenXmlFormat.BinaryFormat
                     uint id = GetDWord(buffer, 4);
 
                     uint offset = 8;
-                    string rid = GetNullableString(buffer, ref offset);
+                    string? rid = GetNullableString(buffer, ref offset);
 
                     // Must be between 1 and 31 characters
                     uint nameLength = GetDWord(buffer, offset);
