@@ -1,33 +1,30 @@
 ﻿[![NuGet](https://img.shields.io/nuget/v/SheetHelper.svg)](https://www.nuget.org/packages/SheetHelper/)
 
+Fast and lightweight library for easy conversion of large Excel files. <br/>
 
-Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel <br/>
+<img src="SheetHelper\Images\SheetHelper_publish.png" width=100% height=100%> 
+AVAILABLE FEATURES: <br/>
+✔ Compatible with reading .xlsx, .xlsm, .xls, .xlsb, .csv, .txt, .rpt files, among others; <br/>
+✔ Contains exception handling for the end user (use the ConverterExcept method)¹; <br/>
+✔ Allows defining the first and last rows to be converted; <br/>
+✔ Replaces file if already converted; <br/>
+✔ Option to choose the desired sheet for conversion using index or name; <br/>
+✔ If the file is being used by another process, offers an option to close Excel; <br/>
+✔ Can choose the file format to be converted; <br/>
+✔ Option to choose the file name, destination location, and format to be saved; <br/>
+✔ Allowed to change the delimiter; <br/>
+✔ Supports conversion of hidden columns, rows, and sheets; <br/>
+✔ Possibility to choose specific columns to be converted; <br/>
+✔ Ability to load a Progress Bar;<br/>
+✔ Supports decompression of .GZ and .ZIP files.<br/>
 
-<img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/SheetHelper.png?raw=true" width=50% height=50%>
+Uses the library ExcelDataReader version 3.7.0 <br/>
 
-## RECURSOS DISPONÍVEIS: <br/>
-✔ Compatível com leitura de arquivos .xlsx, .xlsm, .xls, .xlsb, .csv, .txt, .rpt, entre outros; <br/>
-✔ Contém tratativas de exceções para o usuário final (utilize o método ConverterExcept)¹; <br/>
-✔ Possibilita definir a primeira e última linha que serão convertidas; <br/>
-✔ Substitui arquivo se já convertido; <br/>
-✔ Possibilidade de escolher a aba desejada para conversão utilizando índice ou nome; <br/>
-✔ Se arquivo está sendo usado por outro processo, oferece opção para encerrar o Excel; <br/>
-✔ É possível escolher o formato do arquivo a ser convertido; <br/>
-✔ Opção para escolha do nome do arquivo, local de destino e formato a ser salvo; <br/>
-✔ Permitido alterar o delimitador; <br/>
-✔ Suporta conversão de colunas, linhas e abas ocultas; <br/>
-✔ Possibilidade de escolha de colunas a serem convertidas; <br/>
-✔ Capacidade de realizar carregamento de Progress Bar;<br/>
-✔ Suporte a descompactação de arquivos .GZ e .ZIP.<br/>
-
-Faz uso da biblioteca [ExcelDataReader versão 3.7.0](https://github.com/ExcelDataReader/ExcelDataReader) <br/>
-
-¹ Arquivo inexistente no diretorio de origem ou aberto durante a conversão. 
+¹ File does not exist in the source directory or is open during conversion.
 <br/><br/>
 
 ## PRINCIPAIS CONVERSÕES POSSÍVEIS: <br/>
-<img src="https://github.com/SANTODEVS/SheetHelper/blob/master/SheetHelper/Images/Conversions.png?raw=true" width=65% height=65%>
-<br/>
+<img src="SheetHelper\Images\Conversions.png" width=80% height=80%> 
 
 ## EXEMPLO DE USO:
 ```c#
