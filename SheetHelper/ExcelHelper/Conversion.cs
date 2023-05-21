@@ -15,11 +15,15 @@ namespace SheetHelper
     /// <summary>
     /// Biblioteca rápida e leve, para fácil conversão de grandes arquivos Excel
     /// </summary>
-    public static class ExcelHelper
+    public static class Conversion
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public static int Progress { get; set; }
+
         private static int _i;
         private static int _j;
-
 
 
 
@@ -205,12 +209,9 @@ namespace SheetHelper
         private static DataSet ReadCSV(FileStream stream)
         {
             // Realiza a leitura do arquivo Excel CSV
-            using (var reader = ExcelReaderFactory.CreateCsvReader(stream))
-            {
-                DataSet result = reader.AsDataSet();
-
-                return result;
-            }
+            using var reader = ExcelReaderFactory.CreateCsvReader(stream);
+            DataSet result = reader.AsDataSet();
+            return result;
         }
 
 
@@ -219,7 +220,7 @@ namespace SheetHelper
         /// </summary>
         /// <param name="compressedFileStream">Arquivo  a ser convertido obtido através do método File.Open. </param> 
         /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). Ex.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
-        public static string UnGZ(FileStream compressedFileStream, string pathDestiny)
+        public static string? UnGZ(FileStream compressedFileStream, string pathDestiny)
         {
             string fileConverted;
 
@@ -544,7 +545,7 @@ namespace SheetHelper
             progress += 5; // 40
 
             // Define qual será a primeira e última linha a ser convertida
-            int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
+            int[] rowsNumber = Conversion.DefineRows(rows, table.Rows.Count + 1);
             progress += 5; // 45                
 
 
