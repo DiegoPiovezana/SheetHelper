@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using ExcelDataReader;
 
 namespace SheetHelper
 {
@@ -414,7 +415,7 @@ namespace SheetHelper
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
         /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool ConverterExcept(string origin, string destiny, string sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
+        public static bool ConverterExcept(string origin, string destiny, string sheet, string separator, string[] columns, string rows, int progress)
         {
 
             int countOpen = 0; // Contagem de vezes que o Excel estava aberto
@@ -423,7 +424,7 @@ namespace SheetHelper
 
             try
             {
-                return Converter(origin, destiny, sheet, separator, columns, rows, pgbar);
+                return Converter(origin, destiny, sheet, separator, columns, rows, progress);
             }
 
 
@@ -431,18 +432,18 @@ namespace SheetHelper
             catch (FileNotFoundException nffEx) when (nffEx.HResult.Equals(-2147024894))
             {
 
-                var result3 = MessageBox.Show(
-                                   "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
-                                   + "\n\n" + origin,
-                                   "Aviso",
-                                   MessageBoxButtons.OKCancel,
-                                   MessageBoxIcon.Exclamation);
+                //var result3 = MessageBox.Show(
+                //                   "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
+                //                   + "\n\n" + origin,
+                //                   "Aviso",
+                //                   MessageBoxButtons.OKCancel,
+                //                   MessageBoxIcon.Exclamation);
 
 
-                if (result3 == DialogResult.OK)
-                {
-                    goto again; // Tenta realizar a conversão novamente
-                }
+                //if (result3 == DialogResult.OK)
+                //{
+                //    goto again; // Tenta realizar a conversão novamente
+                //}
 
                 return false;
             }
@@ -452,43 +453,44 @@ namespace SheetHelper
             catch (IOException eiEx) when (eiEx.HResult.Equals(-2147024864))
             {
 
-                countOpen++; // Contador de tentativas com falha de arquivo aberto
+                //countOpen++; // Contador de tentativas com falha de arquivo aberto
 
-                if (countOpen >= 2) // Se necessario forçar o fechamento do Excel (a partir do 2 caso)
-                {
+                //if (countOpen >= 2) // Se necessario forçar o fechamento do Excel (a partir do 2 caso)
+                //{
 
-                    var result1 = MessageBox.Show(
-                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nAs alterações não serão salvas.",
-                       "Aviso",
-                       MessageBoxButtons.YesNo,
-                       MessageBoxIcon.Exclamation);
+                //    var result1 = MessageBox.Show(
+                //       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nAs alterações não serão salvas.",
+                //       "Aviso",
+                //       MessageBoxButtons.YesNo,
+                //       MessageBoxIcon.Exclamation);
 
-                    if (result1 == DialogResult.Yes)
-                    {
-                        CloseExcel(); // Encerra todos os processos do Excel
-                        Thread.Sleep(1500); // Aguarda o excel fechar por completo durante 1,5 segundo
-                        goto again; // Tenta realizar a conversão novamente
+                //    if (result1 == DialogResult.Yes)
+                //    {
+                //        CloseExcel(); // Encerra todos os processos do Excel
+                //        Thread.Sleep(1500); // Aguarda o excel fechar por completo durante 1,5 segundo
+                //        goto again; // Tenta realizar a conversão novamente
 
-                    } // Se No, continua execucao abaixo
+                //    } // Se No, continua execucao abaixo
 
-                }
+                //}
 
-                var result2 = MessageBox.Show(
-                    "O arquivo '" + Path.GetFileName(origin) + "' ou '" + Path.GetFileName(destiny) + "' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-                    "Aviso",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Error);
+                //var result2 = MessageBox.Show(
+                //    "O arquivo '" + Path.GetFileName(origin) + "' ou '" + Path.GetFileName(destiny) + "' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+                //    "Aviso",
+                //    MessageBoxButtons.OKCancel,
+                //    MessageBoxIcon.Error);
 
 
-                if (result2 == DialogResult.OK)
-                {
-                    goto again; // Tenta realizar a conversão novamente
-                }
-                else // Se cancelar
-                {
-                    return false;
-                }
+                //if (result2 == DialogResult.OK)
+                //{
+                //    goto again; // Tenta realizar a conversão novamente
+                //}
+                //else // Se cancelar
+                //{
+                //    return false;
+                //}
 
+                return false;
 
             }
 
@@ -519,36 +521,31 @@ namespace SheetHelper
         /// <param name="separator">Separador a ser utilizado para realizar a conversão. Ex.: ";"</param>
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. Ex.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). Ex.: "1:50 (linha 1 até linha 50)"</param>
-        /// <param name="pgbar">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
+        /// <param name="progress">"Caso desejado, passe uma ProgressBar para ser carregada em 100 (ou null). Ex.: "ProgressBar pgbar = new ProgressBar()"</param>
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string[] columns, string rows, ProgressBar pgbar)
+        public static bool Converter(string origin, string destiny, string sheet, string separator = ";", string[] columns = null, string rows = null, int progress = 0)
         {
 
             ValidateString(new string[] { origin, destiny, sheet, separator, rows, columns[0] });
 
-
-            if (pgbar == null)
-                pgbar = new ProgressBar();
-
-
             File.WriteAllText(destiny, ""); // Para verificar se arquivo de destino esta acessivel
             File.Delete(destiny); // Deleta para evitar que usuario abra o arquivo durante a conversao
-            pgbar.Value += 5; // 5 
+            progress += 5; // 5 
 
             DataSet result = GetDataSet(origin, destiny);
 
-            pgbar.Value += 30; // 35 (pós leitura do arquivo)
+            progress += 30; // 35 (pós leitura do arquivo)
 
             // Obtem a aba a ser convertida
             DataTable table = GetTable(sheet, result);
 
             StringBuilder output = new StringBuilder();
 
-            pgbar.Value += 5; // 40
+            progress += 5; // 40
 
             // Define qual será a primeira e última linha a ser convertida
             int[] rowsNumber = ExcelHelper.DefineRows(rows, table.Rows.Count + 1);
-            pgbar.Value += 5; // 45                
+            progress += 5; // 45                
 
 
             int[] columnsASCII = null;
@@ -572,7 +569,7 @@ namespace SheetHelper
 
             }
 
-            pgbar.Value += 5; // 50 (tratativas)
+            progress += 5; // 50 (tratativas)
 
             double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
             double percPrg = countPercPrg;
@@ -603,7 +600,7 @@ namespace SheetHelper
 
                 if (countPercPrg >= 1) // Se aplicável, carrega a ProgressBar
                 {
-                    pgbar.Value += (int)countPercPrg; // 90                                                               
+                    progress += (int)countPercPrg; // 90                                                               
                     countPercPrg -= (int)countPercPrg;
                 }
 
@@ -615,11 +612,11 @@ namespace SheetHelper
 
 
 
-            pgbar.Value += (90 - pgbar.Value); // Se necessário, completa até 90%
+            progress += (90 - progress); // Se necessário, completa até 90%
 
             // Escreve o novo arquivo convertido (substitui se ja existente)
             File.WriteAllText(destiny, output.ToString());
-            pgbar.Value += 10; // 100
+            progress += 10; // 100
             return true;
 
 

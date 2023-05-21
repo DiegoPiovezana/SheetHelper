@@ -1,3 +1,5 @@
+.vs/
+obj/
 SheetHelper/bin/
 SheetHelper/obj/
-.vs/
+SheetHelper/Nuget.config
