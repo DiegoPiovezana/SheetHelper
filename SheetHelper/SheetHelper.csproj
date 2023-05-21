@@ -50,6 +50,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Resource Include="Images\SheetHelper_icon.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
