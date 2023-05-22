@@ -55,31 +55,25 @@ namespace SheetHelper
             }
         }
 
-        private static void ValidateColumns(string columns)
+        private static void ValidateColumns(string? columns)
         {
             // "A:H, 4:9, B, 75, -2"
-
-            if (String.IsNullOrEmpty(columns))
-            {
-                throw new ArgumentException("Invalid columns.", nameof(columns));
-            }
 
             // TODO: Add specific validation logic for columns
         }
 
-        private static void ValidateRows(string rows)
+        private static void ValidateRows(string? rows)
         {
             // "1:23, 34:56, 70, 75, -1"
 
-            if (String.IsNullOrEmpty(rows))
-            {
-                throw new ArgumentException("Invalid rows.", nameof(rows));
-            }
+
+            // throw new ArgumentException("Invalid rows.", nameof(rows));
+
 
             // TODO: Add specific validation logic for rows
         }
 
-        internal static void Validate(string origin, string destiny, string sheet, string separator, string columns, string rows)
+        internal static void Validate(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             List<Task> validates = new()
             {

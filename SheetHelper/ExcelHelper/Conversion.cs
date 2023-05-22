@@ -33,7 +33,7 @@ namespace SheetHelper
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string columns, string rows)
+        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             Progress = 0;
 
@@ -53,6 +53,9 @@ namespace SheetHelper
 
             // Obtem a aba a ser convertida
             DataTable table = Reading.GetTable(sheet, result);
+            var header = SH.ConverToDataRow(Reading.GetFirstRow(Path.GetExtension(origin),true,table),table);
+            table.Rows.InsertAt(header, 0); // Treatment to allow considering header
+
             StringBuilder output = new();
             Progress += 5; // 40
 
@@ -105,6 +108,7 @@ namespace SheetHelper
 
                 // Obtem a próxima linha
                 //List<string> rowFull = table.Rows[_i - 1].ItemArray.Select(f => f.ToString()).ToList();
+
                 //writer.WriteLine();
             }
 

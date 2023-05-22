@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Data;
 
 namespace SheetHelper
 {
@@ -166,6 +167,24 @@ namespace SheetHelper
         //}
 
         /// <summary>
+        /// Converts a string array to a DataRow and returns the resulting DataRow.
+        /// </summary>
+        /// <param name="row">The string array to be converted.</param>
+        /// <param name="table">The target DataTable to which the new DataRow will be added.</param>
+        /// <returns>The newly created DataRow populated with values from the string array.</returns>
+        public static DataRow ConverToDataRow(string[] row, DataTable table)
+        {
+            DataRow newRow = table.NewRow();
+
+            for (int i = 0; i < row.Length; i++)
+            {
+                newRow[i] = row[i];
+            }
+
+            return newRow;
+        }
+
+        /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// com tratativa de exceçoes para o usuário final (arquivo inexistente no diretorio ou aberto durante a conversão)
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
@@ -177,7 +196,7 @@ namespace SheetHelper
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string columns, string rows)
+        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {        
             try
             {

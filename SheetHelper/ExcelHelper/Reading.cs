@@ -9,9 +9,6 @@ namespace SheetHelper
 {
     internal class Reading
     {
-        private static int _i;
-        private static int _j;
-
         /// <summary>
         /// Realiza a leitura de arquivos .xls, .xlsx e .xlsb
         /// </summary>
@@ -72,7 +69,7 @@ namespace SheetHelper
             }
         }
 
-        internal static List<string> GetFirstRow(string extension, DataTable table)
+        public static string[] GetFirstRow(string extension, bool header, DataTable table)
         {
             List<string> row;
 
@@ -80,7 +77,7 @@ namespace SheetHelper
             { // Se não for CSV
 
                 // Se deseja incluir cabeçalho
-                if (_i == 1)
+                if (header)
                 {
                     var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
                     row = new List<string>(colunsData.Count);
@@ -90,23 +87,21 @@ namespace SheetHelper
                 }
                 else // Se não deseja incluir cabeçalho
                 {
-                    row = table.Rows[_i - 2].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                    row = table.Rows[1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
                 }
 
             }
             else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
             {
-                //if (!extension.Equals(".csv"))                       
-                if (_i == table.Rows.Count + 1) // Se automaticamente alterado para última linha
-                    throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
+                ////if (!extension.Equals(".csv"))                       
+                //if (_i == table.Rows.Count + 1) // Se automaticamente alterado para última linha
+                //    throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
 
                 // Realiza a leitura da primeira linha (cabeçalho)
-                row = table.Rows[_i - 1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
-                _i += 1; // Próxima leitura será a 2ª linha
-                _j += 1;
+                row = table.Rows[0].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)            
             }
 
-            return row;
+            return row.ToArray();
         }
 
         /// <summary>
