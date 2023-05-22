@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -107,10 +106,12 @@ namespace SheetHelper
         /// <returns>The fixed string with proper item separation.</returns>
         public static string FixItems(string items)
         {
-            items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
-            items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
-            items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
-
+            if (!String.IsNullOrEmpty(items))
+            {
+                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+            }
             return items; // "123123,13514,31234"
         }
 
@@ -119,11 +120,11 @@ namespace SheetHelper
         /// </summary>
         internal static int[] DefineRows(string rows, DataTable table)
         {
-            int limitRows = table.Rows.Count;
+            int limitIndexRows = table.Rows.Count;
             List<int> indexRows = new();
 
             if (string.IsNullOrEmpty(rows)) // If rows not specified           
-                return new[] { 1, limitRows }; // Convert all rows
+                return new[] { 1, limitIndexRows }; // Convert all rows
 
             rows = FixItems(rows);
 
@@ -142,7 +143,7 @@ namespace SheetHelper
                         rowsArray[0] = "1"; // Then, convert from the first row
 
                     if (string.IsNullOrEmpty(rowsArray[1])) // If last row not defined
-                        rowsArray[1] = limitRows.ToString(); // Then, convert until the last row
+                        rowsArray[1] = limitIndexRows.ToString(); // Then, convert until the last row
 
                     int firstRowIndex = ConvertIndexRow(rowsArray[0]);
                     int lastRowIndex = ConvertIndexRow(rowsArray[1]);
@@ -168,17 +169,17 @@ namespace SheetHelper
 
                 if (indexRow >= 0)  // "75"
                 {
-                    if (indexRow == 0 || indexRow > limitRows)
-                        throw new Exception($"The row '{row}' is out of range (min 1, max {limitRows})!");
+                    if (indexRow == 0 || indexRow > limitIndexRows)
+                        throw new Exception($"The row '{row}' is out of range (min 1, max {limitIndexRows})!");
 
                     return indexRow;
                 }
                 else // "-2"
                 {
-                    if (limitRows + indexRow + 1 > limitRows)
-                        throw new Exception($"The row '{row}' is out of range, because it refers to row '{limitRows + indexRow + 1}' (min 1, max {limitRows})!");
+                    if (limitIndexRows + indexRow + 1 > limitIndexRows)
+                        throw new Exception($"The row '{row}' is out of range, because it refers to row '{limitIndexRows + indexRow + 1}' (min 1, max {limitIndexRows})!");
 
-                    return limitRows + indexRow + 1;
+                    return limitIndexRows + indexRow + 1;
                 }
             }
         }
@@ -192,11 +193,11 @@ namespace SheetHelper
         /// <exception cref="Exception"></exception>
         internal static int[] DefineColumnsASCII(string columns, DataTable table)
         {
-            int indexLastColumn = table.Columns.Count;
+            int limitIndexColumn = table.Columns.Count;
             List<int> indexColumns = new();
 
-            if (string.IsNullOrEmpty(columns)) // If columns not specified           
-                return Enumerable.Range(1, indexLastColumn).ToArray(); // Convert all columns
+            if (string.IsNullOrEmpty(columns)) // If columns not specified                
+                return new int[] { 0 }; // Behavior to convert all columns
 
             columns = FixItems(columns);
 
@@ -215,10 +216,13 @@ namespace SheetHelper
                         columnsArray[0] = "1"; // Then, convert from the first row
 
                     if (string.IsNullOrEmpty(columnsArray[1])) // If last row not defined
-                        columnsArray[1] = indexLastColumn.ToString(); // Then, convert until the last row
+                        columnsArray[1] = limitIndexColumn.ToString(); // Then, convert until the last row
 
                     int firstColumnIndex = ConvertIndexColumn(columnsArray[0]);
                     int lastColumnIndex = ConvertIndexColumn(columnsArray[1]);
+
+                    if (lastColumnIndex.Equals(limitIndexColumn) && firstColumnIndex.Equals(1))
+                        return new int[] { 0 }; // Behavior to convert all columns
 
                     if (firstColumnIndex > lastColumnIndex)
                         indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1).Reverse());
@@ -242,27 +246,35 @@ namespace SheetHelper
 
                 if (indexColumn >= 0)  // "75"
                 {
-                    if (indexColumn == 0 || indexColumn > indexLastColumn)
-                        throw new Exception($"The column '{column}' is out of range (min 1, max {indexLastColumn})!");
+                    if (indexColumn == 0 || indexColumn > limitIndexColumn)
+                        throw new Exception($"The column '{column}' is out of range (min 1, max {limitIndexColumn})!");
 
                     return indexColumn;
                 }
                 else // "-2"
                 {
-                    if (indexLastColumn + indexColumn + 1 > indexLastColumn)
-                        throw new Exception($"The column '{column}' is out of range, because it refers to column '{indexLastColumn + indexColumn + 1}' (min 1, max {indexLastColumn})!");
+                    if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
+                        throw new Exception($"The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
 
-                    return indexLastColumn + indexColumn + 1;
+                    return limitIndexColumn + indexColumn + 1;
                 }
             }
-
-
         }
-
-
 
         #endregion
 
+        /// <summary>
+        /// Checks if it is necessary to convert the file.
+        /// </summary>
+        /// <returns>True if conversion is required.</returns>
+        internal static bool CheckConvert(string origin, string destiny, string sheet, string separator, string columns, string rows)
+        {
+            bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny)); // The formats is the same?
+            bool checkColumns = string.IsNullOrEmpty(columns) || columns.Trim().Equals(":") || columns.Trim().Equals("1:"); // All columns?
+            bool checkRows = string.IsNullOrEmpty(rows) || rows.Trim().Equals(":") || rows.Trim().Equals("1:"); // All rows?
+
+            return !(checkFormat && checkColumns && checkRows);
+        }
 
 
     }

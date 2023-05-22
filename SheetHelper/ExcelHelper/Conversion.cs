@@ -41,6 +41,13 @@ namespace SheetHelper
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Progress += 5; // 5 
 
+            if(!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
+            {
+                // Se não há necessidade de conversão
+                Progress = 100;
+                return true;
+            }
+
             DataSet result = Reading.GetDataSet(origin, destiny);
             Progress += 30; // 35 (pós leitura do arquivo)
 
@@ -57,28 +64,23 @@ namespace SheetHelper
             int[] columnsASCII = Treatment.DefineColumnsASCII(columns, table);
             Progress += 5; // 50 (tratativas ok)
 
-            //List<string> rowFull = Reading.GetFirstRow(Path.GetExtension(origin), table);
-
             double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
             double percPrg = countPercPrg;
 
             table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
-
-            //_i = rowsNumber[0]; // Primeira linha a ser convertida
-            //_j = 0; // Deslocamento
 
             //using (StreamWriter writer = new (destiny))
             //{
             // Salva todas as demais linhas mediante início e fim   
             foreach (int rowIndex in rowsNumber) // Para cada linha da planilha  
             {
-                // Obter a linha               
+                // Obtem a linha               
                 string[] rowFull = table.Rows[rowIndex - 1].ItemArray.Select(cell => cell.ToString()).ToArray();
                
-                if (columnsASCII.Equals("full")) // Se colunas não especificadas - Todas 
+                if (columnsASCII[0].Equals(0)) // Se colunas não especificadas - Todas 
                 {
                     output.AppendLine(String.Join(separator, rowFull)); // Adiciona toda as colunas da linha
-                                                                        //writer.Write(String.Join(separator, rowFull));                       
+                    //writer.Write(String.Join(separator, rowFull));                       
                 }
                 else // Se colunas especificadas - Selecionadas
                 {
