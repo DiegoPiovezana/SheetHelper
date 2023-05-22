@@ -60,19 +60,19 @@ namespace SheetHelper
         /// <summary>
         /// Gets the column name by index
         /// </summary>
-        /// <param name="columnNumber"> Column index</param>
+        /// <param name="columnIndex"> Column index</param>
         /// <returns>Column name (e.g.: "AB")</returns>
-        public static string GetNameColumn(int columnNumber)
+        public static string GetNameColumn(int columnIndex)
         {
             try
             {
                 string columnName = String.Empty;
 
-                while (columnNumber > 0)
+                while (columnIndex > 0)
                 {
-                    int modulo = (columnNumber - 1) % 26;
-                    columnName = Convert.ToChar('A' + modulo) + columnName;
-                    columnNumber = (columnNumber - modulo) / 26;
+                    int remainder = (columnIndex - 1) % 26;
+                    columnName = Convert.ToChar('A' + remainder) + columnName;
+                    columnIndex = (columnIndex - remainder) / 26;
                 }
 
                 return columnName;
@@ -177,7 +177,7 @@ namespace SheetHelper
         /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string[] columns, string rows)
+        public static bool Converter(string origin, string destiny, string sheet, string separator, string columns, string rows)
         {        
             try
             {

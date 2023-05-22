@@ -1,4 +1,11 @@
-﻿using System;
+﻿using ExcelDataReader.Core;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SheetHelper
 {
@@ -7,120 +14,255 @@ namespace SheetHelper
     /// </summary>
     internal static class Treatment
     {
+        #region Validates
+        private static void ValidateOrigin(string origin)
+        {
+            if (!File.Exists(origin))
+            {
+                throw new FileNotFoundException("Origin file not found.", origin);
+            }
+        }
+
+        private static void ValidateDestiny(string destiny)
+        {
+            try
+            {
+                File.WriteAllText(destiny, ""); // To check if the destination file is accessible
+                File.Delete(destiny); // Delete to prevent the file from being opened during conversion
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error validating destiny file.", ex);
+            }
+        }
+
+        private static void ValidateSheet(string sheet)
+        {
+            // "1" or "Fist_Sheet_Name"
+
+            if (String.IsNullOrEmpty(sheet))
+            {
+                throw new ArgumentException("Invalid sheet name.", nameof(sheet));
+            }
+        }
+
+        private static void ValidateSeparator(string separator)
+        {
+            // ";"
+
+            if (String.IsNullOrEmpty(separator))
+            {
+                throw new ArgumentException("Invalid separator.", nameof(separator));
+            }
+        }
+
+        private static void ValidateColumns(string columns)
+        {
+            // "A:H, 4:9, B, 75, -2"
+
+            if (String.IsNullOrEmpty(columns))
+            {
+                throw new ArgumentException("Invalid columns.", nameof(columns));
+            }
+
+            // TODO: Add specific validation logic for columns
+        }
+
+        private static void ValidateRows(string rows)
+        {
+            // "1:23, 34:56, 70, 75, -1"
+
+            if (String.IsNullOrEmpty(rows))
+            {
+                throw new ArgumentException("Invalid rows.", nameof(rows));
+            }
+
+            // TODO: Add specific validation logic for rows
+        }
+
+        internal static void Validate(string origin, string destiny, string sheet, string separator, string columns, string rows)
+        {
+            List<Task> validates = new()
+            {
+                Task.Run(() => ValidateOrigin(origin)),
+                Task.Run(() => ValidateDestiny(destiny)),
+                Task.Run(() => ValidateSheet(sheet)),
+                Task.Run(() => ValidateSeparator(separator)),
+                Task.Run(() => ValidateColumns(columns)),
+                Task.Run(() => ValidateRows(rows))
+            };
+
+            Task.WhenAll(validates).Wait();
+        }
+
+        #endregion
+
+        #region Defines
+
         /// <summary>
-        /// Define o índice de todas as colunas que serão convertidas
+        /// Fixes a string containing items by replacing line breaks and semicolons with commas,
+        /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
         /// </summary>
-        /// <param name="columns">Colunas a serem convertidas. E.g.: "B:H"</param>
-        /// <param name="lastColumnName">Última coluna da planilha (limite máximo de colunas). E.g.: "AZ"</param>
-        /// <returns>Vetor com todos os índices das colunas a serem convertidas</returns>
+        /// <param name="items">The string containing items to be fixed.</param>
+        /// <returns>The fixed string with proper item separation.</returns>
+        public static string FixItems(string items)
+        {
+            items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+            items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+            items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+
+            return items; // "123123,13514,31234"
+        }
+
+        /// <summary>
+        /// Receives rows as a string and returns an array of integers with the first and last row.
+        /// </summary>
+        internal static int[] DefineRows(string rows, DataTable table)
+        {
+            int limitRows = table.Rows.Count;
+            List<int> indexRows = new();
+
+            if (string.IsNullOrEmpty(rows)) // If rows not specified           
+                return new[] { 1, limitRows }; // Convert all rows
+
+            rows = FixItems(rows);
+
+            //"1:23,34:-56,23:1,70,75,-1"
+
+            foreach (string row in rows.Split(','))
+            {
+                if (row.Contains(":")) // "1:23", "34:-56" or "23:1"
+                {
+                    string[] rowsArray = row.Split(':'); // e.g.: {"A","Z"}
+
+                    if (rowsArray.Length != 2)
+                        throw new Exception($"Row '{row}' is not a valid pattern!");
+
+                    if (string.IsNullOrEmpty(rowsArray[0])) // If first row not defined
+                        rowsArray[0] = "1"; // Then, convert from the first row
+
+                    if (string.IsNullOrEmpty(rowsArray[1])) // If last row not defined
+                        rowsArray[1] = limitRows.ToString(); // Then, convert until the last row
+
+                    int firstRowIndex = ConvertIndexRow(rowsArray[0]);
+                    int lastRowIndex = ConvertIndexRow(rowsArray[1]);
+
+                    if (firstRowIndex > lastRowIndex)
+                        indexRows.AddRange(Enumerable.Range(firstRowIndex, lastRowIndex - firstRowIndex + 1).Reverse());
+                    else
+                        indexRows.AddRange(Enumerable.Range(firstRowIndex, lastRowIndex - firstRowIndex + 1));
+                }
+                else // "70", "75" or "-1"
+                {
+                    indexRows.Add(ConvertIndexRow(row));
+                }
+            }
+            return indexRows.ToArray();
+
+
+            int ConvertIndexRow(string row)
+            {
+                if (row.All(c => char.IsLetter(c))) throw new Exception($"The row '{row}' is not a valid!");
+
+                int indexRow = Convert.ToInt32(row);
+
+                if (indexRow >= 0)  // "75"
+                {
+                    if (indexRow == 0 || indexRow > limitRows)
+                        throw new Exception($"The row '{row}' is out of range (min 1, max {limitRows})!");
+
+                    return indexRow;
+                }
+                else // "-2"
+                {
+                    if (limitRows + indexRow + 1 > limitRows)
+                        throw new Exception($"The row '{row}' is out of range, because it refers to row '{limitRows + indexRow + 1}' (min 1, max {limitRows})!");
+
+                    return limitRows + indexRow + 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Defines the index of all columns to be converted.
+        /// </summary>
+        /// <param name="columns">Columns to be converted. e.g.: "B:H"</param>
+        /// <param name="table">DataTable a ser analisado.</param>        
+        /// <returns>Array with all indexes of the columns to be converted.</returns>
         /// <exception cref="Exception"></exception>
-        internal static int[] DefineColunms(string columns, string lastColumnName)
+        internal static int[] DefineColumnsASCII(string columns, DataTable table)
         {
-            int indexLastColumn = SH.GetIndexColumn(lastColumnName);
+            int indexLastColumn = table.Columns.Count;
+            List<int> indexColumns = new();
 
-            if (columns == null || columns.Equals("")) // Se coluna não especificadas           
-                return new[] { 0, indexLastColumn }; // Converte todas as colunas
+            if (string.IsNullOrEmpty(columns)) // If columns not specified           
+                return Enumerable.Range(1, indexLastColumn).ToArray(); // Convert all columns
 
-            columns = columns.Trim();
+            columns = FixItems(columns);
 
-            if (!columns.Contains(":"))
-                throw new Exception("Use um ':' para definir a primeira e última coluna!");
+            // "A:H,4:9,4:-9,B,75,-2"
 
-            string[] rowsArray = columns.Split(':'); // E.g.: {"A","Z"}
-
-            if (rowsArray[0].Equals("")) // Se primeira coluna não definida
-                rowsArray[0] = "A"; // Então, deseja-se converter desde a primeira coluna
-
-            if (rowsArray[1].Equals("")) // Se última coluna não definida
-                rowsArray[1] = lastColumnName; // Então, deseja-se converter até a última coluna
-
-
-            if (SH.GetIndexColumn(rowsArray[0]) <= 0 || SH.GetIndexColumn(rowsArray[0]) > indexLastColumn)
-                throw new Exception($"A primeira coluna está fora do limite (min A, max {lastColumnName})!");
-
-            if (SH.GetIndexColumn(rowsArray[1]) <= 0 || SH.GetIndexColumn(rowsArray[1]) > indexLastColumn)
-                throw new Exception($"Última coluna fora dos limites (min A, max {lastColumnName})!");
-
-            if (SH.GetIndexColumn(rowsArray[0]) > SH.GetIndexColumn(rowsArray[1])) // Para este caso (incrementador)
-                throw new Exception($"A coluna inicial deve vir antes da última coluna!");
-
-            int firstColumn = SH.GetIndexColumn(rowsArray[0]);
-            int lastColumn = SH.GetIndexColumn(rowsArray[1]);
-            int[] columnsIndex = new int[lastColumn - firstColumn + 1];
-            int count = 0;
-
-            // Preenche o vetor com os índices de todas as colunas que serão convertidas
-            for (int index = firstColumn; index <= lastColumn; index++)
+            foreach (string column in columns.Split(','))
             {
-                columnsIndex[count] = index;
-                count++;
+                if (column.Contains(":")) // "A:H" or "4:9" or 4:-9
+                {
+                    string[] columnsArray = column.Split(':'); // e.g.: {"A","Z"}
+
+                    if (columnsArray.Length != 2)
+                        throw new Exception($"Column '{column}' is not a valid pattern!");
+
+                    if (string.IsNullOrEmpty(columnsArray[0])) // If first row not defined
+                        columnsArray[0] = "1"; // Then, convert from the first row
+
+                    if (string.IsNullOrEmpty(columnsArray[1])) // If last row not defined
+                        columnsArray[1] = indexLastColumn.ToString(); // Then, convert until the last row
+
+                    int firstColumnIndex = ConvertIndexColumn(columnsArray[0]);
+                    int lastColumnIndex = ConvertIndexColumn(columnsArray[1]);
+
+                    if (firstColumnIndex > lastColumnIndex)
+                        indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1).Reverse());
+                    else
+                        indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1));
+                }
+                else // "B", "75" or "-2"
+                {
+                    indexColumns.Add(ConvertIndexColumn(column));
+                }
             }
-
-            return columnsIndex;
-        }
+            return indexColumns.ToArray();
 
 
-
-        /// <summary>
-        /// Recebe as linhas em string, e retorna um vetor de inteiros com a primeira e última linha
-        /// </summary>
-        internal static int[] DefineRows(string rows, int limitRows)
-        {
-            if (rows == null || rows.Equals("")) // Se linhas não especificadas           
-                return new[] { 1, limitRows }; // Converte todas as linhas
-
-            rows = rows.Trim();
-
-            if (!rows.Contains(":"))
-                throw new Exception("Use a ':' to define the first and last row!");
-
-            string[] rowsArray = rows.Split(':');
-
-            if (rowsArray[0].Equals("")) // Se primeira linha não definida
-                rowsArray[0] = "1"; // Então, deseja-se converter desde a primeira linha
-
-            if (rowsArray[1].Equals("")) // Se última linha não definida
-                rowsArray[1] = limitRows.ToString(); // Então, deseja-se converter até a última linha
-
-
-            if (Int32.Parse(rowsArray[0]) < 1 || Int32.Parse(rowsArray[0]) > limitRows)
-                throw new Exception($"A primeira linha está fora do limite (min 1, max {limitRows})!");
-
-            if (Int32.Parse(rowsArray[1]) < 1 || Int32.Parse(rowsArray[1]) > limitRows)
-                throw new Exception($"Última linha fora dos limites (min 1, max {limitRows})!");
-
-            if (Int32.Parse(rowsArray[0]) > Int32.Parse(rowsArray[1]))
-                throw new Exception($"A linha inicial deve ser menor que a última linha!");
-
-
-            return new[] { Int32.Parse(rowsArray[0]), Int32.Parse(rowsArray[1]) };
-
-        }
-
-        /// <summary>
-        /// Recebe as colunas em string, converte para caracter e retorna em ASCII correspondente
-        /// </summary>
-        internal static int[] DefineColunms(string[] columns)
-        {
-            int[] columnsASCII = new int[columns.Length];
-
-            for (int i = 0; i < columns.Length; i++) // Para cada coluna
-            {
-                columnsASCII[i] = SH.GetIndexColumn(columns[i].ToUpper());
-            }
-
-            return columnsASCII;
-        }
-
-        internal static bool ValidateString(string[] strings)
-        {
-            foreach (string str in strings)
+            int ConvertIndexColumn(string column)
             {
-                if (string.IsNullOrEmpty(str))
-                    throw new Exception($"'{str}' inválido!");
+                int indexColumn;
+
+                if (column.All(c => char.IsLetter(c))) indexColumn = SH.GetIndexColumn(column);
+                else indexColumn = Convert.ToInt32(column);
+
+                if (indexColumn >= 0)  // "75"
+                {
+                    if (indexColumn == 0 || indexColumn > indexLastColumn)
+                        throw new Exception($"The column '{column}' is out of range (min 1, max {indexLastColumn})!");
+
+                    return indexColumn;
+                }
+                else // "-2"
+                {
+                    if (indexLastColumn + indexColumn + 1 > indexLastColumn)
+                        throw new Exception($"The column '{column}' is out of range, because it refers to column '{indexLastColumn + indexColumn + 1}' (min 1, max {indexLastColumn})!");
+
+                    return indexLastColumn + indexColumn + 1;
+                }
             }
-            return true;
+
+
         }
+
+
+
+        #endregion
+
 
 
     }
