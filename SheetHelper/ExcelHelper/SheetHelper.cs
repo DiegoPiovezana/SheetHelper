@@ -240,12 +240,14 @@ namespace SH
                 Progress += 5; // 5 
 
                 DataSet result = Reading.GetDataSet(origin);
-                Progress += 30; // 35 (pós leitura do arquivo)
+                Progress += 30; // 35 (after reading the file)
 
-                // Obtem a aba a ser convertida
+                // Get the sheet to be converted
                 DataTable table = Reading.GetTable(sheet, result);
-                var header = ConverToDataRow(Reading.GetFirstRow(Path.GetExtension(origin), table, true), table);
-                table.Rows.InsertAt(header, 0); // Treatment to allow considering header
+
+                // Handling to allow header consideration (XLS case)
+                string[]? header = Reading.GetFirstRow(Path.GetExtension(origin), table, true);
+                if (header != null) { table.Rows.InsertAt(ConverToDataRow(header, table), 0); }
                 Progress += 5; // 40
 
                 return table;

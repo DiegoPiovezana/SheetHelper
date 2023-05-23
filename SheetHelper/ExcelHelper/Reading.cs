@@ -109,48 +109,25 @@ namespace SH
         /// </summary>
         /// <param name="extension">The file extension to determine the reading logic.</param>
         /// <param name="table">The DataTable containing the data.</param>
-        /// <param name="header">Specifies whether to include the header row.</param>
+        /// <param name="ignoreCSV">If true and if the extension is a CSV or similar, it will return null.</param>
         /// <returns>An array of strings representing the first row of the DataTable.</returns>
         /// <exception cref="Exception">Thrown when header is required for CSV, TXT, or RPT files.</exception>
-        public static string[] GetFirstRow(string extension, DataTable table, bool header = true)
+        public static string[] GetFirstRow(string extension, DataTable table, bool ignoreCSV = false)
         {
-            List<string> row;
-
             if (!IsCsvTxtRptExtension(extension))
             {
-                if (header)
-                {
-                    row = table.Columns.Cast<DataColumn>()
-                        .Select(column => column.ColumnName)
-                        .ToList();
-                }
-                else
-                {
-                    row = table.Rows[0].ItemArray
-                        .Select(item => item.ToString())
-                        .ToList();
-                }
+                return table.Columns.Cast<DataColumn>()
+                    .Select(column => column.ColumnName)
+                    .ToArray();
             }
-            else
+            else // If CSV the first row of the table is indeed the first row
             {
-                row = table.Rows[1].ItemArray
+                if(ignoreCSV) { return null; }
+
+                return table.Rows[0].ItemArray
                         .Select(item => item.ToString())
-                        .ToList();
-
-
-                //if (header)
-                //{
-                //    row = table.Rows[1].ItemArray
-                //        .Select(item => item.ToString())
-                //        .ToList();
-                //}
-                //else
-                //{
-                //    throw new Exception("For CSV, TXT, or RPT files, a header row is required.");
-                //}
+                        .ToArray();
             }
-
-            return row.ToArray();
 
             static bool IsCsvTxtRptExtension(string extension)
             {
@@ -164,19 +141,12 @@ namespace SH
         /// </summary>       
         internal static DataSet GetDataSet(string origin)
         {
-            using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
+            using var stream = File.Open(origin, FileMode.Open, FileAccess.Read);
+            return Path.GetExtension(origin).ToLower() switch
             {
-                switch (Path.GetExtension(origin).ToLower())
-                {
-                    case ".rpt":
-                    case ".txt":
-                    case ".csv":
-                        return ReadCSV(stream);
-
-                    default: // .xlsx, .xls, .xlsb, .xlsm
-                        return ReadXLS(stream);
-                }
-            }
+                ".rpt" or ".txt" or ".csv" => ReadCSV(stream),
+                _ => ReadXLS(stream), // .xlsx, .xls, .xlsb, .xlsm
+            };
         }
 
 
