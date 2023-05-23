@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SheetHelper
+namespace SH
 {
     /// <summary>
     /// Used to process the information provided by the user
@@ -14,6 +14,23 @@ namespace SheetHelper
     internal static class Treatment
     {
         #region Validates
+
+        /// <summary>
+        /// Checks if it is necessary to convert the file.
+        /// </summary>
+        /// <returns>True if conversion is required.</returns>
+        internal static bool CheckConvert(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        {
+            bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny), StringComparison.OrdinalIgnoreCase); // The formats is the same?
+            bool isOriginTextFormat = Path.GetExtension(origin).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(origin).Equals(".txt", StringComparison.OrdinalIgnoreCase);                                                                             // 
+            bool isDestinyTextFormat = Path.GetExtension(destiny).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(destiny).Equals(".txt", StringComparison.OrdinalIgnoreCase);
+            bool checkFormatText = isOriginTextFormat && isDestinyTextFormat;
+            bool checkColumns = string.IsNullOrEmpty(columns) || columns.Trim().Equals(":") || columns.Trim().Equals("1:"); // All columns?
+            bool checkRows = string.IsNullOrEmpty(rows) || rows.Trim().Equals(":") || rows.Trim().Equals("1:"); // All rows?
+
+            return !(checkFormat && checkFormatText && checkColumns && checkRows);
+        }
+
         private static void ValidateOrigin(string origin)
         {
             if (!File.Exists(origin))
@@ -235,7 +252,7 @@ namespace SheetHelper
             {
                 int indexColumn;
 
-                if (column.All(c => char.IsLetter(c))) indexColumn = SH.GetIndexColumn(column);
+                if (column.All(c => char.IsLetter(c))) indexColumn = SheetHelper.GetIndexColumn(column);
                 else indexColumn = Convert.ToInt32(column);
 
                 if (indexColumn >= 0)  // "75"
@@ -257,18 +274,7 @@ namespace SheetHelper
 
         #endregion
 
-        /// <summary>
-        /// Checks if it is necessary to convert the file.
-        /// </summary>
-        /// <returns>True if conversion is required.</returns>
-        internal static bool CheckConvert(string origin, string destiny, string sheet, string separator, string columns, string rows)
-        {
-            bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny)); // The formats is the same?
-            bool checkColumns = string.IsNullOrEmpty(columns) || columns.Trim().Equals(":") || columns.Trim().Equals("1:"); // All columns?
-            bool checkRows = string.IsNullOrEmpty(rows) || rows.Trim().Equals(":") || rows.Trim().Equals("1:"); // All rows?
-
-            return !(checkFormat && checkColumns && checkRows);
-        }
+       
 
 
     }

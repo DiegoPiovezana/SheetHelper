@@ -6,15 +6,22 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Data;
+using ExcelDataReader.Core;
+using System.Text;
 
-namespace SheetHelper
+namespace SH
 {
     /// <summary>
     /// Fast and lightweight library for easy conversion of large Excel files
     /// </summary>
-    public class SH
-
+    public class SheetHelper
     {
+        /// <summary>
+        /// Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
+        /// </summary>
+        public static int Progress { get; set; }
+
+
         /// <summary>
         /// Terminates all Excel processes
         /// </summary>
@@ -29,7 +36,7 @@ namespace SheetHelper
             {
 
                 throw;
-            }            
+            }
         }
 
         /// <summary>
@@ -55,7 +62,7 @@ namespace SheetHelper
             {
 
                 throw;
-            }            
+            }
         }
 
         /// <summary>
@@ -82,7 +89,7 @@ namespace SheetHelper
             {
 
                 throw;
-            }            
+            }
         }
 
         /// <summary>
@@ -126,32 +133,31 @@ namespace SheetHelper
         }
 
         /// <summary>
-        /// Descompacta um arquivo .ZIP
+        /// Extracts a .ZIP file.
         /// </summary>
-        /// <param name="zipFile">Local e nome do arquivo compactado. E.g.: 'C:\\Arquivos\\Relatorio.zip</param>
-        /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado. E.g.: 'C:\\Arquivos\\'</param>
-        /// <returns></returns>
+        /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
+        /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
+        /// <returns>The path of the extracted file.</returns>
         public static string UnZIP(string zipFile, string pathDestiny)
         {
             try
             {
                 string directoryZIP = $"{pathDestiny}\\CnvrtdZIP\\";
-                string directoryDestiny = pathDestiny;
 
-                // Realiza a extração para um novo diretório
+                // Extract to a new directory
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
                 IEnumerable<string> files = Directory.EnumerateFiles(directoryZIP);
-                string fileLocation = files.First(); // Obtem o local do arquivo 
-                string fileDestiny = $"{directoryDestiny}\\{Path.GetFileName(fileLocation)}"; // Local destinatário do arquivo
+                string fileLocation = files.First(); // Get the location of the file
+                string fileDestiny = $"{pathDestiny}\\{Path.GetFileName(fileLocation)}"; // Destination location of the file
 
-                if (File.Exists(fileDestiny)) // Se arquivo existente, apaga
+                if (File.Exists(fileDestiny)) // If the file already exists, delete it
                     File.Delete(fileDestiny);
 
-                File.Move(fileLocation, fileDestiny); // Move-o para o local de destino            
-                Directory.Delete(directoryZIP); // Deleta o diretorio criado anteriormente
+                File.Move(fileLocation, fileDestiny); // Move it to the target location            
+                Directory.Delete(directoryZIP); // Delete the previously created directory
 
-                return $"{directoryDestiny}\\{Path.GetFileName(fileLocation)}";
+                return $"{pathDestiny}\\{Path.GetFileName(fileLocation)}";
             }
             catch (Exception)
             {
@@ -159,12 +165,6 @@ namespace SheetHelper
                 throw;
             }
         }
-
-
-        //public static string GetColumns(int row, bool fill)
-        //{
-
-        //}
 
         /// <summary>
         /// Converts a string array to a DataRow and returns the resulting DataRow.
@@ -185,6 +185,42 @@ namespace SheetHelper
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>
+        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. E.g.: "C:\\Users\\ArquivoExcel.csv"</param>
+        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>
+        /// <param name="separator">Separador a ser utilizado para realizar a conversão. E.g.: ";"</param>
+        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
+        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>  
+        /// <returns>DataTable</returns>
+        public static DataTable GetDataTable(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        {
+            try
+            {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                Progress += 5; // 5 
+
+                DataSet result = Reading.GetDataSet(origin);
+                Progress += 30; // 35 (pós leitura do arquivo)
+
+                // Obtem a aba a ser convertida
+                DataTable table = Reading.GetTable(sheet, result);
+                var header = ConverToDataRow(Reading.GetFirstRow(Path.GetExtension(origin), table, true), table);
+                table.Rows.InsertAt(header, 0); // Treatment to allow considering header
+                Progress += 5; // 40
+
+                return table;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        /// <summary>
         /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
         /// com tratativa de exceçoes para o usuário final (arquivo inexistente no diretorio ou aberto durante a conversão)
         /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
@@ -197,7 +233,7 @@ namespace SheetHelper
         /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
-        {        
+        {
             try
             {
                 return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
@@ -217,7 +253,7 @@ namespace SheetHelper
                 //                   MessageBoxIcon.Exclamation);
 
 
-              
+
 
                 return false;
             }

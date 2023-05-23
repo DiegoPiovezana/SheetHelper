@@ -6,18 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SheetHelper
+namespace SH
 {
     /// <summary>
     /// Fast and lightweight library for easy conversion of large Excel files
     /// </summary>
     internal static class Conversion
     {
-        /// <summary>
-        /// Represents the conversion progress. If 100%, the conversion is fully completed.
-        /// </summary>
-        public static int Progress { get; set; }
-
         //private static int _i;
         //private static int _j;
 
@@ -35,37 +30,40 @@ namespace SheetHelper
         /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
         public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
-            Progress = 0;
+            SheetHelper.Progress = 0;
 
             Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Progress += 5; // 5 
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            SheetHelper.Progress += 5; // 5 
 
             if(!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
             {
                 // Se não há necessidade de conversão
-                Progress = 100;
+                SheetHelper.Progress = 100;
+                File.Copy(origin, destiny, true);
                 return true;
             }
 
-            DataSet result = Reading.GetDataSet(origin, destiny);
-            Progress += 30; // 35 (pós leitura do arquivo)
+            //DataSet result = Reading.GetDataSet(origin, destiny);
+            //SheetHelper.Progress += 30; // 35 (pós leitura do arquivo)
 
-            // Obtem a aba a ser convertida
-            DataTable table = Reading.GetTable(sheet, result);
-            var header = SH.ConverToDataRow(Reading.GetFirstRow(Path.GetExtension(origin),true,table),table);
-            table.Rows.InsertAt(header, 0); // Treatment to allow considering header
+            //// Obtem a aba a ser convertida
+            //DataTable table = Reading.GetTable(sheet, result);
+            //var header = SheetHelper.ConverToDataRow(Reading.GetHeader(Path.GetExtension(origin),true,table),table);
+            //table.Rows.InsertAt(header, 0); // Treatment to allow considering header
+            //SheetHelper.Progress += 5; // 40
+
+            DataTable table = SheetHelper.GetDataTable(origin, destiny, sheet, separator, columns, rows);
 
             StringBuilder output = new();
-            Progress += 5; // 40
-
+            
             // Define o número de todas as linhas a serem consideradas
             int[] rowsNumber = Treatment.DefineRows(rows, table);
-            Progress += 5; // 45                
+            SheetHelper.Progress += 5; // 45                
 
             // Define em ASCII, quais serão todas as colunas a serem convertidas
             int[] columnsASCII = Treatment.DefineColumnsASCII(columns, table);
-            Progress += 5; // 50 (tratativas ok)
+            SheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
             double percPrg = countPercPrg;
@@ -100,7 +98,7 @@ namespace SheetHelper
 
                 if (countPercPrg >= 1) // Se aplicável, carrega o progresso
                 {
-                    Progress += (int)countPercPrg; // 90                                                               
+                    SheetHelper.Progress += (int)countPercPrg; // 90                                                               
                     countPercPrg -= (int)countPercPrg;
                 }
 
@@ -112,13 +110,13 @@ namespace SheetHelper
                 //writer.WriteLine();
             }
 
-            Progress += (90 - Progress); // Se necessário, completa até 90%
+            SheetHelper.Progress += (90 - SheetHelper.Progress); // Se necessário, completa até 90%
 
             // Escreve o novo arquivo convertido (substitui se ja existente)
             File.WriteAllText(destiny, output.ToString());
             //}
 
-            Progress += 10; // 100
+            SheetHelper.Progress += 10; // 100
             return true;
         }
 
