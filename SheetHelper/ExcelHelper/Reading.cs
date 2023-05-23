@@ -5,7 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 
-namespace SheetHelper
+namespace SH
 {
     internal class Reading
     {
@@ -69,45 +69,100 @@ namespace SheetHelper
             }
         }
 
-        public static string[] GetFirstRow(string extension, bool header, DataTable table)
+        //public static string[] GetFirstRow(string extension, DataTable table, bool header)
+        //{
+        //    List<string> row;
+
+        //    if (!extension.Equals(".csv") && !extension.Equals(".rpt") && !extension.Equals(".txt")) // A tratativa para o cabeçalho csv é diferente
+        //    { // Se não for CSV
+
+        //        // Se deseja incluir cabeçalho
+        //        if (header)
+        //        {
+        //            var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
+        //            row = new List<string>(colunsData.Count);
+
+        //            foreach (var item in colunsData) // Realiza a conversão das Listas
+        //                row.Add(item.ToString());
+        //        }
+        //        else // Se não deseja incluir cabeçalho
+        //        {
+        //            row = table.Rows[1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+        //        }
+
+        //    }
+        //    else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
+        //    {
+        //        ////if (!extension.Equals(".csv"))                       
+        //        //if (_i == table.Rows.Count + 1) // Se automaticamente alterado para última linha
+        //        //    throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
+
+        //        // Realiza a leitura da primeira linha (cabeçalho)
+        //        row = table.Rows[0].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)            
+        //    }
+
+        //    return row.ToArray();
+        //}
+
+        /// <summary>
+        /// Retrieves the first row of a DataTable based on the file extension and header settings.
+        /// </summary>
+        /// <param name="extension">The file extension to determine the reading logic.</param>
+        /// <param name="table">The DataTable containing the data.</param>
+        /// <param name="header">Specifies whether to include the header row.</param>
+        /// <returns>An array of strings representing the first row of the DataTable.</returns>
+        /// <exception cref="Exception">Thrown when header is required for CSV, TXT, or RPT files.</exception>
+        public static string[] GetFirstRow(string extension, DataTable table, bool header = true)
         {
             List<string> row;
 
-            if (!extension.Equals(".csv") && !extension.Equals(".rpt") && !extension.Equals(".txt")) // A tratativa para o cabeçalho csv é diferente
-            { // Se não for CSV
-
-                // Se deseja incluir cabeçalho
+            if (!IsCsvTxtRptExtension(extension))
+            {
                 if (header)
                 {
-                    var colunsData = table.Columns.Cast<DataColumn>().ToList(); // Salva cabeçalho
-                    row = new List<string>(colunsData.Count);
-
-                    foreach (var item in colunsData) // Realiza a conversão das Listas
-                        row.Add(item.ToString());
+                    row = table.Columns.Cast<DataColumn>()
+                        .Select(column => column.ColumnName)
+                        .ToList();
                 }
-                else // Se não deseja incluir cabeçalho
+                else
                 {
-                    row = table.Rows[1].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)
+                    row = table.Rows[0].ItemArray
+                        .Select(item => item.ToString())
+                        .ToList();
                 }
-
             }
-            else // Se leitura CSV, elimina cabeçalho 'Column' e considera index 0
+            else
             {
-                ////if (!extension.Equals(".csv"))                       
-                //if (_i == table.Rows.Count + 1) // Se automaticamente alterado para última linha
-                //    throw new Exception("Para tratar arquivos CSV, TXT ou RPT é necessário informar qual será a última linha!");
+                row = table.Rows[1].ItemArray
+                        .Select(item => item.ToString())
+                        .ToList();
 
-                // Realiza a leitura da primeira linha (cabeçalho)
-                row = table.Rows[0].ItemArray.Select(f => f.ToString()).ToList(); // linha 2 primeira => index é 1 (-1) e cabeçalho ja retirado (-1)            
+
+                //if (header)
+                //{
+                //    row = table.Rows[1].ItemArray
+                //        .Select(item => item.ToString())
+                //        .ToList();
+                //}
+                //else
+                //{
+                //    throw new Exception("For CSV, TXT, or RPT files, a header row is required.");
+                //}
             }
 
             return row.ToArray();
-        }
+
+            static bool IsCsvTxtRptExtension(string extension)
+            {
+                string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
+                return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+            }
+        }    
 
         /// <summary>
         /// Abre o arquivo e realiza a leitura
         /// </summary>       
-        internal static DataSet GetDataSet(string origin, string destiny)
+        internal static DataSet GetDataSet(string origin)
         {
 
         restart:
@@ -121,26 +176,22 @@ namespace SheetHelper
                 switch (Path.GetExtension(origin).ToLower())
                 {
                     case ".gz":
-                        origin = SH.UnGZ(stream, Path.GetDirectoryName(destiny) + "\\");
+                        origin = SheetHelper.UnGZ(stream, @".\ExcelHelper\Extractions\");
                         goto restart;
 
                     case ".zip":
                         stream.Close();
-                        origin = SH.UnZIP(origin, Path.GetDirectoryName(destiny));
+                        origin = SheetHelper.UnZIP(origin, @".\ExcelHelper\Extractions\");
                         goto restart;
 
                     case ".rpt":
                     case ".txt":
                     case ".csv":
-                        result = ReadCSV(stream);
-                        break;
+                        return ReadCSV(stream);                       
 
                     default: // .xlsx, .xls, .xlsb, .xlsm
-                        result = ReadXLS(stream);
-                        break;
-                }
-
-                return result;
+                        return ReadXLS(stream);                        
+                }              
             }
         }
 
