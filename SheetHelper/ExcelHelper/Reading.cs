@@ -157,41 +157,25 @@ namespace SH
                 string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
                 return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
             }
-        }    
+        }
 
         /// <summary>
-        /// Abre o arquivo e realiza a leitura
+        /// Open the file and perform the reading
         /// </summary>       
         internal static DataSet GetDataSet(string origin)
         {
-
-        restart:
-
-            // Abre o arquivo
             using (var stream = File.Open(origin, FileMode.Open, FileAccess.Read))
             {
-                DataSet result;
-
-                // Realiza a leitura do arquivo
                 switch (Path.GetExtension(origin).ToLower())
                 {
-                    case ".gz":
-                        origin = SheetHelper.UnGZ(stream, @".\ExcelHelper\Extractions\");
-                        goto restart;
-
-                    case ".zip":
-                        stream.Close();
-                        origin = SheetHelper.UnZIP(origin, @".\ExcelHelper\Extractions\");
-                        goto restart;
-
                     case ".rpt":
                     case ".txt":
                     case ".csv":
-                        return ReadCSV(stream);                       
+                        return ReadCSV(stream);
 
                     default: // .xlsx, .xls, .xlsb, .xlsm
-                        return ReadXLS(stream);                        
-                }              
+                        return ReadXLS(stream);
+                }
             }
         }
 

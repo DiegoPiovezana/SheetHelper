@@ -167,6 +167,48 @@ namespace SH
         }
 
         /// <summary>
+        /// Unzip a .zip or .gz file.    
+        /// </summary>
+        /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
+        /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
+        /// <param name="mandatory">If true, it indicates that the extraction must occur, otherwise, it will show an error. If false, if the conversion does not happen, nothing happens.</param>
+        /// <returns>The path of the extracted file.</returns>
+        public static string UnzipAuto(string zipFile, string pathDestiny, bool mandatory = true)
+        {
+            try
+            {
+
+            restart:
+
+                // Abre o arquivo
+                using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
+                {
+                    // Realiza a leitura do arquivo
+                    switch (Path.GetExtension(zipFile).ToLower())
+                    {
+                        case ".gz":
+                            zipFile = UnGZ(stream, pathDestiny);
+                            goto restart;
+
+                        case ".zip":
+                            stream.Close();
+                            zipFile = UnZIP(zipFile, pathDestiny);
+                            goto restart;
+
+                        default:
+                            if (mandatory) throw new Exception("Unable to extract this file!");
+                            else return zipFile;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Converts a string array to a DataRow and returns the resulting DataRow.
         /// </summary>
         /// <param name="row">The string array to be converted.</param>
@@ -187,14 +229,10 @@ namespace SH
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>
-        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. E.g.: "C:\\Users\\ArquivoExcel.csv"</param>
-        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>
-        /// <param name="separator">Separador a ser utilizado para realizar a conversão. E.g.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
-        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>  
+        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>        
+        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>        
         /// <returns>DataTable</returns>
-        public static DataTable GetDataTable(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        public static DataTable GetDataTable(string origin, string sheet)
         {
             try
             {

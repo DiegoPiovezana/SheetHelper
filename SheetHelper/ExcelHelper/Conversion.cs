@@ -1,6 +1,4 @@
-﻿using ExcelDataReader.Core;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -32,11 +30,12 @@ namespace SH
         {
             SheetHelper.Progress = 0;
 
-            Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
-            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Treatment.Validate(origin, destiny, sheet, separator, columns, rows);          
             SheetHelper.Progress += 5; // 5 
 
-            if(!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
+            origin = SheetHelper.UnzipAuto(origin, @".\ExcelHelper\Extractions\",false);
+
+            if (!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
             {
                 // Se não há necessidade de conversão
                 SheetHelper.Progress = 100;
@@ -44,19 +43,10 @@ namespace SH
                 return true;
             }
 
-            //DataSet result = Reading.GetDataSet(origin, destiny);
-            //SheetHelper.Progress += 30; // 35 (pós leitura do arquivo)
-
-            //// Obtem a aba a ser convertida
-            //DataTable table = Reading.GetTable(sheet, result);
-            //var header = SheetHelper.ConverToDataRow(Reading.GetHeader(Path.GetExtension(origin),true,table),table);
-            //table.Rows.InsertAt(header, 0); // Treatment to allow considering header
-            //SheetHelper.Progress += 5; // 40
-
-            DataTable table = SheetHelper.GetDataTable(origin, destiny, sheet, separator, columns, rows);
+            DataTable table = SheetHelper.GetDataTable(origin, sheet);
 
             StringBuilder output = new();
-            
+
             // Define o número de todas as linhas a serem consideradas
             int[] rowsNumber = Treatment.DefineRows(rows, table);
             SheetHelper.Progress += 5; // 45                
@@ -77,7 +67,7 @@ namespace SH
             {
                 // Obtem a linha               
                 string[] rowFull = table.Rows[rowIndex - 1].ItemArray.Select(cell => cell.ToString()).ToArray();
-               
+
                 if (columnsASCII[0].Equals(0)) // Se colunas não especificadas - Todas 
                 {
                     output.AppendLine(String.Join(separator, rowFull)); // Adiciona toda as colunas da linha
@@ -115,6 +105,8 @@ namespace SH
             // Escreve o novo arquivo convertido (substitui se ja existente)
             File.WriteAllText(destiny, output.ToString());
             //}
+
+            if(Directory.Exists(@".\ExcelHelper\Extractions\")) Directory.Delete(@".\ExcelHelper\Extractions\",true);
 
             SheetHelper.Progress += 10; // 100
             return true;
