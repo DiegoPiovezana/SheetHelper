@@ -23,7 +23,13 @@
 		<ApplicationIcon>Images\sheethelper_icon.ico</ApplicationIcon>		
 		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>		
 		<Nullable>enable</Nullable>		
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
+		<PackageReleaseNotes>- Added possibility to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1"
+- Possible to convert column ranges. Eg: "A:H, 4:9, 4:-9, B, 75, -2"
+- Integrated ExcelDataReader library
+- Compatible with net462, netstandard 2.0 and netstandard 2.1
+- Several bugs fixed
+- Performance improvement</PackageReleaseNotes>
 				
 	</PropertyGroup>
 
