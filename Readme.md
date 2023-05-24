@@ -1,6 +1,6 @@
 ﻿[![NuGet](https://img.shields.io/nuget/v/SheetHelper.svg)](https://www.nuget.org/packages/SheetHelper/)
 
-<img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/br.png" width=1.2% height=1.2%> Veja a documentação em português em breve.<br/>
+<img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/br.png" width=1.2% height=1.5%> Veja a documentação em português em breve.<br/>
 
 # SheetHelper
 Fast and lightweight library for easy conversion of large Excel files.<br/>
@@ -12,7 +12,7 @@ AVAILABLE FEATURES:<br/>
 ✔ Get a datatable from a spreadsheet using the _'GetDataTable'_ method;<br/>
 ✔ Use the CloseExcel method to close all Excel processes, even those in the background;<br/>
 ✔ Use _'GetIndexColumn'_ to get the column index by giving the name (e.g. "AB");<br/>
-✔ The _'GetNameColumn'_ method can be used to get the column name according to the index (contrary to the _'GetIndexColumn'_ method);<br/>
+✔ The _'GetNameColumn'_ method can be used to get the column name according to the index;<br/>
 ✔ Convert a array to a DataRow using the _'ConverToDataRow'_ method;<br/>
 ✔ Convert a spreadsheet to different formats using the 'Converter' method;;<br/>
 ✔ Allows to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1";<br/>
@@ -44,12 +44,12 @@ namespace App
     {
         static void Main()
         {
-            string source  = "C:\\Users\\diego\\Arquivos\\Report.xlsx.gz";
-            string destination = "C:\\Users\\diego\\Arquivos\\Report.csv";
+            string source  = "C:\\Users\\Diego\\Files\\Report.xlsx.gz";
+            string destination = "C:\\Users\\Diego\\Files\\Report.csv";
 
             string sheet = "1"; // Use "1" for the first sheet (index or name)
             string delimiter  = ";";
-            string[] columns  = "A, SC, b, 12:-1"; // or null to convert all columns or "A:BC" for a column range
+            string columns  = "A, 3, b, 12:-1"; // or null to convert all columns or "A:BC" for a column range
             string rows = ":4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
             bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns , rows);

@@ -18,7 +18,7 @@ namespace SH
             Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
             SheetHelper.Progress += 5; // 5 
 
-            origin = SheetHelper.UnzipAuto(origin, @".\ExcelHelper\Extractions\", false);
+            origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
 
             if (!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
             {
@@ -55,7 +55,7 @@ namespace SH
 
                 if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
-                    output.AppendLine(String.Join(separator, rowFull)); // Add all row columns
+                    output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
                     //writer.Write(String.Join(separator, rowFull));                       
                 }
                 else // If specified columns - Selected
@@ -67,7 +67,7 @@ namespace SH
                         // Select column considering ASCII table and add separately                            
                         rowSelected.Append(rowFull[column - 1]).Append(separator);
                     }
-                    output.AppendLine(String.Join(separator, rowSelected)); // Add the row with the selected columns                           
+                    output.AppendLine(string.Join(separator, rowSelected)); // Add the row with the selected columns                           
                     //writer.Write(String.Join(separator, rowSelected));                    
                 }
 
@@ -88,7 +88,7 @@ namespace SH
             File.WriteAllText(destiny, output.ToString());
             //}
 
-            if (Directory.Exists(@".\ExcelHelper\Extractions\")) Directory.Delete(@".\ExcelHelper\Extractions\", true);
+            if (Directory.Exists(@".\SheetHelper\Extractions\")) Directory.Delete(@".\SheetHelper\Extractions\", true);
 
             SheetHelper.Progress += 10; // 100
             return true;

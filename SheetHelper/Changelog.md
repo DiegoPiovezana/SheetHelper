@@ -1,4 +1,4 @@
-## [Version 1.1.0] - 23/05/2023
+## [Version 1.1.0] - 24/05/2023
 
 - Added possibility to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1"
 - Possible to convert column ranges. Eg: "A:H, 4:9, 4:-9, B, 75, -2"

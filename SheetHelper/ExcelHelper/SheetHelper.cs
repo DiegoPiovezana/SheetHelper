@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -92,17 +91,18 @@ namespace SH
         }
 
         /// <summary>
-        /// Descompacta arquivo .GZ
+        /// Unpacks a .GZ file.
         /// </summary>
-        /// <param name="compressedFileStream">Arquivo  a ser convertido obtido através do método File.Open. </param> 
-        /// <param name="pathDestiny">Diretório onde será salvo o arquivo descompactado (contendo OU NAO o nome do arquivo destino). E.g.: 'C:\\Arquivos\\ ou 'C:\\Arquivos\\Convertido.xlsx'</param>
+        /// <param name="compressedFileStream">The compressed file stream obtained through the File.Open method.</param>
+        /// <param name="pathDestiny">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
+        /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
         public static string? UnGZ(FileStream compressedFileStream, string pathDestiny)
         {
             try
             {
                 string fileConverted;
 
-                if (Path.GetExtension(pathDestiny) == "") // Se formato a ser convertido não especificado, tenta obter do nome
+                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) // If the format to be converted is not specified, try to get it from the file name
                 {
                     string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
                     string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
@@ -113,20 +113,14 @@ namespace SH
                     fileConverted = pathDestiny;
                 }
 
-                //FileStream compressedFileStream = File.Open(compressedFileName, FileMode.Open); // "compressed.xlsx.gz"
-                FileStream outputFileStream = File.Create(fileConverted); // "decompressed.xlsx"
-                var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
+                using FileStream outputFileStream = File.Create(fileConverted);
+                using var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
                 decompressor.CopyTo(outputFileStream);
-
-                // Encerra uso dos arquivos
-                compressedFileStream.Close();
-                outputFileStream.Close();
 
                 return File.Exists(fileConverted) ? fileConverted : null;
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -141,25 +135,24 @@ namespace SH
         {
             try
             {
-                string directoryZIP = $"{pathDestiny}\\CnvrtdZIP\\";
+                string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
                 // Extract to a new directory
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
-                IEnumerable<string> files = Directory.EnumerateFiles(directoryZIP);
-                string fileLocation = files.First(); // Get the location of the file
-                string fileDestiny = $"{pathDestiny}\\{Path.GetFileName(fileLocation)}"; // Destination location of the file
+                string fileLocation = Directory.EnumerateFiles(directoryZIP).First(); // Get the location of the file
+                string fileDestiny = Path.Combine(pathDestiny, Path.GetFileName(fileLocation)); // Destination location of the file
 
-                if (File.Exists(fileDestiny)) File.Delete(fileDestiny); // If the file already exists, delete it                   
+                if (File.Exists(fileDestiny))
+                    File.Delete(fileDestiny); // If the file already exists, delete it
 
-                File.Move(fileLocation, fileDestiny); // Move it to the target location            
-                Directory.Delete(directoryZIP); // Delete the previously created directory
+                File.Move(fileLocation, fileDestiny); // Move it to the target location
+                Directory.Delete(directoryZIP, true); // Delete the previously created directory
 
-                return $"{pathDestiny}\\{Path.GetFileName(fileLocation)}";
+                return fileDestiny;
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -175,6 +168,7 @@ namespace SH
         {
             try
             {
+                Directory.CreateDirectory(pathDestiny);
 
             restart:
 
@@ -236,7 +230,7 @@ namespace SH
                 Progress += 5; // 5 
 
                 DataSet result = Reading.GetDataSet(origin);
-                Progress += 30; // 35 (after reading the file)
+                Progress += 25; // 35 (after reading the file)
 
                 // Get the sheet to be converted
                 DataTable table = Reading.GetTableByDataSet(sheet, result);
