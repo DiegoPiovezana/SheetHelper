@@ -15,10 +15,10 @@ namespace SH
         {
             SheetHelper.Progress = 0;
 
-            Treatment.Validate(origin, destiny, sheet, separator, columns, rows);          
+            Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
             SheetHelper.Progress += 5; // 5 
 
-            origin = SheetHelper.UnzipAuto(origin, @".\ExcelHelper\Extractions\",false);
+            origin = SheetHelper.UnzipAuto(origin, @".\ExcelHelper\Extractions\", false);
 
             if (!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
             {
@@ -40,7 +40,7 @@ namespace SH
             int[] columnsASCII = Treatment.DefineColumnsASCII(columns, table);
             SheetHelper.Progress += 5; // 50 (tratativas ok)
 
-            double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentage to be progressed for each row of the worksheet
+            double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
             double percPrg = countPercPrg;
 
             table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
@@ -88,7 +88,7 @@ namespace SH
             File.WriteAllText(destiny, output.ToString());
             //}
 
-            if(Directory.Exists(@".\ExcelHelper\Extractions\")) Directory.Delete(@".\ExcelHelper\Extractions\",true);
+            if (Directory.Exists(@".\ExcelHelper\Extractions\")) Directory.Delete(@".\ExcelHelper\Extractions\", true);
 
             SheetHelper.Progress += 10; // 100
             return true;

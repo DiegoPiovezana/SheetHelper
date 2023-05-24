@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExcelDataReader.Core;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -134,7 +135,7 @@ namespace SH
             int limitIndexRows = table.Rows.Count;
             List<int> indexRows = new();
 
-            if (string.IsNullOrEmpty(rows)) // If rows not specified
+            if (string.IsNullOrEmpty(rows) || string.IsNullOrEmpty(rows.Trim())) // If rows not specified
             {
                 indexRows.AddRange(Enumerable.Range(1, limitIndexRows)); // Convert all rows                
                 return indexRows.ToArray();
@@ -210,10 +211,11 @@ namespace SH
             int limitIndexColumn = table.Columns.Count;
             List<int> indexColumns = new();
 
-            if (string.IsNullOrEmpty(columns)) // If columns not specified                
+            if (string.IsNullOrEmpty(columns) || string.IsNullOrEmpty(columns.Trim())) // If columns not specified                
                 return new int[] { 0 }; // Behavior to convert all columns
 
             columns = FixItems(columns);
+            columns = columns.ToUpper();
 
             // "A:H,4:9,4:-9,B,75,-2"
 
