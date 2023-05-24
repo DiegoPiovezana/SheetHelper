@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Compression;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Data;
-using ExcelDataReader.Core;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SH
 {
@@ -151,8 +150,7 @@ namespace SH
                 string fileLocation = files.First(); // Get the location of the file
                 string fileDestiny = $"{pathDestiny}\\{Path.GetFileName(fileLocation)}"; // Destination location of the file
 
-                if (File.Exists(fileDestiny)) // If the file already exists, delete it
-                    File.Delete(fileDestiny);
+                if (File.Exists(fileDestiny)) File.Delete(fileDestiny); // If the file already exists, delete it                   
 
                 File.Move(fileLocation, fileDestiny); // Move it to the target location            
                 Directory.Delete(directoryZIP); // Delete the previously created directory
@@ -180,10 +178,8 @@ namespace SH
 
             restart:
 
-                // Abre o arquivo
                 using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
                 {
-                    // Realiza a leitura do arquivo
                     switch (Path.GetExtension(zipFile).ToLower())
                     {
                         case ".gz":
@@ -227,10 +223,10 @@ namespace SH
         }
 
         /// <summary>
-        /// 
+        /// Reads the file and gets the datatable of the specified sheet
         /// </summary>
-        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>        
-        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>        
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
+        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
         /// <returns>DataTable</returns>
         public static DataTable GetDataTable(string origin, string sheet)
         {
@@ -243,7 +239,7 @@ namespace SH
                 Progress += 30; // 35 (after reading the file)
 
                 // Get the sheet to be converted
-                DataTable table = Reading.GetTable(sheet, result);
+                DataTable table = Reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
                 string[]? header = Reading.GetFirstRow(Path.GetExtension(origin), table, true);
@@ -259,103 +255,28 @@ namespace SH
             }
         }
 
-
         /// <summary>
-        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
-        /// com tratativa de exceçoes para o usuário final (arquivo inexistente no diretorio ou aberto durante a conversão)
-        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso
+        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>
+        /// Handling exceptions for the end user (file does not exist in directory or opened during conversion)
+        /// and returns 'true' if the conversion was successful
         /// </summary>
-        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>
-        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. E.g.: "C:\\Users\\ArquivoExcel.csv"</param>
-        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>
-        /// <param name="separator">Separador a ser utilizado para realizar a conversão. E.g.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
-        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
-        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv"</param>
+        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";"</param>
+        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2" </param>
+        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1"</param>
+        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             try
             {
                 return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
             }
-
-            // TODO: considerar retirar todos os catchs
-
-            #region Se arquivo nao localizado        
-            catch (FileNotFoundException nffEx) when (nffEx.HResult.Equals(-2147024894))
+            catch (Exception)
             {
-
-                //var result3 = MessageBox.Show(
-                //                   "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
-                //                   + "\n\n" + origin,
-                //                   "Aviso",
-                //                   MessageBoxButtons.OKCancel,
-                //                   MessageBoxIcon.Exclamation);
-
-
-
-
-                return false;
+                throw;
             }
-            #endregion
-
-            #region Se arquivo esta em uso
-            catch (IOException eiEx) when (eiEx.HResult.Equals(-2147024864))
-            {
-
-                //countOpen++; // Contador de tentativas com falha de arquivo aberto
-
-                //if (countOpen >= 2) // Se necessario forçar o fechamento do Excel (a partir do 2 caso)
-                //{
-
-                //    var result1 = MessageBox.Show(
-                //       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nAs alterações não serão salvas.",
-                //       "Aviso",
-                //       MessageBoxButtons.YesNo,
-                //       MessageBoxIcon.Exclamation);
-
-                //    if (result1 == DialogResult.Yes)
-                //    {
-                //        CloseExcel(); // Encerra todos os processos do Excel
-                //        Thread.Sleep(1500); // Aguarda o excel fechar por completo durante 1,5 segundo
-                //        goto again; // Tenta realizar a conversão novamente
-
-                //    } // Se No, continua execucao abaixo
-
-                //}
-
-                //var result2 = MessageBox.Show(
-                //    "O arquivo '" + Path.GetFileName(origin) + "' ou '" + Path.GetFileName(destiny) + "' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-                //    "Aviso",
-                //    MessageBoxButtons.OKCancel,
-                //    MessageBoxIcon.Error);
-
-
-                //if (result2 == DialogResult.OK)
-                //{
-                //    goto again; // Tenta realizar a conversão novamente
-                //}
-                //else // Se cancelar
-                //{
-                //    return false;
-                //}
-
-                return false;
-
-            }
-
-            #endregion
-
-            #region Se arquivo em formato não suportado
-            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
-            {
-
-                throw new Exception($"Erro! Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
-
-            }
-            #endregion
-
-
         }
 
 

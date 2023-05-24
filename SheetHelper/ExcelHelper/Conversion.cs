@@ -11,22 +11,7 @@ namespace SH
     /// </summary>
     internal static class Conversion
     {
-        //private static int _i;
-        //private static int _j;
-
-        /// <summary>
-        /// Realiza a conversão do arquivo Excel localizado em <paramref name="origin"/>, salva em <paramref name="destiny"/>
-        /// e retorna 'true' caso a conversão tenha ocorrido com sucesso.
-        /// Utilize o método "ConverterExcept" para realizar a conversão e tratar algumas exceções!
-        /// </summary>
-        /// <param name="origin">Diretorio + nome do arquivo de origem + formato. E.g.: "C:\\Users\\ArquivoExcel.xlsx"</param>
-        /// <param name="destiny">Diretorio + nome do arquivo de destino + formato. E.g.: "C:\\Users\\ArquivoExcel.csv"</param>
-        /// <param name="sheet">Aba da planilha a ser convertida. E.g.: "1" (primeira aba) ou "NomeAba"</param>
-        /// <param name="separator">Separador a ser utilizado para realizar a conversão. E.g.: ";"</param>
-        /// <param name="columns">"Vetor de caracteres (maiúsculo ou minúsculo) contendo todas as colunas desejadas. E.g.: { "A", "b", "E", "C" } ou "{ "A:BC" } </param>
-        /// <param name="rows">"Informe a primeira e última linha (ou deixe em branco). E.g.: "1:50 (linha 1 até linha 50)"</param>        
-        /// <returns>"true" se convertido com sucesso. "false" se não convertido.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        internal static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             SheetHelper.Progress = 0;
 
@@ -37,7 +22,7 @@ namespace SH
 
             if (!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
             {
-                // Se não há necessidade de conversão
+                // If no conversion is needed
                 SheetHelper.Progress = 100;
                 File.Copy(origin, destiny, true);
                 return true;
@@ -47,62 +32,59 @@ namespace SH
 
             StringBuilder output = new();
 
-            // Define o número de todas as linhas a serem consideradas
+            // Defines the number of all rows to be considered
             int[] rowsNumber = Treatment.DefineRows(rows, table);
             SheetHelper.Progress += 5; // 45                
 
-            // Define em ASCII, quais serão todas as colunas a serem convertidas
+            // Define in ASCII, which will be all the columns to be converted
             int[] columnsASCII = Treatment.DefineColumnsASCII(columns, table);
             SheetHelper.Progress += 5; // 50 (tratativas ok)
 
-            double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentual a ser progredido a cada linha da planilha
+            double countPercPrg = 40.0 / (rowsNumber[1] - rowsNumber[0] + 1); // Percentage to be progressed for each row of the worksheet
             double percPrg = countPercPrg;
 
-            table.Rows.Add(); // Para evitar IndexOutOfRangeException (última linha será ignorada)
+            table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
 
             //using (StreamWriter writer = new (destiny))
             //{
-            // Salva todas as demais linhas mediante início e fim   
-            foreach (int rowIndex in rowsNumber) // Para cada linha da planilha  
+            // Save all other lines by start and end  
+            foreach (int rowIndex in rowsNumber) // For each row in the worksheet
             {
-                // Obtem a linha               
+                // Get the row               
                 string[] rowFull = table.Rows[rowIndex - 1].ItemArray.Select(cell => cell.ToString()).ToArray();
 
-                if (columnsASCII[0].Equals(0)) // Se colunas não especificadas - Todas 
+                if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
-                    output.AppendLine(String.Join(separator, rowFull)); // Adiciona toda as colunas da linha
+                    output.AppendLine(String.Join(separator, rowFull)); // Add all row columns
                     //writer.Write(String.Join(separator, rowFull));                       
                 }
-                else // Se colunas especificadas - Selecionadas
+                else // If specified columns - Selected
                 {
-                    StringBuilder rowSelected = new(); // Armazena as colunas selecionadas da linha                            
+                    StringBuilder rowSelected = new(); // Store the selected columns of the row                           
 
-                    foreach (int column in columnsASCII) // Para cada coluna das linhas
+                    foreach (int column in columnsASCII) // For each column of rows
                     {
-                        // Seleciona a coluna considerando tabela ASCII e adiciona separadamente                               
+                        // Select column considering ASCII table and add separately                            
                         rowSelected.Append(rowFull[column - 1]).Append(separator);
                     }
-                    output.AppendLine(String.Join(separator, rowSelected)); // Adiciona a linha com as colunas selecionadas                            
+                    output.AppendLine(String.Join(separator, rowSelected)); // Add the row with the selected columns                           
                     //writer.Write(String.Join(separator, rowSelected));                    
                 }
 
-                if (countPercPrg >= 1) // Se aplicável, carrega o progresso
+                if (countPercPrg >= 1) // If applicable, load the progress
                 {
                     SheetHelper.Progress += (int)countPercPrg; // 90                                                               
                     countPercPrg -= (int)countPercPrg;
                 }
 
-                countPercPrg += percPrg; // Incrementa contador de progresso                        
-
-                // Obtem a próxima linha
-                //List<string> rowFull = table.Rows[_i - 1].ItemArray.Select(f => f.ToString()).ToList();
+                countPercPrg += percPrg; // Increment progress counter                        
 
                 //writer.WriteLine();
             }
 
-            SheetHelper.Progress += (90 - SheetHelper.Progress); // Se necessário, completa até 90%
+            SheetHelper.Progress += (90 - SheetHelper.Progress); // If necessary, complete up to 90%
 
-            // Escreve o novo arquivo convertido (substitui se ja existente)
+            // Write new converted file (overwrite if existing)
             File.WriteAllText(destiny, output.ToString());
             //}
 

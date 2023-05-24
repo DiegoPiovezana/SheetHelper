@@ -117,7 +117,7 @@ namespace SH
         /// <returns>The fixed string with proper item separation.</returns>
         public static string FixItems(string items)
         {
-            if (!String.IsNullOrEmpty(items))
+            if (!string.IsNullOrEmpty(items))
             {
                 items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
                 items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
@@ -134,8 +134,11 @@ namespace SH
             int limitIndexRows = table.Rows.Count;
             List<int> indexRows = new();
 
-            if (string.IsNullOrEmpty(rows)) // If rows not specified           
-                return new[] { 1, limitIndexRows }; // Convert all rows
+            if (string.IsNullOrEmpty(rows)) // If rows not specified
+            {
+                indexRows.AddRange(Enumerable.Range(1, limitIndexRows)); // Convert all rows                
+                return indexRows.ToArray();
+            }
 
             rows = FixItems(rows);
 
@@ -274,7 +277,7 @@ namespace SH
 
         #endregion
 
-       
+
 
 
     }
