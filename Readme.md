@@ -12,7 +12,7 @@ AVAILABLE FEATURES:<br/>
 ✔ Get a datatable from a spreadsheet using the _'GetDataTable'_ method;<br/>
 ✔ Use the CloseExcel method to close all Excel processes, even those in the background;<br/>
 ✔ Use _'GetIndexColumn'_ to get the column index by giving the name (e.g. "AB");<br/>
-✔ The _'GetNameColumn'_ method can be used to get the column name according to the index;<br/>
+✔ The _'GetNameColumn'_ method can be used to get the column name;<br/>
 ✔ Convert a array to a DataRow using the _'ConverToDataRow'_ method;<br/>
 ✔ Convert a spreadsheet to different formats using the 'Converter' method;;<br/>
 ✔ Allows to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1";<br/>
@@ -25,7 +25,7 @@ AVAILABLE FEATURES:<br/>
 ✔ Supports conversion of hidden columns, rows, and sheets;<br/>
 ✔ Possibility to choose specific columns and rows to be converted;<br/>
 ✔ Allows you to track the percentage of completion through the "Progress" property;<br/>
-✔ Supports unzipping of .GZ (using _'UnGZ'_) and .ZIP (using _'UnZIP'_) files. Or use _'UnzipAuto'_ method to unzip automatically.<br/>
+✔ Supports unzipping of .GZ (using _'UnGZ'_) and .ZIP (using _'UnZIP'_) files. Or use _'UnzipAuto'_ to unzip automatically.<br/>
 
 <br/>Uses the library [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) to perform the reading.<br/>
 

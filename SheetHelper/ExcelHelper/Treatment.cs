@@ -29,7 +29,7 @@ namespace SH
             bool checkColumns = string.IsNullOrEmpty(columns) || columns.Trim().Equals(":") || columns.Trim().Equals("1:") || columns.Trim().Equals("A:"); // All columns?
             bool checkRows = string.IsNullOrEmpty(rows) || rows.Trim().Equals(":") || rows.Trim().Equals("1:"); // All rows?
 
-            return !(checkFormat && checkFormatText && checkColumns && checkRows);
+            return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
         private static void ValidateOrigin(string origin)
