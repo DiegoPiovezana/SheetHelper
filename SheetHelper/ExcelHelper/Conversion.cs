@@ -30,6 +30,11 @@ namespace SH
 
             DataTable table = SheetHelper.GetDataTable(origin, sheet);
 
+            return ConverterDataTable(table, destiny, separator, columns, rows);
+        }
+
+        internal static bool ConverterDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
+        {
             StringBuilder output = new();
 
             // Defines the number of all rows to be considered

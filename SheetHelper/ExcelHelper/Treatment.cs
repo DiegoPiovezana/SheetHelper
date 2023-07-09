@@ -67,7 +67,7 @@ namespace SH
         {
             // ";"
 
-            if (String.IsNullOrEmpty(separator))
+            if (string.IsNullOrEmpty(separator))
             {
                 throw new ArgumentException("Invalid separator.", nameof(separator));
             }
@@ -98,6 +98,19 @@ namespace SH
                 Task.Run(() => ValidateOrigin(origin)),
                 Task.Run(() => ValidateDestiny(destiny)),
                 Task.Run(() => ValidateSheet(sheet)),
+                Task.Run(() => ValidateSeparator(separator)),
+                Task.Run(() => ValidateColumns(columns)),
+                Task.Run(() => ValidateRows(rows))
+            };
+
+            Task.WhenAll(validates).Wait();
+        }
+
+        internal static void Validate(string destiny, string separator, string? columns, string? rows)
+        {
+            List<Task> validates = new()
+            {             
+                Task.Run(() => ValidateDestiny(destiny)),         
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))

@@ -72,7 +72,7 @@ namespace SH
         {
             try
             {
-                string columnName = String.Empty;
+                string columnName = string.Empty;
 
                 while (columnIndex > 0)
                 {
@@ -204,7 +204,7 @@ namespace SH
         /// <param name="row">The string array to be converted.</param>
         /// <param name="table">The target DataTable to which the new DataRow will be added.</param>
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
-        public static DataRow ConverToDataRow(string[] row, DataTable table)
+        public static DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             DataRow newRow = table.NewRow();
 
@@ -237,7 +237,7 @@ namespace SH
 
                 // Handling to allow header consideration (XLS case)
                 string[]? header = Reading.GetFirstRow(Path.GetExtension(origin), table, true);
-                if (header != null) { table.Rows.InsertAt(ConverToDataRow(header, table), 0); }
+                if (header != null) { table.Rows.InsertAt(ConvertToDataRow(header, table), 0); }
                 Progress += 5; // 40
 
                 return table;
@@ -249,17 +249,39 @@ namespace SH
             }
         }
 
+
         /// <summary>
-        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>
-        /// Handling exceptions for the end user (file does not exist in directory or opened during conversion)
-        /// and returns 'true' if the conversion was successful
+        /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
         /// </summary>
-        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv"</param>
-        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";"</param>
-        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2" </param>
-        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1"</param>
+        /// <param name="dataTable">DataTable to be converted.</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
+        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
+        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
+        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator, string? columns, string? rows)
+        {
+            try
+            {
+                Treatment.Validate(destiny, separator, columns, rows);
+                return Conversion.ConverterDataTable(dataTable, destiny, separator, columns, rows);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }            
+        }
+
+        /// <summary>
+        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
+        /// </summary>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName".</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
+        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
