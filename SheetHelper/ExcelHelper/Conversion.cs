@@ -36,13 +36,14 @@ namespace SH
         internal static bool ConverterDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {
             StringBuilder output = new();
+            string[] rowFull;
 
             // Defines the number of all rows to be considered
-            int[] rowsNumber = Treatment.DefineRows(rows, table);
+            int[] rowsNumber = Treatment.DefineRows(rows ?? "", table);
             SheetHelper.Progress += 5; // 45                
 
             // Define in ASCII, which will be all the columns to be converted
-            int[] columnsASCII = Treatment.DefineColumnsASCII(columns, table);
+            int[] columnsASCII = Treatment.DefineColumnsASCII(columns ?? "", table);
             SheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
@@ -52,12 +53,22 @@ namespace SH
 
             //using (StreamWriter writer = new (destiny))
             //{
-            // Save all other lines by start and end  
-            foreach (int rowIndex in rowsNumber) // For each row in the worksheet
-            {
-                // Get the row               
-                string[] rowFull = table.Rows[rowIndex - 1].ItemArray.Select(cell => cell.ToString()).ToArray();
 
+            // If you want to include header
+            if (rowsNumber[0].Equals(1))
+            {
+                // Get the header (coluns name)
+                rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+            }
+            else
+            {
+                // Get the first row selected (after header)              
+                rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
+            }
+
+            // Save all other rows by start and end  
+            foreach (int rowIndex in rowsNumber.Skip(1)) // For each row in the worksheet
+            {         
                 if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
                     output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
@@ -82,7 +93,10 @@ namespace SH
                     countPercPrg -= (int)countPercPrg;
                 }
 
-                countPercPrg += percPrg; // Increment progress counter                        
+                countPercPrg += percPrg; // Increment progress counter                      
+
+                // Get the next row               
+                rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
 
                 //writer.WriteLine();
             }
