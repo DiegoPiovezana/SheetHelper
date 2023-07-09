@@ -30,9 +30,9 @@ namespace SH
         /// Reads .csv files
         /// </summary>
         internal static DataSet ReadCSV(FileStream stream)
-        {           
+        {
             using var reader = ExcelReaderFactory.CreateCsvReader(stream);
-            return reader.AsDataSet();            
+            return reader.AsDataSet();
         }
 
         /// <summary>
@@ -61,7 +61,8 @@ namespace SH
                     throw new Exception($"Não foi possível encontrar a aba '{sheet}' desejada! Verifique se o nome da aba está correto.");
                 }
 
-                return result.Tables[sheet]; // Obtem a aba desejada
+               //return result.Tables[sheet];
+                return result.Tables.Cast<DataTable>().FirstOrDefault(table => table.TableName.ToLower() == sheet.ToLower()); // Obtem a aba desejada
             }
         }
 
@@ -73,7 +74,7 @@ namespace SH
         /// <param name="ignoreCSV">If true and if the extension is a CSV or similar, it will return null.</param>
         /// <returns>An array of strings representing the first row of the DataTable.</returns>
         /// <exception cref="Exception">Thrown when header is required for CSV, TXT, or RPT files.</exception>
-        internal static string[] GetFirstRow(string extension, DataTable table, bool ignoreCSV = false)
+        internal static string[]? GetFirstRow(string extension, DataTable table, bool ignoreCSV = false)
         {
             if (!IsCsvTxtRptExtension(extension))
             {
@@ -83,7 +84,7 @@ namespace SH
             }
             else // If CSV the first row of the table is indeed the first row
             {
-                if(ignoreCSV) { return null; }
+                if (ignoreCSV) { return null; }
 
                 return table.Rows[0].ItemArray
                         .Select(item => item.ToString())
