@@ -67,38 +67,6 @@ namespace SH
         }
 
         /// <summary>
-        /// Retrieves the first row of a DataTable based on the file extension and header settings.
-        /// </summary>
-        /// <param name="extension">The file extension to determine the reading logic.</param>
-        /// <param name="table">The DataTable containing the data.</param>
-        /// <param name="ignoreCSV">If true and if the extension is a CSV or similar, it will return null.</param>
-        /// <returns>An array of strings representing the first row of the DataTable.</returns>
-        /// <exception cref="Exception">Thrown when header is required for CSV, TXT, or RPT files.</exception>
-        internal static string[]? GetFirstRow(string extension, DataTable table, bool ignoreCSV = false)
-        {
-            if (!IsCsvTxtRptExtension(extension))
-            {
-                return table.Columns.Cast<DataColumn>()
-                    .Select(column => column.ColumnName)
-                    .ToArray();
-            }
-            else // If CSV the first row of the table is indeed the first row
-            {
-                if (ignoreCSV) { return null; }
-
-                return table.Rows[0].ItemArray
-                        .Select(item => item.ToString())
-                        .ToArray();
-            }
-
-            static bool IsCsvTxtRptExtension(string extension)
-            {
-                string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
-                return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
-            }
-        }
-
-        /// <summary>
         /// Open the file and perform the reading
         /// </summary>       
         internal static DataSet GetDataSet(string origin)
@@ -109,6 +77,32 @@ namespace SH
                 ".rpt" or ".txt" or ".csv" => ReadCSV(stream),
                 _ => ReadXLS(stream), // .xlsx, .xls, .xlsb, .xlsm
             };
+        }        
+
+        private static bool IsCsvTxtRptExtension(string extension)
+        {
+            string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
+            return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+        }
+
+        internal static DataTable TreatHeader(DataTable dataTable, string extension)
+        {
+            //string[]? header = GetFirstRow(Path.GetExtension(origin), dataTable, true);
+            //if (header != null) { dataTable.Rows.InsertAt(SheetHelper.ConvertToDataRow(header, dataTable), 0); }
+
+            if (IsCsvTxtRptExtension(extension))
+            {
+                DataRow firstRow = dataTable.Rows[0];
+
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                }
+
+                dataTable.Rows.RemoveAt(0);
+            }            
+
+            return dataTable; 
         }
 
 
