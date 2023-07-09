@@ -208,16 +208,54 @@ namespace SH
         {
             DataRow newRow = table.NewRow();
 
-            for (int i = 0; i < row.Length; i++)
+            if (row.Length <= table.Columns.Count)
             {
-                newRow[i] = row[i];
+                for (int i = 0; i < row.Length; i++)
+                {
+                    newRow[i] = row[i];
+                }
+            }
+            else
+            {
+                throw new ArgumentException("The length of the row array exceeds the number of columns in the table.");
             }
 
             return newRow;
         }
 
+
         /// <summary>
-        /// Reads the file and gets the datatable of the specified sheet
+        /// Retrieves the first row of a DataTable.
+        /// </summary>       
+        /// <param name="table">The DataTable containing the data.</param>
+        /// <param name="header">If true, it will get the header (columns name).</param>
+        /// <returns>An array of strings representing the first row of the DataTable.</returns>
+        public static string[] GetFirstRow(DataTable table, bool header = true)
+        {
+            if (header)
+            {
+                return table.Columns.Cast<DataColumn>()
+                    .Select(column => column.ColumnName)
+                    .ToArray();
+            }
+            else
+            {
+                if (table.Rows.Count > 0)
+                {
+                    return table.Rows[0].ItemArray
+                        .Select(item => item.ToString())
+                        .ToArray();
+                }
+                else
+                {
+                    return Array.Empty<string>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads the file and gets the datatable of the specified sheet.
+        /// <br>Note.: The header is the name of the columns.</br>
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
@@ -236,15 +274,13 @@ namespace SH
                 DataTable table = Reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
-                string[]? header = Reading.GetFirstRow(Path.GetExtension(origin), table, true);
-                if (header != null) { table.Rows.InsertAt(ConvertToDataRow(header, table), 0); }
+                table = Reading.TreatHeader(table, Path.GetExtension(origin));
                 Progress += 5; // 40
 
                 return table;
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -268,9 +304,8 @@ namespace SH
             }
             catch (Exception)
             {
-
                 throw;
-            }            
+            }
         }
 
         /// <summary>
