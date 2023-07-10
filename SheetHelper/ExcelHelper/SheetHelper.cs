@@ -341,9 +341,8 @@ namespace SH
 #if NETFRAMEWORK
 
             #region If file not found       
-            catch (FileNotFoundException nffEx) when (nffEx.HResult.Equals(-2147024894))
+            catch (Exception ex) when (ex.InnerException.Message.Contains("file not found"))
             {
-
                 var result1 = MessageBox.Show(
                                    "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
                                    + "\n\n" + origin,
@@ -362,7 +361,7 @@ namespace SH
             #endregion
 
             #region If file is in use
-            catch (IOException eiEx) when (eiEx.HResult.Equals(-2147024864))
+            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
             {
                 countOpen++; // Counter for failed attempts with open file
 
@@ -390,7 +389,6 @@ namespace SH
                     MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Error);
 
-
                 if (result3 == DialogResult.OK)
                 {
                     goto again; // Try conversion again
@@ -415,9 +413,9 @@ namespace SH
             #endregion
 
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

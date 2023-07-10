@@ -48,7 +48,7 @@ namespace SH
             }
             catch (Exception ex)
             {
-                throw new Exception("Error validating destiny file.", ex);
+                throw ex;
             }
         }
 

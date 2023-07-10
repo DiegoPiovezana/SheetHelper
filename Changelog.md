@@ -1,3 +1,13 @@
+
+## [Version 1.2.0] - 10/07/2023
+
+- Allowed to specify the name of the sheet disregarding sensitive case
+- Allowed to save dataTable in different formats and with restriction of columns and rows
+- Added possibility to get the first row of a DataTable
+- Added handling for end user when file not found or in use, with MessageBox for NetFramework
+- Fixed conversion considering header format
+
+
 ## [Version 1.1.1] - 01/06/2023
 
 - Dealing with unnecessary conversion between .CSV and .TXT
