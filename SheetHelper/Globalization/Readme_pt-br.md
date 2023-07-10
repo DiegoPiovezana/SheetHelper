@@ -5,7 +5,7 @@
 # SheetHelper
 Biblioteca rápida e leve para conversão fácil de grandes arquivos Excel.<br/>.<br/>
 
-<img src="SheetHelper\Images\SheetHelper_publish.png" width=100% height=100%> 
+<img src="../Images/SheetHelper_publish.png" width=100% height=100%> 
 
 RECURSOS DISPONÍVEIS:<br/>
 ✔ Compatível com leitura de arquivos .xlsx, .xlsm, .xls, .xlsb, .csv, .txt, .rpt e outros;<br/>
@@ -36,7 +36,7 @@ RECURSOS DISPONÍVEIS:<br/>
 <br/><br/>
 
 ## PRINCIPAIS CONVERSÕES POSSÍVEIS:<br/>
-<img src="..\Images\Conversions_pt-br.png" width=80% height=80%> 
+<img src="../Images/Conversions_pt-br.png" width=80% height=80%> 
 
 ### INSTALAÇÃO:
 ```
