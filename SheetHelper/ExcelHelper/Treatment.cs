@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -109,8 +108,8 @@ namespace SH
         internal static void Validate(string destiny, string separator, string? columns, string? rows)
         {
             List<Task> validates = new()
-            {             
-                Task.Run(() => ValidateDestiny(destiny)),         
+            {
+                Task.Run(() => ValidateDestiny(destiny)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
@@ -145,7 +144,7 @@ namespace SH
         /// </summary>
         internal static int[] DefineRows(string rows, DataTable table)
         {
-            int limitIndexRows = table.Rows.Count;
+            int limitIndexRows = table.Rows.Count + 1; // Add 1 to consider header
             List<int> indexRows = new();
 
             if (string.IsNullOrEmpty(rows) || string.IsNullOrEmpty(rows.Trim())) // If rows not specified

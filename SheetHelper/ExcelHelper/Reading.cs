@@ -38,25 +38,25 @@ namespace SH
         /// <summary>
         /// Get the desired sheet
         /// </summary>
-        /// <param name="sheet">Nome ou índice da aba desejada</param>
-        /// <param name="result">Dataset da planilha</param>    
-        /// <exception cref="Exception">Erro ao localizar aba</exception>
+        /// <param name="sheet">Name or index of the desired sheet</param>
+        /// <param name="result">Dataset of the spreadsheet</param>
+        /// <exception cref="Exception">Error locating sheet</exception>
         internal static DataTable GetTableByDataSet(string sheet, DataSet result)
         {
-            if (int.TryParse(sheet, out int sh)) // Se informado índice da aba desejada
+            if (int.TryParse(sheet, out int sh)) // If the index of the desired tab is informed
             {
-                // Se existir abas na planilha e a desejada estiver correta
+                // If there are sheets in the worksheet and the desired one is correct
                 if (result.Tables.Count <= 0 || sh <= -1 || sh > result.Tables.Count)
                 {
                     throw new Exception("Erro ao selecionar a aba desejada! Verifique se o índice da aba está correto.");
                 }
 
-                return result.Tables[sh - 1]; // Obtem a aba desejada
+                return result.Tables[sh - 1]; // Get the desired tab
 
-            } // Se nome da aba for informado
+            } // If sheet name is given
             else
             {
-                if (!result.Tables.Contains(sheet)) // Se nome da aba não localizado
+                if (!result.Tables.Contains(sheet)) // If sheet name not found
                 {
                     throw new Exception($"Não foi possível encontrar a aba '{sheet}' desejada! Verifique se o nome da aba está correto.");
                 }
@@ -87,9 +87,6 @@ namespace SH
 
         internal static DataTable TreatHeader(DataTable dataTable, string extension)
         {
-            //string[]? header = GetFirstRow(Path.GetExtension(origin), dataTable, true);
-            //if (header != null) { dataTable.Rows.InsertAt(SheetHelper.ConvertToDataRow(header, dataTable), 0); }
-
             if (IsCsvTxtRptExtension(extension))
             {
                 DataRow firstRow = dataTable.Rows[0];

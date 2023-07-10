@@ -49,7 +49,7 @@ namespace SH
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
             double percPrg = countPercPrg;
 
-            table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
+            //table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
 
             //using (StreamWriter writer = new (destiny))
             //{
@@ -67,7 +67,7 @@ namespace SH
             }
 
             // Save all other rows by start and end  
-            foreach (int rowIndex in rowsNumber.Skip(1)) // For each row in the worksheet
+            foreach (int rowIndex in rowsNumber.Skip(1).Concat(new[] { rowsNumber.Last() })) // For each row in the worksheet
             {         
                 if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
