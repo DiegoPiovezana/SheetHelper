@@ -9,7 +9,7 @@
 		<AssemblyTitle>SheetHelper</AssemblyTitle>
 		<AssemblyName>SheetHelper</AssemblyName>
 		<PackageId>SheetHelper</PackageId>
-		<Version>1.1.1</Version>
+		<Version>1.2.0</Version>
 		<Authors>Diêgo Piovezana</Authors>
 		<Company>DiegoPiov</Company>
 		<RepositoryUrl>https://github.com/DiegoPiovezana/SheetHelper</RepositoryUrl>
@@ -24,7 +24,11 @@
 		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>		
 		<Nullable>enable</Nullable>		
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
-		<PackageReleaseNotes>- Dealing with unnecessary conversion between CSV and TXT</PackageReleaseNotes>
+		<PackageReleaseNotes>- Allowed to specify the name of the sheet disregarding sensitive case
+- Allowed to save dataTable in different formats and with restriction of columns and rows
+- Added possibility to get the first row of a DataTable
+- Added handling for end user when file not found or in use, with MessageBox for NetFramework
+- Fixed conversion considering header format</PackageReleaseNotes>
 				
 	</PropertyGroup>
 
