@@ -3,7 +3,7 @@
 <img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/us.png" width=2.0% height=2.0%> See the documentation in English by [clicking here](../../Readme.md).<br/>
 
 # SheetHelper
-Biblioteca rápida e leve para conversão fácil de grandes arquivos Excel.<br/>.<br/>
+Biblioteca rápida e leve para conversão fácil de grandes arquivos Excel.<br/>
 
 <img src="../Images/SheetHelper_publish.png" width=100% height=100%> 
 
@@ -31,7 +31,6 @@ RECURSOS DISPONÍVEIS:<br/>
 ✔ Suporta descompactação de arquivos .GZ (usando `UnGZ`) e .ZIP (usando `UnZIP`). Ou use `UnzipAuto` para descompactar automaticamente.<br/>
 
 <br/>Utiliza a biblioteca [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) para realizar a leitura.<br/>
-
 
 <br/><br/>
 
