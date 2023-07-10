@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace SH
 {
@@ -264,13 +264,13 @@ namespace SH
         public static DataTable GetDataTable(string origin, string sheet)
         {
             try
-            {                
-                if(!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
+            {
+                if (!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
                 {
                     Treatment.ValidateOrigin(origin);
                     Treatment.ValidateSheet(sheet);
                     origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                }                
+                }
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 Progress += 5; // 5 
@@ -328,16 +328,98 @@ namespace SH
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
+            int countOpen = 0; // Count of times Excel was open
+
+        again:
+
             try
             {
                 return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
             }
+
+
+#if NETFRAMEWORK
+
+            #region If file not found       
+            catch (FileNotFoundException nffEx) when (nffEx.HResult.Equals(-2147024894))
+            {
+
+                var result1 = MessageBox.Show(
+                                   "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
+                                   + "\n\n" + origin,
+                                   "Aviso",
+                                   MessageBoxButtons.OKCancel,
+                                   MessageBoxIcon.Exclamation);
+
+
+                if (result1 == DialogResult.OK)
+                {
+                    goto again; // Try conversion again
+                }
+
+                return false;
+            }
+            #endregion
+
+            #region If file is in use
+            catch (IOException eiEx) when (eiEx.HResult.Equals(-2147024864))
+            {
+                countOpen++; // Counter for failed attempts with open file
+
+                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
+                {
+
+                    var result2 = MessageBox.Show(
+                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
+                       "Aviso",
+                       MessageBoxButtons.YesNo,
+                       MessageBoxIcon.Exclamation);
+
+                    if (result2 == DialogResult.Yes)
+                    {
+                        CloseExcel(); // Close all Excel processes
+                        System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
+                        goto again; // Try conversion again
+
+                    } // If No, continue execution below
+                }
+
+                var result3 = MessageBox.Show(
+                    "O arquivo '" + Path.GetFileName(origin) + "' ou '" + Path.GetFileName(destiny) + "' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+                    "Aviso",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Error);
+
+
+                if (result3 == DialogResult.OK)
+                {
+                    goto again; // Try conversion again
+                }
+                else // If canceled
+                {
+                    return false;
+                }
+            }
+
+            #endregion
+#endif
+
+
+            #region If file in unsupported format
+            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
+            {
+
+                throw new Exception($"Erro! Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
+
+            }
+            #endregion
+
+
             catch (Exception)
             {
                 throw;
             }
         }
-
 
 
     }
