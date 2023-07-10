@@ -31,7 +31,7 @@ namespace SH
             return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
-        private static void ValidateOrigin(string origin)
+        internal static void ValidateOrigin(string origin)
         {
             if (!File.Exists(origin))
             {
@@ -39,7 +39,7 @@ namespace SH
             }
         }
 
-        private static void ValidateDestiny(string destiny)
+        internal static void ValidateDestiny(string destiny)
         {
             try
             {
@@ -52,17 +52,22 @@ namespace SH
             }
         }
 
-        private static void ValidateSheet(string sheet)
+        internal static void ValidateSheet(string sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
-            if (String.IsNullOrEmpty(sheet))
+            if (string.IsNullOrEmpty(sheet))
             {
                 throw new ArgumentException("Invalid sheet name.", nameof(sheet));
             }
+
+            if (sheet.Equals("0"))
+            {
+                throw new ArgumentException("The first sheet is '1'!");
+            }
         }
 
-        private static void ValidateSeparator(string separator)
+        internal static void ValidateSeparator(string separator)
         {
             // ";"
 
@@ -72,14 +77,14 @@ namespace SH
             }
         }
 
-        private static void ValidateColumns(string? columns)
+        internal static void ValidateColumns(string? columns)
         {
             // "A:H, 4:9, B, 75, -2"
 
             // TODO: Add specific validation logic for columns
         }
 
-        private static void ValidateRows(string? rows)
+        internal static void ValidateRows(string? rows)
         {
             // "1:23, 34:56, 70, 75, -1"
 

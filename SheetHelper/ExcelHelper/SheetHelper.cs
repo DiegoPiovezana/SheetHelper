@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -263,7 +264,14 @@ namespace SH
         public static DataTable GetDataTable(string origin, string sheet)
         {
             try
-            {
+            {                
+                if(!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
+                {
+                    Treatment.ValidateOrigin(origin);
+                    Treatment.ValidateSheet(sheet);
+                    origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                }                
+
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 Progress += 5; // 5 
 
