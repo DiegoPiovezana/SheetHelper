@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExcelDataReader.Core;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -279,14 +280,8 @@ namespace SH
                 {
                     if (sheet.Rows.Count >= minQtdRows)
                     {
-                        if (formatName)
-                        {
-                            sheetDictionary.Add(sheet.TableName, sheet);
-                        }
-                        else
-                        {
-                            sheetDictionary.Add(NormalizeText(sheet.TableName), sheet);
-                        }
+                        if (!formatName) { sheetDictionary.Add(sheet.TableName, sheet); }
+                        else { sheetDictionary.Add(NormalizeText(sheet.TableName), sheet); }
                     }
                 }
 
@@ -352,8 +347,12 @@ namespace SH
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
         /// <returns>DataTable</returns>
-        public static DataTable GetDataTable(string origin, string sheet)
+        public static DataTable? GetDataTable(string origin, string sheet)
         {
+            int countOpen = 0; // Count of times Excel was open
+
+        again:
+
             try
             {
                 Treatment.ValidateSheet(sheet);
@@ -369,71 +368,6 @@ namespace SH
 
                 return table;
             }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
-        /// </summary>
-        /// <param name="dataTable">DataTable to be converted.</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
-        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
-        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
-        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator, string? columns, string? rows)
-        {
-            try
-            {
-                Treatment.Validate(destiny, separator, columns, rows);
-                return Conversion.ConverterDataTable(dataTable, destiny, separator, columns, rows);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
-        /// </summary>
-        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
-        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName".</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
-        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
-        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
-        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
-        {
-            int countOpen = 0; // Count of times Excel was open
-
-        again:
-
-            try
-            {
-                Progress = 5;
-
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (origin == null) return false;
-
-                if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
-                {
-                    // If no conversion is needed
-                    Progress = 100;
-                    File.Copy(origin, destiny, true);
-                    return true;
-                }
-
-                DataTable table = GetDataTable(origin, sheet); // Progress 40        
-
-                return SaveDataTable(table, destiny, separator, columns, rows);
-            }
-
-
 #if NETFRAMEWORK
 
             #region If file not found       
@@ -452,7 +386,7 @@ namespace SH
                     goto again; // Try conversion again
                 }
 
-                return false;
+                return null;
             }
             #endregion
 
@@ -480,7 +414,7 @@ namespace SH
                 }
 
                 var result3 = MessageBox.Show(
-                    "O arquivo '" + Path.GetFileName(origin) + "' ou '" + Path.GetFileName(destiny) + "' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+                    $"O arquivo '{Path.GetFileName(origin)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
                     "Aviso",
                     MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Error);
@@ -491,7 +425,7 @@ namespace SH
                 }
                 else // If canceled
                 {
-                    return false;
+                    return null;
                 }
             }
 
@@ -508,10 +442,144 @@ namespace SH
             }
             #endregion
 
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
+        /// <summary>
+        /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
+        /// </summary>
+        /// <param name="dataTable">DataTable to be converted.</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
+        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
+        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
+        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator, string? columns, string? rows)
+        {
+            int countOpen = 0; // Count of times Excel was open
+
+        again:
+
+            try
+            {
+                Treatment.Validate(destiny, separator, columns, rows);
+                return Conversion.ConverterDataTable(dataTable, destiny, separator, columns, rows);
+            }
+#if NETFRAMEWORK                        
+
+            #region If file is in use
+            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
+            {
+                countOpen++; // Counter for failed attempts with open file
+
+                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
+                {
+                    var result2 = MessageBox.Show(
+                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
+                       "Aviso",
+                       MessageBoxButtons.YesNo,
+                       MessageBoxIcon.Exclamation);
+
+                    if (result2 == DialogResult.Yes)
+                    {
+                        CloseExcel(); // Close all Excel processes
+                        System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
+                        goto again; // Try conversion again
+
+                    } // If No, continue execution below
+                }
+
+                var result3 = MessageBox.Show(
+                    $"O arquivo '{Path.GetFileName(destiny)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+                    "Aviso",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Error);
+
+                if (result3 == DialogResult.OK)
+                {
+                    goto again; // Try conversion again
+                }
+                else // If canceled
+                {
+                    return false;
+                }
+            }
+
+            #endregion
+#endif
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
+        /// </summary>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName".</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
+        /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
+        /// <returns>"true" if converted successfully. "false" if not converted.</returns>
+        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        {
+            try
+            {
+                Progress = 5;
+
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                if (origin == null) return false;
+
+                if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+                {
+                    // If no conversion is needed
+                    Progress = 100;
+                    File.Copy(origin, destiny, true);
+                    return true;
+                }
+
+                DataTable table = GetDataTable(origin, sheet); // Progress 40        
+
+                return SaveDataTable(table, destiny, separator, columns, rows);
+            }
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Converts all spreadsheet tabs considering all rows and columns.
+        /// <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
+        /// </summary>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
+        /// <returns></returns>
+        public static bool ConverterAllSheet(string origin, string destiny, string separator, int minRows = 1)
+        {
+            try
+            {
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                if (origin == null) return false;
+
+                foreach (var sheet in GetSheets(origin, minRows, false))
+                {
+                    destiny = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}_{sheet.Key}{Path.GetExtension(destiny)}");
+                    SaveDataTable(sheet.Value, destiny, separator, "", "");
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
