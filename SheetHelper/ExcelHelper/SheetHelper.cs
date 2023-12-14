@@ -256,31 +256,13 @@ namespace SH
         }
 
         /// <summary>
-        /// Gets the name of the sheets in the workbook
-        /// </summary>
-        /// <param name="filePath">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>   
-        /// <returns></returns>
-        public static List<DataTable> GetSheets(string filePath)
-        {
-            try
-            {
-                var dataSet = GetDataSet(filePath);
-                return dataSet.Tables.Cast<DataTable>().ToList(); // DataTableCollection              
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of the sheets in the workbook with the respective dataTable.
+        /// Gets the sheets in the workbook with the respective dataTable.
         /// </summary>
         /// <param name="filePath">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
         /// <param name="minQtdRows">The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
-        /// <param name="formatName"></param>
+        /// <param name="formatName">If true, all spaces and special characters from tab names will be removed.</param>
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
-        public static Dictionary<string, DataTable> GetNameSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        public static Dictionary<string, DataTable> GetSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
             {
