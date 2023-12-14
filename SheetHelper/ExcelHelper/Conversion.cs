@@ -59,12 +59,32 @@ namespace SH
             if (rowsNumber[0].Equals(1))
             {
                 // Get the header (coluns name)
-                rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+                //rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+                rowFull = table.Columns.Cast<DataColumn>().Select(column =>
+                 {
+                     string cellValue = column.ColumnName;
+                     if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                     {
+                         // Apply double quotes to surround the value and escape the inner double quotes
+                         cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                     }
+                     return cellValue;
+                 }).ToArray();
             }
             else
             {
                 // Get the first row selected (after header)              
-                rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
+                //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
+                rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell =>
+                {
+                    string cellValue = cell.ToString();
+                    if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                    {
+                        // Apply double quotes to surround the value and escape the inner double quotes
+                        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                    }
+                    return cellValue;
+                }).ToArray();
             }
 
             // Save all rows by start and end  
@@ -98,12 +118,24 @@ namespace SH
 
                 // Get the next row
                 if (rowIndex - 2 >= 0 && rowIndex - 2 < table.Rows.Count)
-                    rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
+                {
+                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
+                    rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                    {
+                        string cellValue = cell.ToString();
+                        if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                        {
+                            // Apply double quotes to surround the value and escape the inner double quotes
+                            cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                        }
+                        return cellValue;
+                    }).ToArray();
+                }                    
 
                 //writer.WriteLine();
             }
 
-            SheetHelper.Progress += (90 - SheetHelper.Progress); // If necessary, complete up to 90%
+            SheetHelper.Progress += 90 - SheetHelper.Progress; // If necessary, complete up to 90%
 
             // Write new converted file (overwrite if existing)
             File.WriteAllText(destiny, output.ToString());
