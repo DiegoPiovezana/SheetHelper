@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -86,7 +87,7 @@ namespace SH
             {
                 throw;
             }
-        }
+        }        
 
         /// <summary>
         /// Unpacks a .GZ file.
@@ -251,7 +252,25 @@ namespace SH
                     return Array.Empty<string>();
                 }
             }
-        }        
+        }
+
+        /// <summary>
+        /// Gets the name of the sheets in the workbook
+        /// </summary>
+        /// <param name="filePath">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>   
+        /// <returns></returns>
+        public static List<DataTable> GetSheets(string filePath)
+        {
+            try
+            {
+                var dataSet = GetDataSet(filePath);
+                return dataSet.Tables.Cast<DataTable>().ToList(); // DataTableCollection              
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.
@@ -310,7 +329,6 @@ namespace SH
             }
         }
 
-
         /// <summary>
         /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
         /// </summary>
@@ -351,14 +369,7 @@ namespace SH
 
             try
             {
-                //return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
-
-
-
-                Progress = 0;
-
-                //Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
-                Progress += 5; // 5 
+                Progress = 5; 
 
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (origin == null) return false;
