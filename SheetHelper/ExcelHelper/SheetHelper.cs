@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -87,7 +88,7 @@ namespace SH
             {
                 throw;
             }
-        }        
+        }
 
         /// <summary>
         /// Unpacks a .GZ file.
@@ -273,6 +274,69 @@ namespace SH
         }
 
         /// <summary>
+        /// Gets the name of the sheets in the workbook with the respective dataTable.
+        /// </summary>
+        /// <param name="filePath">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
+        /// <param name="minQtdRows">The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
+        /// <param name="formatName"></param>
+        /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
+        public static Dictionary<string, DataTable> GetNameSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        {
+            try
+            {
+                var dataSet = GetDataSet(filePath);
+
+                if (minQtdRows == 0 && formatName == false)
+                {
+                    return dataSet.Tables.Cast<DataTable>().ToDictionary(table => table.TableName);
+                }
+
+                Dictionary<string, DataTable> sheetDictionary = new();
+
+                foreach (var sheet in dataSet.Tables.Cast<DataTable>())
+                {
+                    if (sheet.Rows.Count >= minQtdRows)
+                    {
+                        if (formatName)
+                        {
+                            sheetDictionary.Add(sheet.TableName, sheet);
+                        }
+                        else
+                        {
+                            sheetDictionary.Add(NormalizeText(sheet.TableName), sheet);
+                        }
+                    }
+                }
+
+                return sheetDictionary;
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Normalizes the text by removing accents and spaces.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>Text normalized.</returns>
+        public static string NormalizeText(string text)
+        {
+            string normalizedString = text.Normalize(NormalizationForm.FormD);
+            StringBuilder stringBuilder = new();
+
+            foreach (char c in normalizedString)
+            {
+                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(" ", "").ToLower();
+        }
+
+        /// <summary>
         /// Reads the file and gets the dataset of worksheet.
         /// <br>Note.: The header is the name of the columns.</br>
         /// </summary>
@@ -281,9 +345,9 @@ namespace SH
         public static DataSet GetDataSet(string origin)
         {
             try
-            {                
-                Treatment.ValidateOrigin(origin);                
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);                
+            {
+                Treatment.ValidateOrigin(origin);
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 Progress += 5; // 5 
@@ -369,7 +433,7 @@ namespace SH
 
             try
             {
-                Progress = 5; 
+                Progress = 5;
 
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (origin == null) return false;
