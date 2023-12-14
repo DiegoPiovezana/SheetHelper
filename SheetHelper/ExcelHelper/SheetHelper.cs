@@ -91,13 +91,14 @@ namespace SH
         /// <summary>
         /// Unpacks a .GZ file.
         /// </summary>
-        /// <param name="compressedFileStream">The compressed file stream obtained through the File.Open method.</param>
+        /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
         /// <param name="pathDestiny">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
         /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
-        public static string? UnGZ(FileStream compressedFileStream, string pathDestiny)
+        public static string? UnGZ(string zipFile, string pathDestiny)
         {
             try
             {
+                using var compressedFileStream = File.Open(zipFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
                 if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) // If the format to be converted is not specified, try to get it from the file name
@@ -166,28 +167,30 @@ namespace SH
         {
             try
             {
+                if (string.IsNullOrEmpty(zipFile)) return null;
+
                 Directory.CreateDirectory(pathDestiny);
 
             restart:
 
-                using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
+                //using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
+                //{
+                switch (Path.GetExtension(zipFile).ToLower())
                 {
-                    switch (Path.GetExtension(zipFile).ToLower())
-                    {
-                        case ".gz":
-                            zipFile = UnGZ(stream, pathDestiny);
-                            goto restart;
+                    case ".gz":
+                        zipFile = UnGZ(zipFile, pathDestiny);
+                        goto restart;
 
-                        case ".zip":
-                            stream.Close();
-                            zipFile = UnZIP(zipFile, pathDestiny);
-                            goto restart;
+                    case ".zip":
+                        //stream.Close();
+                        zipFile = UnZIP(zipFile, pathDestiny);
+                        goto restart;
 
-                        default:
-                            if (mandatory) throw new Exception("Unable to extract this file!");
-                            else return zipFile;
-                    }
+                    default:
+                        if (mandatory) throw new Exception("Unable to extract this file!");
+                        else return zipFile;
                 }
+                //}
             }
             catch (Exception)
             {
@@ -263,9 +266,9 @@ namespace SH
             {
                 //if (!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
                 //{
-                    Treatment.ValidateOrigin(origin);
-                    Treatment.ValidateSheet(sheet);
-                    origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                Treatment.ValidateOrigin(origin);
+                Treatment.ValidateSheet(sheet);
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 //}
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
