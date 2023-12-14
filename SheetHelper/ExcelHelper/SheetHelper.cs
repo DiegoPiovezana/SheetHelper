@@ -251,6 +251,33 @@ namespace SH
                     return Array.Empty<string>();
                 }
             }
+        }        
+
+        /// <summary>
+        /// Reads the file and gets the dataset of worksheet.
+        /// <br>Note.: The header is the name of the columns.</br>
+        /// </summary>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>       
+        /// <returns>DataSet</returns>
+        public static DataSet GetDataSet(string origin)
+        {
+            try
+            {                
+                Treatment.ValidateOrigin(origin);                
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);                
+
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                Progress += 5; // 5 
+
+                DataSet result = Reading.GetDataSet(origin);
+                Progress += 25; // 35 (after reading the file)
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -264,18 +291,9 @@ namespace SH
         {
             try
             {
-                //if (!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
-                //{
-                Treatment.ValidateOrigin(origin);
                 Treatment.ValidateSheet(sheet);
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                //}
 
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                Progress += 5; // 5 
-
-                DataSet result = Reading.GetDataSet(origin);
-                Progress += 25; // 35 (after reading the file)
+                var result = GetDataSet(origin); // 35 (after reading the file)
 
                 // Get the sheet to be converted
                 DataTable table = Reading.GetTableByDataSet(sheet, result);
