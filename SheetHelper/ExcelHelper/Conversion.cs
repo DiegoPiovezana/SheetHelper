@@ -67,9 +67,9 @@ namespace SH
                 rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
             }
 
-            // Save all other rows by start and end  
+            // Save all rows by start and end  
             foreach (int rowIndex in rowsNumber.Skip(1).Concat(new[] { rowsNumber.Last() })) // For each row in the worksheet
-            {         
+            {
                 if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
                     output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
@@ -96,8 +96,9 @@ namespace SH
 
                 countPercPrg += percPrg; // Increment progress counter                      
 
-                // Get the next row               
-                rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
+                // Get the next row
+                if (rowIndex - 2 >= 0 && rowIndex - 2 < table.Rows.Count)
+                    rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
 
                 //writer.WriteLine();
             }
