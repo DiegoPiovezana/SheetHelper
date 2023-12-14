@@ -11,27 +11,28 @@ namespace SH
     /// </summary>
     internal static class Conversion
     {
-        internal static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
-        {
-            SheetHelper.Progress = 0;
+        //internal static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        //{
+        //    SheetHelper.Progress = 0;
 
-            Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
-            SheetHelper.Progress += 5; // 5 
+        //    Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
+        //    SheetHelper.Progress += 5; // 5 
 
-            origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+        //    origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+        //    if (origin == null) return false;
 
-            if (!Treatment.CheckConvert(origin, destiny, sheet, separator, columns, rows))
-            {
-                // If no conversion is needed
-                SheetHelper.Progress = 100;
-                File.Copy(origin, destiny, true);
-                return true;
-            }
+        //    if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+        //    {
+        //        // If no conversion is needed
+        //        SheetHelper.Progress = 100;
+        //        File.Copy(origin, destiny, true);
+        //        return true;
+        //    }
 
-            DataTable table = SheetHelper.GetDataTable(origin, sheet);
+        //    DataTable table = SheetHelper.GetDataTable(origin, sheet);
 
-            return ConverterDataTable(table, destiny, separator, columns, rows);
-        }
+        //    return ConverterDataTable(table, destiny, separator, columns, rows);
+        //}
 
         internal static bool ConverterDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {

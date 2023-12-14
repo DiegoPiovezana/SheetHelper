@@ -33,7 +33,6 @@ namespace SH
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -59,7 +58,6 @@ namespace SH
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -86,7 +84,6 @@ namespace SH
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -132,7 +129,7 @@ namespace SH
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <returns>The path of the extracted file.</returns>
-        public static string UnZIP(string zipFile, string pathDestiny)
+        public static string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
             {
@@ -165,7 +162,7 @@ namespace SH
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <param name="mandatory">If true, it indicates that the extraction must occur, otherwise, it will show an error. If false, if the conversion does not happen, nothing happens.</param>
         /// <returns>The path of the extracted file.</returns>
-        public static string UnzipAuto(string zipFile, string pathDestiny, bool mandatory = true)
+        public static string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
             {
@@ -194,7 +191,6 @@ namespace SH
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -265,12 +261,12 @@ namespace SH
         {
             try
             {
-                if (!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
-                {
+                //if (!new StackTrace().GetFrame(2).GetMethod().Name.Equals(nameof(Conversion.Converter)))
+                //{
                     Treatment.ValidateOrigin(origin);
                     Treatment.ValidateSheet(sheet);
                     origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                }
+                //}
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 Progress += 5; // 5 
@@ -334,7 +330,29 @@ namespace SH
 
             try
             {
-                return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
+                //return Conversion.Converter(origin, destiny, sheet, separator, columns, rows);
+
+
+
+                Progress = 0;
+
+                //Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
+                Progress += 5; // 5 
+
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                if (origin == null) return false;
+
+                if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+                {
+                    // If no conversion is needed
+                    Progress = 100;
+                    File.Copy(origin, destiny, true);
+                    return true;
+                }
+
+                DataTable table = GetDataTable(origin, sheet); // Progress 40        
+
+                return SaveDataTable(table, destiny, separator, columns, rows);
             }
 
 

@@ -19,7 +19,7 @@ namespace SH
         /// Checks if it is necessary to convert the file.
         /// </summary>
         /// <returns>True if conversion is required.</returns>
-        internal static bool CheckConvert(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        internal static bool CheckConvertNecessary(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny), StringComparison.OrdinalIgnoreCase); // The formats is the same?
             bool isOriginTextFormat = Path.GetExtension(origin).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(origin).Equals(".txt", StringComparison.OrdinalIgnoreCase);                                                                             // 
@@ -158,9 +158,8 @@ namespace SH
                 return indexRows.ToArray();
             }
 
-            rows = FixItems(rows);
+            rows = FixItems(rows); //"1:23,34:-56,23:1,70,75,-1"
 
-            //"1:23,34:-56,23:1,70,75,-1"
 
             foreach (string row in rows.Split(','))
             {
