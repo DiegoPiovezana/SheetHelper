@@ -278,7 +278,7 @@ namespace SH
 
                 foreach (var sheet in dataSet.Tables.Cast<DataTable>())
                 {
-                    if (sheet.Rows.Count >= minQtdRows)
+                    if ((sheet.Rows.Count + (sheet.Columns.Count > 0 ? 1 : 0)) >= minQtdRows)
                     {
                         if (!formatName) { sheetDictionary.Add(sheet.TableName, sheet); }
                         else { sheetDictionary.Add(NormalizeText(sheet.TableName), sheet); }
@@ -569,10 +569,10 @@ namespace SH
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (origin == null) return false;
 
-                foreach (var sheet in GetSheets(origin, minRows, false))
+                foreach (var sheet in GetSheets(origin, minRows, true))
                 {
-                    destiny = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}_{sheet.Key}{Path.GetExtension(destiny)}");
-                    SaveDataTable(sheet.Value, destiny, separator, "", "");
+                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}_{sheet.Key}{Path.GetExtension(destiny)}");
+                    SaveDataTable(sheet.Value, dest, separator, "", "");
                 }
 
                 return true;
