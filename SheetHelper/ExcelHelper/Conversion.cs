@@ -63,7 +63,7 @@ namespace SH
                 rowFull = table.Columns.Cast<DataColumn>().Select(column =>
                  {
                      string cellValue = column.ColumnName;
-                     if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                     if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
                      {
                          // Apply double quotes to surround the value and escape the inner double quotes
                          cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
@@ -78,7 +78,7 @@ namespace SH
                 rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell =>
                 {
                     string cellValue = cell.ToString();
-                    if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
                     {
                         // Apply double quotes to surround the value and escape the inner double quotes
                         cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
@@ -123,7 +123,7 @@ namespace SH
                     rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
                     {
                         string cellValue = cell.ToString();
-                        if (cellValue.Contains(Environment.NewLine)) // Check if the cell contains a line break
+                        if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
                         {
                             // Apply double quotes to surround the value and escape the inner double quotes
                             cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
