@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -266,7 +265,7 @@ namespace SH
                 if (table.Rows.Count > 0 && indexRow >= 0)
                 {
                     return table.Rows[indexRow].ItemArray
-                        .Select(item => item.ToString())
+                        .Select(cell => cell.ToString())
                         .ToArray();
                 }
                 else
@@ -367,7 +366,7 @@ namespace SH
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
         /// <returns>DataTable</returns>
-        public static DataTable? GetDataTable(string origin, string sheet)
+        public static DataTable? GetDataTable(string origin, string sheet = "1")
         {
             int countOpen = 0; // Count of times Excel was open
 
@@ -477,7 +476,7 @@ namespace SH
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator, string? columns, string? rows)
+        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
         {
             int countOpen = 0; // Count of times Excel was open
 
@@ -582,7 +581,7 @@ namespace SH
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns></returns>
-        public static bool ConverterAllSheet(string origin, string destiny, string separator, int minRows = 1)
+        public static bool ConverterAllSheet(string origin, string destiny, string separator = ";", int minRows = 1)
         {
             try
             {
