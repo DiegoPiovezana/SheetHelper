@@ -14,7 +14,7 @@ using System.Windows.Forms;
 namespace SH
 {
     /// <summary>
-    /// Fast and lightweight library for easy conversion of large Excel files
+    /// Fast and lightweight library for easy read and conversion of large Excel files
     /// </summary>
     public class SheetHelper
     {
@@ -23,6 +23,25 @@ namespace SH
         /// </summary>
         public static int Progress { get; set; }
 
+        //private static double _progress;
+
+        ///// <summary>
+        ///// Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
+        ///// </summary>
+        //public static double Progress
+        //{
+        //    get => _progress;
+        //    set
+        //    {
+        //        _progress = value;
+        //        OnProgressChanged?.Invoke(value);
+        //    }
+        //}
+
+
+        //public static event Action<int>? OnProgressChanged;
+
+        //public event EventHandler ProgressChanged;
 
         /// <summary>
         /// Terminates all Excel processes
@@ -228,12 +247,13 @@ namespace SH
 
 
         /// <summary>
-        /// Retrieves the first row of a DataTable.
+        /// Retrieves a row of a DataTable.
         /// </summary>       
         /// <param name="table">The DataTable containing the data.</param>
         /// <param name="header">If true, it will get the header (columns name).</param>
-        /// <returns>An array of strings representing the first row of the DataTable.</returns>
-        public static string[] GetFirstRow(DataTable table, bool header = true)
+        /// <param name="indexRow">index of the line to be obtained (in addition to the header). Enter negative to get just the header.</param>
+        /// <returns>An array of strings representing a row of the DataTable.</returns>
+        public static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             if (header)
             {
@@ -243,9 +263,9 @@ namespace SH
             }
             else
             {
-                if (table.Rows.Count > 0)
+                if (table.Rows.Count > 0 && indexRow >= 0)
                 {
-                    return table.Rows[0].ItemArray
+                    return table.Rows[indexRow].ItemArray
                         .Select(item => item.ToString())
                         .ToArray();
                 }
@@ -297,7 +317,7 @@ namespace SH
         /// <summary>
         /// Normalizes the text by removing accents and spaces.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">Text to be normalized.</param>
         /// <returns>Text normalized.</returns>
         public static string NormalizeText(string text)
         {
