@@ -34,7 +34,7 @@ namespace SH
         //    return ConverterDataTable(table, destiny, separator, columns, rows);
         //}
 
-        internal static bool ConverterDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
+        internal static bool ConvertDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {
             StringBuilder output = new();
             string[] rowFull;

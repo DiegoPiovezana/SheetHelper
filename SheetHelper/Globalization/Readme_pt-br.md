@@ -14,9 +14,9 @@ RECURSOS DISPONÍVEIS:<br/>
 ✔ Use o método `CloseExcel` para fechar todos os processos do Excel, inclusive os em segundo plano;<br/>
 ✔ Use `GetIndexColumn` para obter o índice da coluna fornecendo o nome (por exemplo, "AB");<br/>
 ✔ O método `GetNameColumn` pode ser usado para obter o nome da coluna;<br/>
-✔ Use `GetFirstRow` para obter a primeira linha de um DataTable;<br/>
+✔ Use `GetRowArray` para obter uma linha de um DataTable;<br/>
 ✔ Converta um array em uma DataRow usando o método `ConvertToDataRow`;<br/>
-✔ Converta uma planilha para diferentes formatos usando o método 'Converter';<br/>
+✔ Converta uma planilha para diferentes formatos usando o método `Converter`;<br/>
 ✔ Permite converter intervalos de linhas. Ex: "1:23, -34:56, 70, 75, -1";<br/>
 ✔ Possibilidade de converter intervalos de colunas. Ex: "A:H, 4:9, 4:-9, B, 75, -2";<br/>
 ✔ Substitui o arquivo se já convertido;<br/>
@@ -26,7 +26,7 @@ RECURSOS DISPONÍVEIS:<br/>
 ✔ Permite alterar o delimitador;<br/>
 ✔ Suporta a conversão de colunas, linhas e planilhas ocultas;<br/>
 ✔ Possibilidade de escolher colunas e linhas específicas para conversão;<br/>
-✔ Permite acompanhar a porcentagem de conclusão por meio da propriedade `"Progress"`;<br/>
+✔ Permite acompanhar a porcentagem de conclusão por meio da propriedade `Progress`;<br/>
 ✔ Lida com o usuário final quando o arquivo não é encontrado com MessageBox para NetFramework;<br/>
 ✔ Suporta descompactação de arquivos .GZ (usando `UnGZ`) e .ZIP (usando `UnZIP`). Ou use `UnzipAuto` para descompactar automaticamente.<br/>
 

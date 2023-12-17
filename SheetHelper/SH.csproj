@@ -5,7 +5,7 @@
 		<TargetFrameworks>net462;netstandard2.0;netstandard2.1</TargetFrameworks>
 		<LangVersion>9.0</LangVersion>
 		
-		<Description>Fast and lightweight library for easy conversion of large Excel files.</Description>
+		<Description>Fast and lightweight library for easy read and conversion of large Excel files.</Description>
 		<AssemblyTitle>SheetHelper</AssemblyTitle>
 		<AssemblyName>SheetHelper</AssemblyName>
 		<PackageId>SheetHelper</PackageId>
@@ -24,11 +24,13 @@
 		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>		
 		<Nullable>enable</Nullable>		
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
-		<PackageReleaseNotes>- Allowed to specify the name of the sheet disregarding sensitive case
+<PackageReleaseNotes>
+- Allowed to specify the name of the sheet disregarding sensitive case
 - Allowed to save dataTable in different formats and with restriction of columns and rows
 - Added possibility to get the first row of a DataTable
 - Added handling for end user when file not found or in use, with MessageBox for NetFramework
-- Fixed conversion considering header format</PackageReleaseNotes>
+- Fixed conversion considering header format
+</PackageReleaseNotes>
 				
 	</PropertyGroup>
 

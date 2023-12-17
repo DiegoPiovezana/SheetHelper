@@ -14,9 +14,9 @@ AVAILABLE FEATURES:<br/>
 ✔ Use the `CloseExcel` method to close all Excel processes, even those in the background;<br/>
 ✔ Use `GetIndexColumn` to get the column index by giving the name (e.g. "AB");<br/>
 ✔ The `GetNameColumn` method can be used to get the column name;<br/>
-✔ Use `GetFirstRow` to get the first row of a DataTable;<br/>
+✔ Use `GetRowArray` to get a row of a DataTable;<br/>
 ✔ Convert a array to a DataRow using the `ConverToDataRow` method;<br/>
-✔ Convert a spreadsheet to different formats using the 'Converter' method;;<br/>
+✔ Convert a spreadsheet to different formats using the `Converter` method;<br/>
 ✔ Allows to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1";<br/>
 ✔ Possibility to convert ranges of columns. Eg: "A:H, 4:9, 4:-9, B, 75, -2";<br/>
 ✔ Replaces file if already converted;<br/>
@@ -26,7 +26,7 @@ AVAILABLE FEATURES:<br/>
 ✔ Allowed to change the delimiter;<br/>
 ✔ Supports conversion of hidden columns, rows, and sheets;<br/>
 ✔ Possibility to choose specific columns and rows to be converted;<br/>
-✔ Allows you to track the percentage of completion through the `"Progress"` property;<br/>
+✔ Allows you to track the percentage of completion through the `Progress` property;<br/>
 ✔ Has handling for end user when file not found with MessageBox for NetFramework;<br/>
 ✔ Supports unzipping of .GZ (using `UnGZ`) and .ZIP (using `UnZIP`) files. Or use `UnzipAuto` to unzip automatically.<br/>
 

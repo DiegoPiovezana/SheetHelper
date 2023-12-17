@@ -466,7 +466,7 @@ namespace SH
             try
             {
                 Treatment.Validate(destiny, separator, columns, rows);
-                return Conversion.ConverterDataTable(dataTable, destiny, separator, columns, rows);
+                return Conversion.ConvertDataTable(dataTable, destiny, separator, columns, rows);
             }
 #if NETFRAMEWORK                        
 
@@ -559,10 +559,10 @@ namespace SH
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
         /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
-        /// <returns></returns>
-        public static bool ConverterAllSheet(string origin, string destiny, string separator = ";", int minRows = 1)
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <returns>True, if success.</returns>
+        public static bool ConvertAllSheets(string origin, string destiny, int minRows = 1, string separator = ";")
         {
             try
             {

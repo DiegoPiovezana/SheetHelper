@@ -17,6 +17,7 @@ namespace SH
             // - Binary Excel files (2.0-2003 format; *.xls)
             // - Excel OpenXml files (2007 format; *.xlsx, *.xlsb)
             using var reader = ExcelReaderFactory.CreateReader(stream);
+
             DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
             {
                 ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
@@ -24,6 +25,21 @@ namespace SH
             });
 
             return result;
+
+            //do
+            //{
+
+            //    reader.NextResult();
+
+
+            //    while (reader.Read())
+            //    {
+            //        // reader.GetDouble(0);
+            //    }
+            //} while (reader.NextResult());
+
+            //return null;
+
         }
 
         /// <summary>
@@ -61,8 +77,8 @@ namespace SH
                     throw new Exception($"Não foi possível encontrar a aba '{sheet}' desejada! Verifique se o nome da aba está correto.");
                 }
 
-               //return result.Tables[sheet];
-                return result.Tables.Cast<DataTable>().FirstOrDefault(table => table.TableName.ToLower() == sheet.ToLower()); // Obtem a aba desejada
+                //return result.Tables[sheet];
+                return result.Tables.Cast<DataTable>().FirstOrDefault(table => table.TableName.Trim().ToLower() == sheet.Trim().ToLower()); // Obtem a aba desejada
             }
         }
 
@@ -77,7 +93,7 @@ namespace SH
                 ".rpt" or ".txt" or ".csv" => ReadCSV(stream),
                 _ => ReadXLS(stream), // .xlsx, .xls, .xlsb, .xlsm
             };
-        }        
+        }
 
         private static bool IsCsvTxtRptExtension(string extension)
         {
@@ -97,9 +113,9 @@ namespace SH
                 }
 
                 dataTable.Rows.RemoveAt(0);
-            }            
+            }
 
-            return dataTable; 
+            return dataTable;
         }
 
 
