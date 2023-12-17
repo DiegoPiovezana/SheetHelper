@@ -16,32 +16,13 @@ namespace SH
     /// Fast and lightweight library for easy read and conversion of large Excel files
     /// </summary>
     public class SheetHelper
-    {
+    {    
         /// <summary>
         /// Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
-        /// </summary>
-        public static int Progress { get; set; }
+        /// </summary>    
+        public static int Progress { get; internal set; }
 
-        //private static double _progress;
-
-        ///// <summary>
-        ///// Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
-        ///// </summary>
-        //public static double Progress
-        //{
-        //    get => _progress;
-        //    set
-        //    {
-        //        _progress = value;
-        //        OnProgressChanged?.Invoke(value);
-        //    }
-        //}
-
-
-        //public static event Action<int>? OnProgressChanged;
-
-        //public event EventHandler ProgressChanged;
-
+        
         /// <summary>
         /// Terminates all Excel processes
         /// </summary>
