@@ -9,7 +9,7 @@
 		<AssemblyTitle>SheetHelper</AssemblyTitle>
 		<AssemblyName>SheetHelper</AssemblyName>
 		<PackageId>SheetHelper</PackageId>
-		<Version>1.2.0</Version>
+		<Version>1.3.0</Version>
 		<Authors>Diêgo Piovezana</Authors>
 		<Company>DiegoPiov</Company>
 		<RepositoryUrl>https://github.com/DiegoPiovezana/SheetHelper</RepositoryUrl>
@@ -25,11 +25,13 @@
 		<Nullable>enable</Nullable>		
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
 <PackageReleaseNotes>
-- Allowed to specify the name of the sheet disregarding sensitive case
-- Allowed to save dataTable in different formats and with restriction of columns and rows
-- Added possibility to get the first row of a DataTable
-- Added handling for end user when file not found or in use, with MessageBox for NetFramework
-- Fixed conversion considering header format
+- Possible to obtain the DataSet from a file
+- Cells that have line breaks will now be correctly converted
+- The `NormalizeText` method allows removing all accents and spaces from a text
+- Possible to convert all tabs of the spreadsheet considering all rows and columns
+- Use `GetRowArray` to obtain a row from a DataTable
+- The `GetSheets` method allows obtaining all sheets from the spreadsheet in DataTable
+- Now it's possible to perform the conversion of tabs that have only one row
 </PackageReleaseNotes>
 				
 	</PropertyGroup>
