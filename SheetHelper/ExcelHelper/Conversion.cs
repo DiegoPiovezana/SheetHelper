@@ -73,9 +73,9 @@ namespace SH
             }
             else
             {
-                // Get the first row selected (after header)              
+                // Get the first row selected (after header - index-2)              
                 //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
-                rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell =>
+                rowFull = table.Rows[rowsNumber[0]-2].ItemArray.Select(cell =>
                 {
                     string cellValue = cell.ToString();
                     if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
