@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# TODO: TODO
+dotnet_diagnostic.TODO.severity = suggestion

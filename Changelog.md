@@ -6,6 +6,7 @@
 - Possible to convert all tabs of the spreadsheet considering all rows and columns
 - Use `GetRowArray` to obtain a row from a DataTable
 - The `GetSheets` method allows obtaining all sheets from the spreadsheet in DataTable
+- Fixed selection of first line that is not the header
 - Now it's possible to perform the conversion of tabs that have only one row
 
 ## [Version 1.2.0] - 2023-07-10
