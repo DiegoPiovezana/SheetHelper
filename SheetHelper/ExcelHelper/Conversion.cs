@@ -150,8 +150,8 @@ namespace SH
             // Write new converted file (overwrite if existing)
             //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
             using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
-
-            if (Directory.Exists(@".\SheetHelper\Extractions\")) Directory.Delete(@".\SheetHelper\Extractions\", true);
+                        
+            if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
             SheetHelper.Progress += 10; // 100
             return true;

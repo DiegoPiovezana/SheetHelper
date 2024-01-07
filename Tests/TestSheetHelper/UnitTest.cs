@@ -21,8 +21,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestManipulacaoDt()
         {
-            string origin = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx.gz";
-            string destination = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Especial_xlsx.csv";
+            string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx.gz";
+            string destination = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Especial_xlsx.csv";
 
             string sheet = "1"; // Use "1" for the first sheet (index or name)
             string delimiter = ";";
@@ -74,8 +74,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TesteFormatoColunas()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\TesteFormatoColunas.xlsx";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\TesteFormatoColunas.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\TesteFormatoColunas.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\TesteFormatoColunas.csv";
 
             string aba = "1";
             string separador = ";";
@@ -90,8 +90,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestTxtCsv()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.txt";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_txtCsv.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.txt";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_txtCsv.csv";
 
             string aba = "1";
             string separador = ";";
@@ -106,8 +106,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestUnzipOnly()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.zip";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_unzipOnly.xlsx";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.zip";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_unzipOnly.xlsx";
 
             string aba = "1";
             string separador = ";";
@@ -122,8 +122,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestUnzip()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.zip";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_unzipXlsx.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.zip";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_unzipXlsx.csv";
 
             string aba = "1";
             string separador = ";";
@@ -140,8 +140,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestConvertParticularXLSX()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_xlsx.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_xlsx.csv";
 
             string aba = "sheet1"; // Utilize "1" para a primeira aba (índice ou nome)
             string separador = ";";
@@ -156,8 +156,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestConvertParticularCSV()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.csv";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_csv.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_csv.csv";
 
             string aba = "1"; 
             string separador = ";";            
@@ -171,8 +171,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestConvertParticularXLSB()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcelBig.xlsb";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcelBig_xlsb.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcelBig.xlsb";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcelBig_xlsb.csv";
 
             string aba = "1"; 
             string separador = ";";          
@@ -197,7 +197,7 @@ namespace TestSheetHelper
         [TestCase("1,2,3,-3:", 10, ExpectedResult = true, TestName = "1,2,3,-3:-1")]
         public bool TestRows(string linhas, int id)
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
             string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_row{id}.csv";
 
             string aba = "1"; 
@@ -214,7 +214,7 @@ namespace TestSheetHelper
         [TestCase(null, 5, ExpectedResult = true, TestName = "Colunas nulo...")]
         public bool TestColuns(string colunas, int id)
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xls";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xls";
             string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_column{id}.csv";
 
             string aba = "1";

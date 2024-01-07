@@ -539,7 +539,8 @@ namespace SH
                 {
                     // If no conversion is needed
                     Progress = 100;
-                    File.Copy(origin, destiny, true);
+                    File.Copy(origin, destiny, true);                    
+                    if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
                 }
 
