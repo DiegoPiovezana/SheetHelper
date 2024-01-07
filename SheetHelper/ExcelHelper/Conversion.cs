@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExcelDataReader.Core;
+using System;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -62,13 +63,14 @@ namespace SH
                 //rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
                 rowFull = table.Columns.Cast<DataColumn>().Select(column =>
                  {
-                     string cellValue = column.ColumnName;
-                     if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-                     {
-                         // Apply double quotes to surround the value and escape the inner double quotes
-                         cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                     }
-                     return cellValue;
+                     //string cellValue = column.ColumnName;
+                     //if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+                     //{
+                     //    // Apply double quotes to surround the value and escape the inner double quotes
+                     //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                     //}
+                     //return cellValue;
+                     return TreatCell(column.ColumnName, separator);
                  }).ToArray();
             }
             else
@@ -77,13 +79,15 @@ namespace SH
                 //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
                 rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
                 {
-                    string cellValue = cell.ToString();
-                    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-                    {
-                        // Apply double quotes to surround the value and escape the inner double quotes
-                        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                    }
-                    return cellValue;
+                    //string cellValue = cell.ToString();
+                    //if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
+                    //{
+                    //    // Apply double quotes to surround the value and escape the inner double quotes
+                    //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                    //}
+                    //return cellValue;
+
+                    return TreatCell(cell.ToString(), separator);
                 }).ToArray();
             }
 
@@ -120,15 +124,21 @@ namespace SH
                 if (rowIndex - 2 >= 0 && rowIndex - 2 < table.Rows.Count)
                 {
                     //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
+                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                    //{
+                    //    string cellValue = cell.ToString();
+                    //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+                    //    {
+                    //        // Apply double quotes to surround the value and escape the inner double quotes
+                    //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                    //    }
+                    //    return cellValue;
+                    //}).ToArray();
+                    //rowFull = TreatCell(table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray());
                     rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
                     {
-                        string cellValue = cell.ToString();
-                        if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-                        {
-                            // Apply double quotes to surround the value and escape the inner double quotes
-                            cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                        }
-                        return cellValue;
+                        return TreatCell(cell.ToString(), separator);
+
                     }).ToArray();
                 }
 
@@ -145,10 +155,68 @@ namespace SH
 
             SheetHelper.Progress += 10; // 100
             return true;
+
         }
 
+        //internal static T[] TreatCell<T>(T[] cells, string separator = ";")
+        internal static string TreatCell(string cellValue, string separator)
+        {
+            //// Header
+            //rowFull = table.Columns.Cast<DataColumn>().Select(column =>
+            //{
+            //    string cellValue = column.ColumnName;
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+            //    {
+            //        // Apply double quotes to surround the value and escape the inner double quotes
+            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+            //    }
+            //    return cellValue;
+            //}).ToArray();
 
+            //// Row 1
+            //rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
+            //{
+            //    string cellValue = cell.ToString();
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
+            //    {
+            //        // Apply double quotes to surround the value and escape the inner double quotes
+            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+            //    }
+            //    return cellValue;
+            //}).ToArray();
+
+            //// Other rows
+            //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+            //{
+            //    string cellValue = cell.ToString();
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+            //    {
+            //        // Apply double quotes to surround the value and escape the inner double quotes
+            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+            //    }
+            //    return cellValue;
+            //}).ToArray();      
+
+            // Generic
+            //return cells.Select(cell =>
+            //{
+            //    string cellValue = cell.ToString();
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator))
+            //    {
+            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+            //    }
+            //    return (T)Convert.ChangeType(cellValue, typeof(T));
+            //}).ToArray();
+
+            if (cellValue.Contains("\n") || cellValue.Contains("\r") 
+                || cellValue.Contains(separator) || cellValue.Contains("\""))
+            {
+                cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+            }
+            return cellValue;
+        }
 
     }
+
 }
 

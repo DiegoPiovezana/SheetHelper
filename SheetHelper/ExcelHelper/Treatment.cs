@@ -46,9 +46,13 @@ namespace SH
                 File.WriteAllText(destiny, ""); // To check if the destination file is accessible
                 File.Delete(destiny); // Delete to prevent the file from being opened during conversion
             }
+            catch (UnauthorizedAccessException)
+            {
+                throw new InvalidOperationException("E-0000-SH: The destination file is in use by another process.");
+            }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
             }
         }
     
