@@ -31,11 +31,13 @@ namespace SH
             return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
-        internal static void ValidateOrigin(string origin)
+        internal static void ValidateOrigin(string? origin)
         {
+            if (string.IsNullOrEmpty(origin)) throw new Exception($"E-0000-SH: The '{nameof(origin)}' is null or empty.");
+
             if (!File.Exists(origin))
             {
-                throw new FileNotFoundException("Origin file not found.", origin);
+                throw new FileNotFoundException("E-0000-SH: Origin file not found.", origin);
             }
         }
 

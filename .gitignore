@@ -4,3 +4,6 @@ SheetHelper/bin/
 SheetHelper/obj/
 Nuget.config
 Tests/TestSheetHelper/bin/
+Tests/TestSheetHelper/obj/
+Tests/UnitTestSheetHelper/bin/
+Tests/UnitTestSheetHelper/obj/

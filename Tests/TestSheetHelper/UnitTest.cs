@@ -217,14 +217,31 @@ namespace TestSheetHelper
             string? colunas = null;
             string? linhas = null;
 
-            SheetHelper.ProhibitedItems = new Dictionary<string, string> 
-            { 
-                { "\n", " " }, 
-                { "\r", " " },
-                { ",", "" },
-                { ";", "," },
-                { ".", "" },
-            };
+            //SheetHelper.ProhibitedItems = new Dictionary<string, string> 
+            //{ 
+            //    { "\n", " " }, 
+            //    { "\r", " " },
+            //    { ",", "" },
+            //    { ";", "," },
+            //    { ".", "" },
+            //};
+
+            // "Key1;Value1\nKey2;Value2\nKey3;Value3";
+            // separatorItems = ";"   separatorGroupItems = "\n"
+
+            // A2\tB2\r\nA3\tB3\r\nA4\tB4\r\nA5\tB5\r\n
+            // separatorItems = "\t"   separatorGroupItems = "\r\n"
+
+            // "Key1,Value1\nKey2,Value2\nKey3,Value3";
+            // separatorItems = ","   separatorGroupItems = "\n"
+
+            // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
+  
+
+            SheetHelper.ProhibitedItems = SheetHelper.GetDictionary(
+                "\n: ; \r: ; ,:."
+                );
+
 
             var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 

@@ -42,6 +42,11 @@
             Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
             </summary>    
         </member>
+        <member name="P:SH.SheetHelper.ProhibitedItems">
+            <summary>
+            (Optional) The dictionary can specify characters that should not be maintained after conversion (line breaks, for example) and which replacements should be performed in each case.
+            </summary>
+        </member>
         <member name="M:SH.SheetHelper.CloseExcel">
             <summary>
             Terminates all Excel processes
@@ -103,7 +108,7 @@
             <param name="indexRow">index of the line to be obtained (in addition to the header). Enter negative to get just the header.</param>
             <returns>An array of strings representing a row of the DataTable.</returns>
         </member>
-        <member name="M:SH.SheetHelper.GetSheets(System.String,System.Int32,System.Boolean)">
+        <member name="M:SH.SheetHelper.GetAllSheets(System.String,System.Int32,System.Boolean)">
             <summary>
             Gets the sheets in the workbook with the respective dataTable.
             </summary>
@@ -115,9 +120,28 @@
         <member name="M:SH.SheetHelper.NormalizeText(System.String)">
             <summary>
             Normalizes the text by removing accents and spaces.
+            <para>Example: " Hot Café" => "hot_cafe" </para>
             </summary>
             <param name="text">Text to be normalized.</param>
             <returns>Text normalized.</returns>
+        </member>
+        <member name="M:SH.SheetHelper.FixItems(System.String)">
+            <summary>
+            Fixes a string containing items by replacing line breaks and semicolons with commas,
+            removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
+            </summary>
+            <param name="items">The string containing items to be fixed.</param>
+            <returns>The fixed string with proper item separation.</returns>
+        </member>
+        <member name="M:SH.SheetHelper.GetDictionary(System.String,System.String,System.String)">
+            <summary>
+            Converts a string into a dictionary where keys and values are separated by specific delimiters.
+            <para>Example: ""Key1;Value1\nKey2;Value2\nKey3;Value3"</para>   
+            </summary>
+            <param name="textItems">String containing the key-value pairs to be converted.</param>
+            <param name="separatorItems">Separator between key and value within the string (default: ";").</param>
+            <param name="separatorGroupItems">Separator between groups of key-value pairs within string (default: "\n").</param>
+            <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
         </member>
         <member name="M:SH.SheetHelper.GetDataSet(System.String)">
             <summary>
@@ -147,7 +171,7 @@
             <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
             <returns>"true" if converted successfully. "false" if not converted.</returns>
         </member>
-        <member name="M:SH.SheetHelper.Converter(System.String,System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:SH.SheetHelper.Converter(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)">
             <summary>
             Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
             </summary>
@@ -157,7 +181,22 @@
             <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
             <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
             <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
+            <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
             <returns>"true" if converted successfully. "false" if not converted.</returns>
+        </member>
+        <member name="M:SH.SheetHelper.Converter(System.String,System.String,System.Collections.Generic.ICollection{System.String},System.String,System.Collections.Generic.ICollection{System.String},System.Collections.Generic.ICollection{System.String},System.Int32)">
+            <summary>
+            Converts all spreadsheet tabs considering all rows and columns.
+            <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
+            </summary>
+            <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
+            <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+            <param name="sheets">Enter the names or indexes of the sheets to be converted. Enter null to convert all sheets.</param>
+            <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+            <param name="columns">"Enter the the group of columns or their range for each sheet.</param>
+            <param name="rows">"Enter the group of rows or their range for each sheet.</param>
+            <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
+            <returns>Number of tabs successfully saved.</returns>
         </member>
         <member name="M:SH.SheetHelper.ConvertAllSheets(System.String,System.String,System.Int32,System.String)">
             <summary>
@@ -180,14 +219,6 @@
             Checks if it is necessary to convert the file.
             </summary>
             <returns>True if conversion is required.</returns>
-        </member>
-        <member name="M:SH.Treatment.FixItems(System.String)">
-            <summary>
-            Fixes a string containing items by replacing line breaks and semicolons with commas,
-            removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
-            </summary>
-            <param name="items">The string containing items to be fixed.</param>
-            <returns>The fixed string with proper item separation.</returns>
         </member>
         <member name="M:SH.Treatment.DefineRows(System.String,System.Data.DataTable)">
             <summary>
