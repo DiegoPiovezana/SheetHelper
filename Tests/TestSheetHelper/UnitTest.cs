@@ -183,6 +183,29 @@ namespace TestSheetHelper
             Assert.That(retorno, Is.EqualTo(true));
         }
 
+        [Test]
+        public void TestConvertSheets()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
+
+            //string aba = "2";
+            var abas = new List<string>() { "aba 6", "1", "sheet3" };
+            string separador = ";";
+            //string? colunas = null;
+            //string[]? colunas = null;
+            string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
+            //string? linhas = null;
+            //List<string>? linhas = new ();
+            List<string>? linhas = new() {"1:3", "1:10", "1" };
+            int minRows = 1;
+
+
+            var retorno = SheetHelper.Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+            
+            Assert.That(retorno == abas.Count, Is.EqualTo(true));
+        }
+
         // --------------------------------------------------------------------------------
 
         [TestCase("2:", 1, ExpectedResult = true, TestName = "2:")]

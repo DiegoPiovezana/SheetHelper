@@ -16,13 +16,13 @@ namespace SH
     /// Fast and lightweight library for easy read and conversion of large Excel files
     /// </summary>
     public class SheetHelper
-    {    
+    {
         /// <summary>
         /// Represents the conversion progress. E.g.: If 100%, the conversion is fully completed.
         /// </summary>    
         public static int Progress { get; internal set; }
 
-        
+
         /// <summary>
         /// Terminates all Excel processes
         /// </summary>
@@ -198,6 +198,10 @@ namespace SH
             {
                 throw;
             }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
         }
 
         /// <summary>
@@ -263,7 +267,7 @@ namespace SH
         /// <param name="minQtdRows">The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <param name="formatName">If true, all spaces and special characters from tab names will be removed.</param>
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
-        public static Dictionary<string, DataTable> GetSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        public static Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
             {
@@ -296,21 +300,30 @@ namespace SH
 
         /// <summary>
         /// Normalizes the text by removing accents and spaces.
+        /// <para>Example: " Hot Café" => "hot_cafe" </para>
         /// </summary>
         /// <param name="text">Text to be normalized.</param>
         /// <returns>Text normalized.</returns>
-        public static string NormalizeText(string text)
+        public static string NormalizeText(string? text)
         {
-            string normalizedString = text.Normalize(NormalizationForm.FormD);
-            StringBuilder stringBuilder = new();
-
-            foreach (char c in normalizedString)
+            try
             {
-                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
-            }
+                if (string.IsNullOrEmpty(text)) throw new ArgumentException("E-0000-SH: The text is null or empty.");
+                string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
+                StringBuilder stringBuilder = new();
 
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(" ", "").ToLower();
+                foreach (char c in normalizedString)
+                {
+                    UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                    if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
+                }
+
+                return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(" ", "_").ToLower();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -319,10 +332,12 @@ namespace SH
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>       
         /// <returns>DataSet</returns>
-        public static DataSet GetDataSet(string origin)
+        public static DataSet GetDataSet(string? origin)
         {
             try
             {
+                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The origin is null or empty.");
+
                 Treatment.ValidateOrigin(origin);
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
 
@@ -525,34 +540,111 @@ namespace SH
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
+        /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        public static bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
             try
             {
                 Progress = 5;
 
+                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (origin == null) return false;
+                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
 
                 if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
                 {
                     // If no conversion is needed
                     Progress = 100;
-                    File.Copy(origin, destiny, true);                    
+                    File.Copy(origin, destiny, true);
                     if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
                 }
 
-                DataTable table = GetDataTable(origin, sheet); // Progress 40        
+                DataTable? table = GetDataTable(origin, sheet); // Progress 40        
+                if (table == null || table.Rows.Count < minRows - 1) throw new Exception("E-0000-SH: The sheet does not have the minimum number of rows.");
 
                 return SaveDataTable(table, destiny, separator, columns, rows);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
+
+        /// <summary>
+        /// Converts all spreadsheet tabs considering all rows and columns.
+        /// <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
+        /// </summary>
+        /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
+        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="sheets">Enter the names or indexes of the sheets to be converted. Enter null to convert all sheets.</param>
+        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the the group of columns or their range for each sheet.</param>
+        /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
+        /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
+        /// <returns>Number of tabs successfully saved.</returns>
+        public static int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
+                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
+
+                var sheetsDictionary = GetAllSheets(origin, minRows, true);
+
+                if (sheets == null || sheets.Count == 0) sheets = sheetsDictionary.Keys;
+                if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
+                if (rows == null || rows.Count == 0) rows = Enumerable.Repeat("", sheets.Count).ToList();
+
+                if (sheets.Count != columns.Count || sheets.Count != rows.Count)
+                {
+                    throw new Exception("E-0000-SH: The number of sheets, columns and rows must be the same.");
+                }
+
+                int saveSuccess = default;
+
+                for (int i = 0; i < sheets.Count; i++) // Name or index of the sheet              
+                {
+                    var sheetId = NormalizeText(sheets.Skip(i).FirstOrDefault());
+                    
+                    DataTable? dtSheet = null;
+
+                    if (int.TryParse(sheetId, out int indexSheet)) // Index of the sheet
+                    {
+                        dtSheet = sheetsDictionary.ElementAtOrDefault(indexSheet - 1).Value;
+                    }
+                    else if (sheetsDictionary.ContainsKey(sheetId))// Name of the sheet
+                    {
+                        dtSheet = sheetsDictionary[sheetId];
+
+                        //indexSheet =
+                        //    sheetsDictionary.FirstOrDefault(x => x.Value == sheetsDictionary[sheetId]).Key != null ?
+                        //    Array.IndexOf(sheetsDictionary.Keys.ToArray(), sheetsDictionary.FirstOrDefault(x => x.Value == sheetsDictionary[sheetId]).Key) :
+                        //    -1;
+                    }
+
+                    if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
+
+                    //var columnSheet = columns.Skip(indexSheet).FirstOrDefault();
+                    //var rowSheet = rows.Skip(indexSheet).FirstOrDefault();
+
+                    var columnSheet = columns.Skip(i).FirstOrDefault();
+                    var rowSheet = rows.Skip(i).FirstOrDefault();
+
+                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}__{sheetId}{Path.GetExtension(destiny)}");
+                    saveSuccess += SaveDataTable(dtSheet, dest, separator, columnSheet, rowSheet) ? 1 : 0;
+                }
+
+                return saveSuccess;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// Converts all spreadsheet tabs considering all rows and columns.
@@ -563,16 +655,17 @@ namespace SH
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <returns>True, if success.</returns>
-        public static bool ConvertAllSheets(string origin, string destiny, int minRows = 1, string separator = ";")
+        public static bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
             try
             {
+                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (origin == null) return false;
+                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
 
-                foreach (var sheet in GetSheets(origin, minRows, true))
+                foreach (var sheet in GetAllSheets(origin, minRows, true))
                 {
-                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}_{sheet.Key}{Path.GetExtension(destiny)}");
+                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}__{sheet.Key}{Path.GetExtension(destiny)}");
                     SaveDataTable(sheet.Value, dest, separator, "", "");
                 }
 

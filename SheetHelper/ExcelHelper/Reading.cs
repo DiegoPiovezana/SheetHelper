@@ -78,6 +78,7 @@ namespace SH
                 }
 
                 //return result.Tables[sheet];
+                // TODO: ?SheetHelper.NormalizeText(table.TableName)
                 return result.Tables.Cast<DataTable>().FirstOrDefault(table => table.TableName.Trim().ToLower() == sheet.Trim().ToLower()); // Obtem a aba desejada
             }
         }
