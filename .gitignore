@@ -3,3 +3,4 @@ obj/
 SheetHelper/bin/
 SheetHelper/obj/
 Nuget.config
+Tests/TestSheetHelper/bin/

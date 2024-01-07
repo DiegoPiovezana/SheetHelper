@@ -41,13 +41,31 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestDefaultReadme()
         {
-            string source = "C:\\Users\\Diego\\Files\\Report.xlsx.gz";
-            string destination = "C:\\Users\\Diego\\Files\\Report.csv";
+            //string source = "C:\\Users\\Diego\\Files\\Report.xlsx.gz";
+            //string destination = "C:\\Users\\Diego\\Files\\Report.csv";
+
+            string source = @"C:\Users\diego\Desktop\Tests\Converter\ColunasExcel.tar.gz";
+            string destination = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Report.csv";
 
             string sheet = "1"; // Use "1" for the first sheet (index or name)
             string delimiter = ";";
-            string columns = "A, 3, b, 12:-1"; // or null to convert all columns or "A:BC" for a column range
-            string rows = ":4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
+            string columns = "A, 3, b, -5:-1"; // or null to convert all columns or "A:BC" for a column range
+            string rows = "1:2,:4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
+
+            bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
+            Assert.That(success, Is.EqualTo(true));
+        }
+
+        [Test, Repeat(1)]
+        public void TestUTF8()
+        {
+            string source = @"C:\Users\diego\Desktop\Tests\Converter\ExcelUTF8.xlsx";
+            string destination = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelUTF8.csv";
+
+            string sheet = "2"; // Use "1" for the first sheet (index or name)
+            string delimiter = ";";
+            string columns = "a:F"; // or null to convert all columns or "A:BC" for a column range
+            string rows = "1:8"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
             bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
             Assert.That(success, Is.EqualTo(true));

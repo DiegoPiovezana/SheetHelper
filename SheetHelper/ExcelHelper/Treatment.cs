@@ -51,7 +51,7 @@ namespace SH
                 throw ex;
             }
         }
-
+    
         internal static void ValidateSheet(string sheet)
         {
             // "1" or "Fist_Sheet_Name"
@@ -61,7 +61,7 @@ namespace SH
                 throw new ArgumentException("Invalid sheet name.", nameof(sheet));
             }
 
-            if (sheet.Equals("0"))
+            if (int.TryParse( sheet, out int sheetNumber) && sheetNumber <= 0)
             {
                 throw new ArgumentException("The first sheet is '1'!");
             }

@@ -466,7 +466,7 @@ namespace SH
             try
             {
                 Treatment.Validate(destiny, separator, columns, rows);
-                return Conversion.ConvertDataTable(dataTable, destiny, separator, columns, rows);
+                return Conversion.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
 #if NETFRAMEWORK                        
 

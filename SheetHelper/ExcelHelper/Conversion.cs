@@ -34,7 +34,7 @@ namespace SH
         //    return ConverterDataTable(table, destiny, separator, columns, rows);
         //}
 
-        internal static bool ConvertDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
+        internal static bool SaveDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {
             StringBuilder output = new();
             string[] rowFull;
@@ -75,7 +75,7 @@ namespace SH
             {
                 // Get the first row selected (after header - index-2)              
                 //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
-                rowFull = table.Rows[rowsNumber[0]-2].ItemArray.Select(cell =>
+                rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
                 {
                     string cellValue = cell.ToString();
                     if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
@@ -130,7 +130,7 @@ namespace SH
                         }
                         return cellValue;
                     }).ToArray();
-                }                    
+                }
 
                 //writer.WriteLine();
             }
@@ -138,8 +138,8 @@ namespace SH
             SheetHelper.Progress += 90 - SheetHelper.Progress; // If necessary, complete up to 90%
 
             // Write new converted file (overwrite if existing)
-            File.WriteAllText(destiny, output.ToString());
-            //}
+            //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
+            using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
 
             if (Directory.Exists(@".\SheetHelper\Extractions\")) Directory.Delete(@".\SheetHelper\Extractions\", true);
 
