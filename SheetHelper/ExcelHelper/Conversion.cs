@@ -211,7 +211,15 @@ namespace SH
             if (cellValue.Contains("\n") || cellValue.Contains("\r") 
                 || cellValue.Contains(separator) || cellValue.Contains("\""))
             {
-                cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""
+
+                if(SheetHelper.ProhibitedItems != null && SheetHelper.ProhibitedItems.Count > 0)
+                {
+                    foreach (var item in SheetHelper.ProhibitedItems)
+                    {
+                        cellValue = cellValue.Replace(item.Key, item.Value);
+                    }
+                }                  
             }
             return cellValue;
         }

@@ -22,6 +22,10 @@ namespace SH
         /// </summary>    
         public static int Progress { get; internal set; }
 
+        /// <summary>
+        /// (Optional) The dictionary can specify characters that should not be maintained after conversion (line breaks, for example) and which replacements should be performed in each case.
+        /// </summary>
+        public static Dictionary<string, string>? ProhibitedItems { get; set; } = null;
 
         /// <summary>
         /// Terminates all Excel processes
@@ -324,7 +328,7 @@ namespace SH
             {
                 throw;
             }
-        }
+        }        
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.
@@ -608,7 +612,7 @@ namespace SH
                 for (int i = 0; i < sheets.Count; i++) // Name or index of the sheet              
                 {
                     var sheetId = NormalizeText(sheets.Skip(i).FirstOrDefault());
-                    
+
                     DataTable? dtSheet = null;
 
                     if (int.TryParse(sheetId, out int indexSheet)) // Index of the sheet

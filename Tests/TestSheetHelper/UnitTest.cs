@@ -193,8 +193,8 @@ namespace TestSheetHelper
             var abas = new List<string>() { "aba 6", "1", "sheet3" };
             string separador = ";";
             //string? colunas = null;
-            //string[]? colunas = null;
-            string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
+            string[]? colunas = null;
+            //string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
             //string? linhas = null;
             //List<string>? linhas = new ();
             List<string>? linhas = new() {"1:3", "1:10", "1" };
@@ -205,6 +205,33 @@ namespace TestSheetHelper
             
             Assert.That(retorno == abas.Count, Is.EqualTo(true));
         }
+
+        [Test]
+        public void TestProhibitedItems()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ProhibitedItems.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ProhibitedItems_xlsx.csv";
+
+            string aba = "3";
+            string separador = ";";
+            string? colunas = null;
+            string? linhas = null;
+
+            SheetHelper.ProhibitedItems = new Dictionary<string, string> 
+            { 
+                { "\n", " " }, 
+                { "\r", " " },
+                { ",", "" },
+                { ";", "," },
+                { ".", "" },
+            };
+
+            var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+
+            Assert.That(retorno, Is.EqualTo(true));
+        }
+
+
 
         // --------------------------------------------------------------------------------
 
