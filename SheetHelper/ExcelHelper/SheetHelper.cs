@@ -328,7 +328,24 @@ namespace SH
             {
                 throw;
             }
-        }        
+        }
+
+        /// <summary>
+        /// Fixes a string containing items by replacing line breaks and semicolons with commas,
+        /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
+        /// </summary>
+        /// <param name="items">The string containing items to be fixed.</param>
+        /// <returns>The fixed string with proper item separation.</returns>
+        public static string FixItems(string items)
+        {
+            if (!string.IsNullOrEmpty(items))
+            {
+                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+            }
+            return items; // "123123,13514,31234"
+        }
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.

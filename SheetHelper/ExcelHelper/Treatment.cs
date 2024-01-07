@@ -131,22 +131,7 @@ namespace SH
 
         #region Defines
 
-        /// <summary>
-        /// Fixes a string containing items by replacing line breaks and semicolons with commas,
-        /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
-        /// </summary>
-        /// <param name="items">The string containing items to be fixed.</param>
-        /// <returns>The fixed string with proper item separation.</returns>
-        public static string FixItems(string items)
-        {
-            if (!string.IsNullOrEmpty(items))
-            {
-                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
-                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
-                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
-            }
-            return items; // "123123,13514,31234"
-        }
+     
 
         /// <summary>
         /// Receives rows as a string and returns an array of integers with the first and last row.
@@ -162,7 +147,7 @@ namespace SH
                 return indexRows.ToArray();
             }
 
-            rows = FixItems(rows); //"1:23,34:-56,23:1,70,75,-1"
+            rows = SheetHelper.FixItems(rows); //"1:23,34:-56,23:1,70,75,-1"
 
 
             foreach (string row in rows.Split(','))
@@ -234,7 +219,7 @@ namespace SH
             if (string.IsNullOrEmpty(columns) || string.IsNullOrEmpty(columns.Trim())) // If columns not specified                
                 return new int[] { 0 }; // Behavior to convert all columns
 
-            columns = FixItems(columns);
+            columns = SheetHelper.FixItems(columns);
             columns = columns.ToUpper();
 
             // "A:H,4:9,4:-9,B,75,-2"
