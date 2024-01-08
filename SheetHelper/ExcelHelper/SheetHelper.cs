@@ -349,52 +349,24 @@ namespace SH
         }
 
         /// <summary>
-        /// Converts a string into a dictionary where keys and values are separated by specific delimiters.
-        /// <para>Example: ""Key1;Value1\nKey2;Value2\nKey3;Value3"</para>  
-        /// <para>For JSON, do not provide separators!</para>
+        /// Converts a string in JSON format to a dictionary.
+        /// <para>Example 1: "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }"</para> 
+        /// <para>Example 2: "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}"</para>         
         /// </summary>
-        /// <param name="textItems">String containing the key-value pairs to be converted.</param>
-        /// <param name="separatorItems">Separator between key and value within the string (default: ";").</param>
-        /// <param name="separatorGroupItems">Separator between groups of key-value pairs within string (default: "\n").</param>
+        /// <param name="jsonTextItems">String JSON containing the key-value pairs to be converted.</param>        
         /// <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
-        public static Dictionary<string, string>? GetDictionary(string textItems, string separatorItems = "", string separatorGroupItems = "")
+        public static Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
-            // CASES:
-
-            // "Key1;Value1\nKey2;Value2\nKey3;Value3";
-            // separatorItems = ";"   separatorGroupItems = "\n"
-
-            // A2\tB2\r\nA3\tB3\r\nA4\tB4\r\nA5\tB5\r\n
-            // separatorItems = "\t"   separatorGroupItems = "\r\n"
-
-            // "Key1,Value1\nKey2,Value2\nKey3,Value3";
-            // separatorItems = ","   separatorGroupItems = "\n"
-
-            // JSON
-            // "{"key1": "value1", "key2": "value2", "key3": "value3"}";         
-            // NOT NECESSARY => separatorItems = ""   separatorGroupItems = ""
-
             try
             {
-                if (string.IsNullOrEmpty(textItems))
-                    throw new ArgumentException($"E-0000-SH: The '{nameof(textItems)}' parameter is null or empty.");
+                if (string.IsNullOrEmpty(jsonTextItems))
+                    throw new ArgumentException($"E-0000-SH: The '{nameof(jsonTextItems)}' parameter is null or empty.");
 
-                if(string.IsNullOrEmpty(separatorItems) && string.IsNullOrEmpty(separatorGroupItems))
-                {
-                    return JsonSerializer.Deserialize<Dictionary<string, string>>(textItems);
-                }
-                else
-                {
-                    return textItems
-                    .Split(new[] { separatorGroupItems }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(pair => pair.Split(new[] { separatorItems }, StringSplitOptions.RemoveEmptyEntries))
-                    .Where(pair => pair.Length == 2)
-                    .ToDictionary(pair => pair[0], pair => pair[1]);
-                }                
-            }            
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
+            }
             catch (Exception ex)
             {
-                throw new Exception("E-0000-SH: An error occurred while processing the text items.", ex);
+                throw new Exception("E-0000-SH: An error occurred while processing the text items in JSON format.", ex);
             }
         }
 

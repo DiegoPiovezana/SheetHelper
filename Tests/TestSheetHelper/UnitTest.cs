@@ -33,7 +33,7 @@ namespace TestSheetHelper
             var dt = SheetHelper.GetDataTable(origin, "1");
             var first = SheetHelper.GetRowArray(dt);
             bool success = SheetHelper.SaveDataTable(dt, destination, delimiter, columns, rows);
-                     
+
             Assert.That(success, Is.EqualTo(true));
         }
 
@@ -159,10 +159,10 @@ namespace TestSheetHelper
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_csv.csv";
 
-            string aba = "1"; 
-            string separador = ";";            
+            string aba = "1";
+            string separador = ";";
             string? colunas = null;
-            string linhas = "1:3";          
+            string linhas = "1:3";
 
             bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -174,10 +174,10 @@ namespace TestSheetHelper
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcelBig.xlsb";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcelBig_xlsb.csv";
 
-            string aba = "1"; 
-            string separador = ";";          
+            string aba = "1";
+            string separador = ";";
             string? colunas = null;
-            string? linhas = null;          
+            string? linhas = null;
 
             bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -197,12 +197,12 @@ namespace TestSheetHelper
             //string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
             //string? linhas = null;
             //List<string>? linhas = new ();
-            List<string>? linhas = new() {"1:3", "1:10", "1" };
+            List<string>? linhas = new() { "1:3", "1:10", "1" };
             int minRows = 1;
 
 
             var retorno = SheetHelper.Converter(origem, destino, abas, separador, colunas, linhas, minRows);
-            
+
             Assert.That(retorno == abas.Count, Is.EqualTo(true));
         }
 
@@ -217,31 +217,21 @@ namespace TestSheetHelper
             string? colunas = null;
             string? linhas = null;
 
-            //SheetHelper.ProhibitedItems = new Dictionary<string, string> 
-            //{ 
-            //    { "\n", " " }, 
-            //    { "\r", " " },
-            //    { ",", "" },
-            //    { ";", "," },
-            //    { ".", "" },
-            //};
+            var dic = new Dictionary<string, string>
+            {
+                { "\n", " " },
+                { "\r", " " },
+                { ";", "," },
+            };
 
-            // "Key1;Value1\nKey2;Value2\nKey3;Value3";
-            // separatorItems = ";"   separatorGroupItems = "\n"
-
-            // A2\tB2\r\nA3\tB3\r\nA4\tB4\r\nA5\tB5\r\n
-            // separatorItems = "\t"   separatorGroupItems = "\r\n"
-
-            // "Key1,Value1\nKey2,Value2\nKey3,Value3";
-            // separatorItems = ","   separatorGroupItems = "\n"
+            SheetHelper.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
-  
+            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
+            string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
+            string jsonDictionary = System.Text.Json.JsonSerializer.Serialize(dic);
 
-            SheetHelper.ProhibitedItems = SheetHelper.GetDictionary(
-                "\n: ; \r: ; ,:."
-                );
-
+            SheetHelper.ProhibitedItems = SheetHelper.GetDictionaryJson(jsonDictionary);
 
             var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
@@ -267,9 +257,9 @@ namespace TestSheetHelper
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
             string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_row{id}.csv";
 
-            string aba = "1"; 
+            string aba = "1";
             string separador = ";";
-            string colunas = "A, 2,c";                    
+            string colunas = "A, 2,c";
 
             return SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
         }
@@ -285,8 +275,8 @@ namespace TestSheetHelper
             string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_column{id}.csv";
 
             string aba = "1";
-            string separador = ";";            
-            string linhas = "2:";   
+            string separador = ";";
+            string linhas = "2:";
 
             return SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
         }
