@@ -121,7 +121,7 @@ namespace SH
                 countPercPrg += percPrg; // Increment progress counter                      
 
                 // Get the next row
-                if (rowIndex - 2 >= 0 && rowIndex - 2 < table.Rows.Count)
+                if (rowIndex - 1 >= 0 && rowIndex - 2 < table.Rows.Count)
                 {
                     //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
                     //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
@@ -135,11 +135,32 @@ namespace SH
                     //    return cellValue;
                     //}).ToArray();
                     //rowFull = TreatCell(table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray());
-                    rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
-                    {
-                        return TreatCell(cell.ToString(), separator);
+                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                    //{
+                    //    return TreatCell(cell.ToString(), separator);
 
-                    }).ToArray();
+                    //}).ToArray();
+
+
+
+                    if (rowIndex.Equals(1))  // If header
+                    {
+                        // Get the header (coluns name)                       
+                        rowFull = table.Columns.Cast<DataColumn>().Select(column =>
+                        {
+                            return TreatCell(column.ColumnName, separator);
+                        }).ToArray();
+                    }
+                    else
+                    {
+                        // Get the first row selected (after header - index-2) 
+                        rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                        {
+                            return TreatCell(cell.ToString(), separator);
+                        }).ToArray();
+                    }
+
+
                 }
 
                 //writer.WriteLine();
@@ -150,7 +171,7 @@ namespace SH
             // Write new converted file (overwrite if existing)
             //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
             using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
-                        
+
             if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
             SheetHelper.Progress += 10; // 100
@@ -208,18 +229,18 @@ namespace SH
             //    return (T)Convert.ChangeType(cellValue, typeof(T));
             //}).ToArray();
 
-            if (cellValue.Contains("\n") || cellValue.Contains("\r") 
+            if (cellValue.Contains("\n") || cellValue.Contains("\r")
                 || cellValue.Contains(separator) || cellValue.Contains("\""))
             {
                 cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""
 
-                if(SheetHelper.ProhibitedItems != null && SheetHelper.ProhibitedItems.Count > 0)
+                if (SheetHelper.ProhibitedItems != null && SheetHelper.ProhibitedItems.Count > 0)
                 {
                     foreach (var item in SheetHelper.ProhibitedItems)
                     {
                         cellValue = cellValue.Replace(item.Key, item.Value);
                     }
-                }                  
+                }
             }
             return cellValue;
         }

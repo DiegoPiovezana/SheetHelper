@@ -248,7 +248,8 @@ namespace TestSheetHelper
             string sheet = "1";
             string separator = ";";
             string? columns = "";
-            string? rows = "3:1";
+            string? rows = "1:3, 5, 1; 2";
+            //string? rows = "3:1";
 
             bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
