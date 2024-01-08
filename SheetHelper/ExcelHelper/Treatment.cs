@@ -249,7 +249,7 @@ namespace SH
                         return new int[] { 0 }; // Behavior to convert all columns
 
                     if (firstColumnIndex > lastColumnIndex)
-                        indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1).Reverse());
+                        indexColumns.AddRange(Enumerable.Range(lastColumnIndex,  firstColumnIndex - lastColumnIndex + 1).Reverse());
                     else
                         indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1));
                 }

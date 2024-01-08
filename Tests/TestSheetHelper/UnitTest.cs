@@ -243,13 +243,29 @@ namespace TestSheetHelper
         public void TestConvertRowsToBack()
         {
             string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
-            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_Back_xlsb.csv";
+            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackRows_xlsx.csv";
 
             string sheet = "1";
             string separator = ";";
             string? columns = "";
-            string? rows = "1:3, 5, 1; 2";
-            //string? rows = "3:1";
+            //string? rows = "1:3, 5, 1; 2";
+            string? rows = "3:1, -1:-2; -2:-1";
+
+            bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
+            Assert.That(result, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvertColumnsToBack()
+        {
+            string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackColumns_xlsx.csv";
+
+            string sheet = "1";
+            string separator = ";";
+            string? columns = "C:A, A; -1, -2:-3; -3:-1";
+            string? rows = "1:3, 1, 3:1";
+           
 
             bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
