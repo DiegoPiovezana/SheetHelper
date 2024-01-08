@@ -131,9 +131,10 @@ namespace SH
 
         #endregion
 
-        #region Defines
 
-     
+
+
+        #region Defines     
 
         /// <summary>
         /// Receives rows as a string and returns an array of integers with the first and last row.
@@ -171,7 +172,7 @@ namespace SH
                     int lastRowIndex = ConvertIndexRow(rowsArray[1]);
 
                     if (firstRowIndex > lastRowIndex)
-                        indexRows.AddRange(Enumerable.Range(firstRowIndex, lastRowIndex - firstRowIndex + 1).Reverse());
+                        indexRows.AddRange(Enumerable.Range(lastRowIndex, firstRowIndex - lastRowIndex + 1).Reverse());
                     else
                         indexRows.AddRange(Enumerable.Range(firstRowIndex, lastRowIndex - firstRowIndex + 1));
                 }

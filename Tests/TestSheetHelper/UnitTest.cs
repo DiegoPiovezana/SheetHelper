@@ -224,21 +224,35 @@ namespace TestSheetHelper
                 { ";", "," },
             };
 
-            SheetHelper.ProhibitedItems = dic;
+            //SheetHelper.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
             string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
             string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
-            string jsonDictionary = System.Text.Json.JsonSerializer.Serialize(dic);
+            string jsonDictionary1 = System.Text.Json.JsonSerializer.Serialize(dic);
+            string jsonDictionary2 = SheetHelper.GetJsonDictionary(dic);
 
-            SheetHelper.ProhibitedItems = SheetHelper.GetDictionaryJson(jsonDictionary);
+            SheetHelper.ProhibitedItems = SheetHelper.GetDictionaryJson(jsonDictionary2);
 
             var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
             Assert.That(retorno, Is.EqualTo(true));
         }
 
+        [Test]
+        public void TestConvertRowsToBack()
+        {
+            string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_Back_xlsb.csv";
 
+            string sheet = "1";
+            string separator = ";";
+            string? columns = "";
+            string? rows = "3:1";
+
+            bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
+            Assert.That(result, Is.EqualTo(true));
+        }
 
         // --------------------------------------------------------------------------------
 
