@@ -351,7 +351,7 @@ namespace SH
         /// <summary>
         /// Converts a string in JSON format to a dictionary.
         /// <para>Example 1: "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }"</para> 
-        /// <para>Example 2: "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}"</para>         
+        /// <para>Example 2: "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}"</para>        
         /// </summary>
         /// <param name="jsonTextItems">String JSON containing the key-value pairs to be converted.</param>        
         /// <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
@@ -370,6 +370,27 @@ namespace SH
             }
         }
 
+        /// <summary>
+/// Serializes a dictionary of strings into a JSON representation.
+/// </summary>
+/// <param name="dictionary">The dictionary to be serialized into JSON.</param>
+/// <returns>A string containing the JSON representation of the provided dictionary.</returns>
+/// <exception cref="ArgumentException">Thrown if the dictionary is null or empty.</exception>
+/// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
+        public static string GetJsonDictionary(Dictionary<string, string> dictionary)
+        {
+            try
+            {
+                if (dictionary == null || dictionary.Count == 0)
+                    throw new ArgumentException("E-0000-SH: The dictionary is null or empty.");
+
+                return JsonSerializer.Serialize(dictionary);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("E-0000-SH: An error occurred while serializing the dictionary to JSON.", ex);
+            }
+        }
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.
