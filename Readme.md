@@ -17,7 +17,7 @@ AVAILABLE FEATURES:<br/>
 ✔ Use `GetRowArray` to get a row of a DataTable;<br/>
 ✔ Convert a array to a DataRow using the `ConverToDataRow` method;<br/>
 ✔ Convert a spreadsheet to different formats using the `Converter` method;<br/>
-✔ Allows to convert ranges of rows. Eg: "1:23, -34:56, 70, 75, -1";<br/>
+✔ Allows to convert ranges of rows. Eg: "1:23, -34:56, 70:40, 75, -1";<br/>
 ✔ Possibility to convert ranges of columns. Eg: "A:H, 4:9, 4:-9, B, 75, -2";<br/>
 ✔ Replaces file if already converted;<br/>
 ✔ Option to choose the desired sheet for conversion using index or name (no sensitive case);<br/>
@@ -32,16 +32,23 @@ AVAILABLE FEATURES:<br/>
 
 <br/>Uses the library [ExcelDataReader](https://github.com/ExcelDataReader/ExcelDataReader) to perform the reading.<br/>
 
+<br/>
+
+### CONTACT:
+https://bit.ly/FeedbackHappyHelper
+
 <br/><br/>
 
 ## MAIN POSSIBLE CONVERSIONS:<br/>
 <img src="SheetHelper/Images/Conversions.png" width=80% height=80%> 
+
 
 ### INSTALLATION:
 ```
  dotnet add package SheetHelper
 ```
 
+<br/>
 
 ## EXAMPLE OF USE:
 ```c#
@@ -61,10 +68,9 @@ namespace App
             string columns  = "A, 3, b, 12:-1"; // or null to convert all columns or "A:BC" for a column range
             string rows = ":4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
-            bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
+            bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);           
 
-            if (success ) Console.WriteLine("The file was converted successfully!");
-            else Console.WriteLine("Failed to convert the file!");
+            Console.WriteLine(success ? "The file was converted successfully!" : "Failed to convert the file!")
         }
     }
 }

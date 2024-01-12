@@ -1,3 +1,13 @@
+## [Version 1.4.0] - 2023-12-01
+
+- Ability to manipulate and save spreadsheets containing special characters (UTF-8)
+- The temporary directory "SheetHelper" is automatically deleted upon completion
+- Ability to select rows in reverse order (e.g., "3:1")
+- Columns can be selected in reverse order (e.g., "-1:-5")
+- Dictionary of forbidden cell terms that will be replaced
+- Semicolons (";") in cells are retained within the cell instead of creating a new column
+
+
 ## [Version 1.3.0] - 2023-12-18
 
 - Possible to obtain the DataSet from a file
@@ -8,6 +18,7 @@
 - The `GetSheets` method allows obtaining all sheets from the spreadsheet in DataTable
 - Fixed selection of first line that is not the header
 - Now it's possible to perform the conversion of tabs that have only one row
+
 
 ## [Version 1.2.0] - 2023-07-10
 
