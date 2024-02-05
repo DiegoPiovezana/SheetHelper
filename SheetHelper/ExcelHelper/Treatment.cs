@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SH
@@ -57,19 +56,19 @@ namespace SH
                 throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
             }
         }
-    
+
         internal static void ValidateSheet(string sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
             if (string.IsNullOrEmpty(sheet))
             {
-                throw new ArgumentException("Invalid sheet name.", nameof(sheet));
+                throw new ArgumentException("E-0000-SH: Invalid sheet name.", nameof(sheet));
             }
 
-            if (int.TryParse( sheet, out int sheetNumber) && sheetNumber <= 0)
+            if (int.TryParse(sheet, out int sheetNumber) && sheetNumber <= 0)
             {
-                throw new ArgumentException("The first sheet is '1'!");
+                throw new ArgumentException("E-0000-SH: The first sheet is '1'!");
             }
         }
 
@@ -79,7 +78,7 @@ namespace SH
 
             if (string.IsNullOrEmpty(separator))
             {
-                throw new ArgumentException("Invalid separator.", nameof(separator));
+                throw new ArgumentException("E-0000-SH: Invalid separator.", nameof(separator));
             }
         }
 
@@ -160,7 +159,7 @@ namespace SH
                     string[] rowsArray = row.Split(':'); // e.g.: {"A","Z"}
 
                     if (rowsArray.Length != 2)
-                        throw new Exception($"Row '{row}' is not a valid pattern!");
+                        throw new Exception($"E-0000-SH: Row '{row}' is not a valid pattern!");
 
                     if (string.IsNullOrEmpty(rowsArray[0])) // If first row not defined
                         rowsArray[0] = "1"; // Then, convert from the first row
@@ -186,21 +185,21 @@ namespace SH
 
             int ConvertIndexRow(string row)
             {
-                if (row.All(c => char.IsLetter(c))) throw new Exception($"The row '{row}' is not a valid!");
+                if (row.All(c => char.IsLetter(c))) throw new Exception($"E-0000-SH: The row '{row}' is not a valid!");
 
                 int indexRow = Convert.ToInt32(row);
 
                 if (indexRow >= 0)  // "75"
                 {
                     if (indexRow == 0 || indexRow > limitIndexRows)
-                        throw new Exception($"The row '{row}' is out of range (min 1, max {limitIndexRows})!");
+                        throw new Exception($"E-0000-SH: The row '{row}' is out of range (min 1, max {limitIndexRows})!");
 
                     return indexRow;
                 }
                 else // "-2"
                 {
                     if (limitIndexRows + indexRow + 1 > limitIndexRows)
-                        throw new Exception($"The row '{row}' is out of range, because it refers to row '{limitIndexRows + indexRow + 1}' (min 1, max {limitIndexRows})!");
+                        throw new Exception($"E-0000-SH: The row '{row}' is out of range, because it refers to row '{limitIndexRows + indexRow + 1}' (min 1, max {limitIndexRows})!");
 
                     return limitIndexRows + indexRow + 1;
                 }
@@ -234,7 +233,7 @@ namespace SH
                     string[] columnsArray = column.Split(':'); // e.g.: {"A","Z"}
 
                     if (columnsArray.Length != 2)
-                        throw new Exception($"Column '{column}' is not a valid pattern!");
+                        throw new Exception($"E-0000-SH: Column '{column}' is not a valid pattern!");
 
                     if (string.IsNullOrEmpty(columnsArray[0])) // If first row not defined
                         columnsArray[0] = "1"; // Then, convert from the first row
@@ -249,7 +248,7 @@ namespace SH
                         return new int[] { 0 }; // Behavior to convert all columns
 
                     if (firstColumnIndex > lastColumnIndex)
-                        indexColumns.AddRange(Enumerable.Range(lastColumnIndex,  firstColumnIndex - lastColumnIndex + 1).Reverse());
+                        indexColumns.AddRange(Enumerable.Range(lastColumnIndex, firstColumnIndex - lastColumnIndex + 1).Reverse());
                     else
                         indexColumns.AddRange(Enumerable.Range(firstColumnIndex, lastColumnIndex - firstColumnIndex + 1));
                 }
@@ -271,14 +270,14 @@ namespace SH
                 if (indexColumn >= 0)  // "75"
                 {
                     if (indexColumn == 0 || indexColumn > limitIndexColumn)
-                        throw new Exception($"The column '{column}' is out of range (min 1, max {limitIndexColumn})!");
+                        throw new Exception($"E-0000-SH: The column '{column}' is out of range (min 1, max {limitIndexColumn})!");
 
                     return indexColumn;
                 }
                 else // "-2"
                 {
                     if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
-                        throw new Exception($"The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
+                        throw new Exception($"E-0000-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
 
                     return limitIndexColumn + indexColumn + 1;
                 }

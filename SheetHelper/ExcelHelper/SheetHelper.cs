@@ -26,7 +26,14 @@ namespace SH
         /// <summary>
         /// (Optional) The dictionary can specify characters that should not be maintained after conversion (line breaks, for example) and which replacements should be performed in each case.
         /// </summary>
-        public static Dictionary<string, string>? ProhibitedItems { get; set; } = null;
+        public static Dictionary<string, string>? ProhibitedItems { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// (Optional) Ignored exceptions will attempt to be handled internally. If it is not possible, it will just return false and the exception will not be thrown.
+        /// <para>By default, it will ignore the exception when the source or destination file is in use. If .NET Framework will display a warning to close the file, otherwise it will return false.</para>
+        /// </summary>
+        public static List<string>? TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH" };
+
 
         /// <summary>
         /// Terminates all Excel processes
@@ -143,14 +150,12 @@ namespace SH
             {
                 string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
-                // Extract to a new directory
-                ZipFile.ExtractToDirectory(zipFile, directoryZIP);
+                ZipFile.ExtractToDirectory(zipFile, directoryZIP); // Extract to a new directory
 
                 string fileLocation = Directory.EnumerateFiles(directoryZIP).First(); // Get the location of the file
                 string fileDestiny = Path.Combine(pathDestiny, Path.GetFileName(fileLocation)); // Destination location of the file
 
-                if (File.Exists(fileDestiny))
-                    File.Delete(fileDestiny); // If the file already exists, delete it
+                if (File.Exists(fileDestiny)) File.Delete(fileDestiny); // If the file already exists, delete it
 
                 File.Move(fileLocation, fileDestiny); // Move it to the target location
                 Directory.Delete(directoryZIP, true); // Delete the previously created directory
@@ -164,7 +169,8 @@ namespace SH
         }
 
         /// <summary>
-        /// Unzip a .zip or .gz file.    
+        /// Unzip a .zip or .gz file.
+        /// <para>Please visit https://bit.ly/SheetHelper_Features to learn more.</para>
         /// </summary>
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
@@ -221,10 +227,7 @@ namespace SH
 
             if (row.Length <= table.Columns.Count)
             {
-                for (int i = 0; i < row.Length; i++)
-                {
-                    newRow[i] = row[i];
-                }
+                for (int i = 0; i < row.Length; i++) { newRow[i] = row[i]; }
             }
             else
             {
@@ -308,8 +311,10 @@ namespace SH
         /// <para>Example: " Hot Café" => "hot_cafe" </para>
         /// </summary>
         /// <param name="text">Text to be normalized.</param>
+        /// <param name="replaceSpace">Character to replace spaces. E.g.: "_"</param>
+        /// <param name="toLower">If true, the text will be converted to lowercase.</param>
         /// <returns>Text normalized.</returns>
-        public static string NormalizeText(string? text)
+        public static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
             try
             {
@@ -323,7 +328,8 @@ namespace SH
                     if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
                 }
 
-                return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(" ", "_").ToLower();
+                if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
+                return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
             }
             catch (Exception)
             {
@@ -371,12 +377,12 @@ namespace SH
         }
 
         /// <summary>
-/// Serializes a dictionary of strings into a JSON representation.
-/// </summary>
-/// <param name="dictionary">The dictionary to be serialized into JSON.</param>
-/// <returns>A string containing the JSON representation of the provided dictionary.</returns>
-/// <exception cref="ArgumentException">Thrown if the dictionary is null or empty.</exception>
-/// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
+        /// Serializes a dictionary of strings into a JSON representation.
+        /// </summary>
+        /// <param name="dictionary">The dictionary to be serialized into JSON.</param>
+        /// <returns>A string containing the JSON representation of the provided dictionary.</returns>
+        /// <exception cref="ArgumentException">Thrown if the dictionary is null or empty.</exception>
+        /// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
         public static string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             try
@@ -443,7 +449,7 @@ namespace SH
                 DataTable table = Reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
-                table = Reading.TreatHeader(table, Path.GetExtension(origin));
+                table = Reading.FirstRowToHeader(table, Path.GetExtension(origin));
                 Progress += 5; // 40
 
                 return table;
@@ -613,7 +619,7 @@ namespace SH
             {
                 Progress = 5;
 
-                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
+                if (string.IsNullOrEmpty(destiny)) throw new ArgumentException($"E-0000-SH: The '{nameof(destiny)}' is null or empty.", destiny);
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
 

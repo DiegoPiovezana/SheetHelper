@@ -184,6 +184,50 @@ namespace TestSheetHelper
         }
 
         [Test]
+        public void TestConvertOneSheetBig()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ExcelBig_OneSheetBig_AB1048576.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelBig_OneSheetBig_AB1048576_xlsx.csv";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = "";
+            string? linhas = "1:";
+
+            SheetHelper.ProhibitedItems = new Dictionary<string, string>
+            {
+                { "\n", " " },
+                { "\r", " " },
+                { ";", "," },
+            };
+
+            bool retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            Assert.That(retorno, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvertManySheetBig()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ExcelBig_ManySheetBig_AB1048576.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelBig_ManySheetBig_AB1048576_xlsx.csv";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = "";
+            string? linhas = "1:";
+
+            SheetHelper.ProhibitedItems = new Dictionary<string, string>
+            {
+                { "\n", " " },
+                { "\r", " " },
+                { ";", "," },
+            };
+
+            bool retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            Assert.That(retorno, Is.EqualTo(true));
+        }
+
+        [Test]
         public void TestConvertSheets()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";

@@ -52,36 +52,40 @@ namespace SH
         }
 
         /// <summary>
-        /// Get the desired sheet
+        /// Get the desired sheet from the dataset.
         /// </summary>
-        /// <param name="sheet">Name or index of the desired sheet</param>
-        /// <param name="result">Dataset of the spreadsheet</param>
-        /// <exception cref="Exception">Error locating sheet</exception>
+        /// <param name="sheet">Name or index of the desired sheet.</param>
+        /// <param name="result">Dataset of the spreadsheet.</param>
+        /// <returns>The DataTable representing the desired sheet.</returns>
+        /// <exception cref="Exception">Throws an exception if there is an error locating the sheet.</exception>
         internal static DataTable GetTableByDataSet(string sheet, DataSet result)
         {
-            if (int.TryParse(sheet, out int sh)) // If the index of the desired tab is informed
+            if (int.TryParse(sheet, out int sheetIndex)) // If the index of the desired sheet is provided
             {
-                // If there are sheets in the worksheet and the desired one is correct
-                if (result.Tables.Count <= 0 || sh <= -1 || sh > result.Tables.Count)
+                // If there are no sheets in the dataset or the provided index is incorrect
+                if (result.Tables.Count <= 0 || sheetIndex <= -1 || sheetIndex > result.Tables.Count)
                 {
-                    throw new Exception("Erro ao selecionar a aba desejada! Verifique se o índice da aba está correto.");
+                    throw new Exception("E-0000-SH: Error selecting the desired sheet! Please check if the sheet index is correct.");
                 }
 
-                return result.Tables[sh - 1]; // Get the desired tab
+                return result.Tables[sheetIndex - 1];
 
-            } // If sheet name is given
-            else
+            }
+            else // If sheet name is provided
             {
-                if (!result.Tables.Contains(sheet)) // If sheet name not found
+                if (!result.Tables.Contains(sheet)) // If sheet name is not found
                 {
-                    throw new Exception($"Não foi possível encontrar a aba '{sheet}' desejada! Verifique se o nome da aba está correto.");
+                    throw new Exception($"E-0000-SH: Unable to find the desired sheet '{sheet}'! Please check if the sheet name is correct.");
                 }
 
                 //return result.Tables[sheet];
                 // TODO: ?SheetHelper.NormalizeText(table.TableName)
-                return result.Tables.Cast<DataTable>().FirstOrDefault(table => table.TableName.Trim().ToLower() == sheet.Trim().ToLower()); // Obtem a aba desejada
+                return result.Tables
+                    .Cast<DataTable>()
+                    .FirstOrDefault(table => table.TableName.Trim().ToLower() == sheet.Trim().ToLower());
             }
         }
+
 
         /// <summary>
         /// Open the file and perform the reading
@@ -96,13 +100,13 @@ namespace SH
             };
         }
 
-        private static bool IsCsvTxtRptExtension(string extension)
+        internal static bool IsCsvTxtRptExtension(string extension)
         {
             string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
             return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
-        internal static DataTable TreatHeader(DataTable dataTable, string extension)
+        internal static DataTable FirstRowToHeader(DataTable dataTable, string extension)
         {
             if (IsCsvTxtRptExtension(extension))
             {
