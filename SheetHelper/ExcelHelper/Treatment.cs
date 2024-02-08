@@ -32,12 +32,27 @@ namespace SH
 
         internal static void ValidateOrigin(string? origin)
         {
-            if (string.IsNullOrEmpty(origin)) throw new Exception($"E-0000-SH: The '{nameof(origin)}' is null or empty.");
-
-            if (!File.Exists(origin))
+            try
             {
-                throw new FileNotFoundException("E-0000-SH: Origin file not found.", origin);
+                if (string.IsNullOrEmpty(origin)) throw new Exception($"E-0000-SH: The '{nameof(origin)}' is null or empty.");
+
+                if (!File.Exists(origin))
+                {
+                    throw new FileNotFoundException("E-0000-SH: Origin file not found.", origin);
+                }
+                else
+                {
+                    File.OpenRead(origin).Dispose(); // To check if the file is accessible
+                }
             }
+            catch (UnauthorizedAccessException)
+            {
+                throw new InvalidOperationException("E-0000-SH: The origin file is in use by another process.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("E-0000-SH: An error occurred while validating the origin file.", ex);
+            }           
         }
 
         internal static void ValidateDestiny(string destiny)

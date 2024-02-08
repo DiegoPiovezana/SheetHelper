@@ -25,13 +25,13 @@ namespace SH
     }
 
     [Serializable]
-    internal class FileInUse : CustomExceptionBase
+    internal class FileOriginInUse : CustomExceptionBase
     {
         protected new int Number { get; } = 0;
 
-        internal FileInUse(string pathFile) : base(Messages.FileInUse(pathFile)) { }
+        internal FileOriginInUse(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
 
-        public FileInUse(string pathFile, Exception innerException) : base(Messages.FileInUse(pathFile), innerException) { }
+        public FileOriginInUse(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
     }
 
    

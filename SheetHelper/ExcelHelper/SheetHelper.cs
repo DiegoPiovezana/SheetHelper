@@ -298,7 +298,6 @@ namespace SH
                 }
 
                 return sheetDictionary;
-
             }
             catch (Exception)
             {
@@ -522,9 +521,7 @@ namespace SH
             #region If file in unsupported format
             catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
             {
-
                 throw new Exception($"Erro E-99101-SH: Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
-
             }
             #endregion
 
