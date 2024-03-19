@@ -568,9 +568,9 @@ namespace SH
 
                     if (result2 == DialogResult.Yes)
                     {
-                        CloseExcel(); // Close all Excel processes
-                        System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
-                        goto again; // Try conversion again
+                        CloseExcel(); 
+                        System.Threading.Thread.Sleep(1500);
+                        goto again;
 
                     } // If No, continue execution below
                 }
@@ -583,7 +583,7 @@ namespace SH
 
                 if (result3 == DialogResult.OK)
                 {
-                    goto again; // Try conversion again
+                    goto again;
                 }
                 else // If canceled
                 {
