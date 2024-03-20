@@ -34,8 +34,17 @@ namespace SH
         public FileOriginInUse(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
     }
 
-   
+    [Serializable]
+    internal class FileDestinyInUse : CustomExceptionBase
+    {
+        protected new int Number { get; } = 0;
 
+        internal FileDestinyInUse(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
+
+        public FileDestinyInUse(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
+    }
+
+   
 
 
 }
