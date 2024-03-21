@@ -1,24 +1,24 @@
 ﻿using SH.Globalization;
 using System;
 
-namespace SH
+namespace SH.Exceptions
 {
     [Serializable]
-    internal class CustomExceptionBase : Exception
+    internal class SHException : Exception
     {
         protected int Number { get; } = 0;
         protected string Code => $"E-{Number:D4}-SH"; // E-0000-SH
         protected new string Message { get; } = string.Empty;
 
-        internal CustomExceptionBase() { }
+        internal SHException() { }
 
-        internal CustomExceptionBase(string message) : base(message)
+        internal SHException(string message) : base(message)
         {
             Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
         }
 
-        internal CustomExceptionBase(string message, Exception innerException) : base(message, innerException)
-        {            
+        internal SHException(string message, Exception innerException) : base(message, innerException)
+        {
             Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
         }
     }
@@ -28,7 +28,7 @@ namespace SH
 
 
     [Serializable]
-    internal class FileOriginInUse : CustomExceptionBase
+    internal class FileOriginInUse : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -38,7 +38,7 @@ namespace SH
     }
 
     [Serializable]
-    internal class FileDestinyInUse : CustomExceptionBase
+    internal class FileDestinyInUse : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -47,7 +47,7 @@ namespace SH
         public FileDestinyInUse(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
     }
 
-   
+
 
 
 }

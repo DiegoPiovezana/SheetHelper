@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SH.Exceptions;
+using SH.Globalization;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -223,18 +225,26 @@ namespace SH
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
         public static DataRow ConvertToDataRow(string[] row, DataTable table)
         {
-            DataRow newRow = table.NewRow();
-
-            if (row.Length <= table.Columns.Count)
+            try
             {
-                for (int i = 0; i < row.Length; i++) { newRow[i] = row[i]; }
-            }
-            else
-            {
-                throw new ArgumentException("E-0000-SH: The length of the row array exceeds the number of columns in the table.");
-            }
+                DataRow newRow = table.NewRow();
 
-            return newRow;
+                if (row.Length <= table.Columns.Count)
+                {
+                    for (int i = 0; i < row.Length; i++) { newRow[i] = row[i]; }
+                }
+                else
+                {
+                    throw new ArgumentException("E-0000-SH: The length of the row array exceeds the number of columns in the table.");
+                }
+
+                return newRow;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
 
@@ -247,24 +257,32 @@ namespace SH
         /// <returns>An array of strings representing a row of the DataTable.</returns>
         public static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
-            if (header)
+            try
             {
-                return table.Columns.Cast<DataColumn>()
-                    .Select(column => column.ColumnName)
-                    .ToArray();
-            }
-            else
-            {
-                if (table.Rows.Count > 0 && indexRow >= 0)
+                if (header)
                 {
-                    return table.Rows[indexRow].ItemArray
-                        .Select(cell => cell.ToString())
+                    return table.Columns.Cast<DataColumn>()
+                        .Select(column => column.ColumnName)
                         .ToArray();
                 }
                 else
                 {
-                    return Array.Empty<string>();
+                    if (table.Rows.Count > 0 && indexRow >= 0)
+                    {
+                        return table.Rows[indexRow].ItemArray
+                            .Select(cell => cell.ToString())
+                            .ToArray();
+                    }
+                    else
+                    {
+                        return Array.Empty<string>();
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
@@ -344,13 +362,21 @@ namespace SH
         /// <returns>The fixed string with proper item separation.</returns>
         public static string FixItems(string items)
         {
-            if (!string.IsNullOrEmpty(items))
+            try
             {
-                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
-                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
-                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+                if (!string.IsNullOrEmpty(items))
+                {
+                    items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+                    items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+                    items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+                }
+                return items; // "123123,13514,31234"
             }
-            return items; // "123123,13514,31234"
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -369,9 +395,13 @@ namespace SH
 
                 return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
             }
+            catch (SHException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception("E-0000-SH: An error occurred while processing the text items in JSON format.", ex);
+                throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson)), ex);
             }
         }
 
@@ -568,7 +598,7 @@ namespace SH
 
                     if (result2 == DialogResult.Yes)
                     {
-                        CloseExcel(); 
+                        CloseExcel();
                         System.Threading.Thread.Sleep(1500);
                         goto again;
 
@@ -682,10 +712,12 @@ namespace SH
                     if (int.TryParse(sheetId, out int indexSheet)) // Index of the sheet
                     {
                         dtSheet = sheetsDictionary.ElementAtOrDefault(indexSheet - 1).Value;
+                        if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
                     }
                     else if (sheetsDictionary.ContainsKey(sheetId))// Name of the sheet
                     {
                         dtSheet = sheetsDictionary[sheetId];
+                        if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
 
                         //indexSheet =
                         //    sheetsDictionary.FirstOrDefault(x => x.Value == sheetsDictionary[sheetId]).Key != null ?
@@ -693,7 +725,7 @@ namespace SH
                         //    -1;
                     }
 
-                    if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
+
 
                     //var columnSheet = columns.Skip(indexSheet).FirstOrDefault();
                     //var rowSheet = rows.Skip(indexSheet).FirstOrDefault();
@@ -709,6 +741,7 @@ namespace SH
             }
             catch (Exception)
             {
+
                 throw;
             }
         }
@@ -741,8 +774,9 @@ namespace SH
             }
             catch (Exception)
             {
+
                 throw;
-            }
+            } 
         }
 
 
