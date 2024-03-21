@@ -25,12 +25,21 @@ namespace SH.Globalization
             };
         }
 
+        internal static string UnmappedException(string nameMethod)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos e veja a 'InnerException' desta exceção. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions",
+                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct and see 'InnerException' of this exception. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions",
+            };
+        }
+
 
         #endregion
 
         #region Sheet
 
-        internal static string SheetErrorIndex(int sheetIndex)
+        internal static string SheetIndexNotFound(int sheetIndex)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
@@ -43,7 +52,7 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Não foi possível encontrar a planilha desejada '{sheetName}'! Verifique se o nome da planilha está correto.",
+                "pt-BR" => $"Não foi possível encontrar a aba '{sheetName}' desejada! Verifique se o nome da aba está correto.",
                 _ => $"Unable to find the desired sheet '{sheetName}'! Please check if the sheet name is correct.",
             };
         }
@@ -65,6 +74,17 @@ namespace SH.Globalization
                 _ => $"Invalid sheet name '{sheetName}'.",
             };
         }
+
+        internal static string SheetRowColumnNumberSame()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"A quantidade de abas, colunas e linhas definidas deve ser igual.",
+                _ => $"The number of tabs, columns and lines defined must be the same.",
+            };
+        }
+
+
 
         #endregion
 
@@ -137,6 +157,27 @@ namespace SH.Globalization
             };
         }
 
+        internal static string RowCountNotMinimum(string sheet)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"A aba '{sheet}' da planilha não possui o número mínimo de linhas desejado.",
+                _ => $"The '{sheet}' tab of the spreadsheet does not have the minimum number of rows desired.",
+            };
+        }
+
+        internal static string RowArrayOverflowDt()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O tamanho do vetor excede o número de colunas da dataTable!",
+                _ => $"The length of the row array exceeds the number of columns in the dataTable!",
+            };
+        }
+
+
+
+
         #endregion
 
         #region Separator
@@ -152,14 +193,14 @@ namespace SH.Globalization
 
         #endregion
 
-        #region File
+        #region FileOrigin
 
         internal static string FileOriginInUse(string pathFile)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O arquivo de origem '{Path.GetFileName(pathFile)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente.",
-                _ => $"The origin file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again.",
+                "pt-BR" => $"O arquivo de origem '{Path.GetFileName(pathFile)}' não pode ser lido pois está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente.",
+                _ => $"The origin file '{Path.GetFileName(pathFile)}' cannot be read because it is being used by another process. Please finish its use and then try again.",
             };
         }
 
@@ -189,6 +230,19 @@ namespace SH.Globalization
                 _ => $"The 'origin' file is null or empty.",
             };
         }
+
+        internal static string FileOriginNotReadSupport(string pathOrigin)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Sem suporte para realizar a leitura do arquivo com formato '{Path.GetExtension(pathOrigin)}'.",
+                _ => $"No support for reading the file in '{Path.GetExtension(pathOrigin)}' format.",
+            };
+        }
+
+        #endregion
+
+        #region FileDestiny
 
         internal static string FileDestinyInUse(string pathFile)
         {
@@ -226,8 +280,47 @@ namespace SH.Globalization
             };
         }
 
-
         #endregion
+
+        #region JsonDictionary
+
+        internal static string JsonTextItemsNull()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"A string JSON 'jsonTextItems' que contém os pares de chave-valor a serem convertidos como parâmetro do método 'GetDictionaryJson' é nula ou vazia.",
+                _ => $"The JSON string 'jsonTextItems' containing the key-value pairs to be converted as a parameter of the 'GetDictionaryJson' method is null or empty.",
+            };
+        }
+
+        internal static string JsonError()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Ocorreu um erro ao processar os itens no formato JSON do método 'GetDictionaryJson'.",
+                _ => $"An error occurred while processing items in JSON format from the 'GetDictionaryJson' method.",
+            };
+        }
+
+        internal static string JsonDicNull()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O dicionário a ser serializado em JSON a partir do método 'GetDictionaryJson' é nulo ou vazio.",
+                _ => $"The dictionary to be serialized into JSON from the 'GetDictionaryJson' method is null or empty.",
+            };
+        }
+
+        internal static string JsonDicError()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Ocorreu um erro ao serializar o dicionário para JSON em 'GetJsonDictionary'.",
+                _ => $"An error occurred while serializing the dictionary to JSON in 'GetJsonDictionary'.",
+            };
+        }
+
+        #endregion 
 
     }
 }
