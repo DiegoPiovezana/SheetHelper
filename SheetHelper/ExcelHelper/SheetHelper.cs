@@ -200,7 +200,7 @@ namespace SH
                         goto restart;
 
                     default:
-                        if (mandatory) throw new Exception("Unable to extract this file!");
+                        if (mandatory) throw new Exception("E-0000-SH: Unable to extract this file!");
                         else return zipFile;
                 }
                 //}
@@ -231,7 +231,7 @@ namespace SH
             }
             else
             {
-                throw new ArgumentException("The length of the row array exceeds the number of columns in the table.");
+                throw new ArgumentException("E-0000-SH: The length of the row array exceeds the number of columns in the table.");
             }
 
             return newRow;

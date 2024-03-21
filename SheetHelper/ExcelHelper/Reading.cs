@@ -65,7 +65,7 @@ namespace SH
                 // If there are no sheets in the dataset or the provided index is incorrect
                 if (result.Tables.Count <= 0 || sheetIndex <= -1 || sheetIndex > result.Tables.Count)
                 {
-                    throw new Exception("E-0000-SH: Error selecting the desired sheet! Please check if the sheet index is correct.");
+                    throw new Exception($"E-0000-SH: Error selecting the desired sheet! Please check if the sheet index '{sheetIndex}' is correct.");
                 }
 
                 return result.Tables[sheetIndex - 1];

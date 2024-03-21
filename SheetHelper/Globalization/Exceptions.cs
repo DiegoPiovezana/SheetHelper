@@ -14,15 +14,18 @@ namespace SH
 
         internal CustomExceptionBase(string message) : base(message)
         {
-            Message = $"{Code}: {message} \n\n Please visit https://bit.ly/SheetHelper_Exceptions to learn more.";
+            Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
         }
 
         internal CustomExceptionBase(string message, Exception innerException) : base(message, innerException)
-        {
-            //Code = $"E-{Number:D4}-SH";
-            Message = $"{Code}: {message} \n\n Please visit https://bit.ly/SheetHelper_Exceptions to learn more.";
+        {            
+            Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
         }
     }
+
+
+
+
 
     [Serializable]
     internal class FileOriginInUse : CustomExceptionBase
