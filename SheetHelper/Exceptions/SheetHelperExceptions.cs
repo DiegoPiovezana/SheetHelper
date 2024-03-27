@@ -7,8 +7,8 @@ namespace SH.Exceptions
     internal class SHException : Exception
     {
         protected int Number { get; } = 0;
-        protected string Code => $"E-{Number:D4}-SH"; // E-0000-SH
-        protected new string Message { get; } = string.Empty;
+        public string Code => $"E-{Number:D4}-SH"; // E-0000-SH
+        public new string Message { get; } = string.Empty;
 
         internal SHException() { }
 

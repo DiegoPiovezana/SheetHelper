@@ -25,12 +25,12 @@ namespace SH.Globalization
             };
         }
 
-        internal static string UnmappedException(string nameMethod)
+        internal static string UnmappedException(string nameMethod, System.Exception ex)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos e veja a 'InnerException' desta exceção. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions",
-                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct and see 'InnerException' of this exception. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions",
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos e veja a 'InnerException' desta exceção. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct and see 'InnerException' of this exception. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
             };
         }
 
@@ -204,6 +204,15 @@ namespace SH.Globalization
             };
         }
 
+        internal static string FileOriginInUseAndCloseExcel(string pathFile)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Parece que o arquivo '{Path.GetFileName(pathFile)}' ainda continua em uso. Deseja forçar o encerramento de todos os Excel e tentar novamente? \n\nATENÇÃO: Todos os Excel abertos serão fechados e as alterações da(s) planilha(s) não serão salvas!",
+                _ => $"It appears that the file '{Path.GetFileName(pathFile)}' is still in use. Do you want to force quit all Excel and try again? \n\nATTENTION: All open Excel will be closed and changes to the worksheet(s) will not be saved!",
+            };
+        }
+
         internal static string FileOriginErrorValid()
         {
             return CultureInfo.CurrentCulture.Name switch
@@ -250,6 +259,15 @@ namespace SH.Globalization
             {
                 "pt-BR" => $"O arquivo de destino '{Path.GetFileName(pathFile)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente",
                 _ => $"The destiny file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again",
+            };
+        }
+
+        internal static string FileDestinyInUseAndCloseExcel(string pathFile)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Parece que o arquivo '{Path.GetFileName(pathFile)}' ainda continua em uso. Deseja forçar o encerramento de todos os Excel e tentar novamente? \n\nATENÇÃO: Todos os Excel abertos serão fechados e as alterações da(s) planilha(s) não serão salvas!",
+                _ => $"It appears that the file '{Path.GetFileName(pathFile)}' is still in use. Do you want to force quit all Excel and try again? \n\nATTENTION: All open Excel will be closed and changes to the worksheet(s) will not be saved!",
             };
         }
 

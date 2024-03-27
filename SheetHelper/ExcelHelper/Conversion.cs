@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using System;
+﻿using SH.Exceptions;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -37,146 +36,142 @@ namespace SH
 
         internal static bool SaveDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {
-            StringBuilder output = new();
-            string[] rowFull;
+            
+                StringBuilder output = new();
+                string[] rowFull;
 
-            // Defines the number of all rows to be considered
-            int[] rowsNumber = Treatment.DefineRows(rows ?? "", table);
-            SheetHelper.Progress += 5; // 45                
+                // Defines the number of all rows to be considered
+                int[] rowsNumber = Treatment.DefineRows(rows ?? "", table);
+                SheetHelper.Progress += 5; // 45                
 
-            // Define in ASCII, which will be all the columns to be converted
-            int[] columnsASCII = Treatment.DefineColumnsASCII(columns ?? "", table);
-            SheetHelper.Progress += 5; // 50 (tratativas ok)
+                // Define in ASCII, which will be all the columns to be converted
+                int[] columnsASCII = Treatment.DefineColumnsASCII(columns ?? "", table);
+                SheetHelper.Progress += 5; // 50 (tratativas ok)
 
-            double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
-            double percPrg = countPercPrg;
+                double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
+                double percPrg = countPercPrg;
 
-            //table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
+                //table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
 
-            //using (StreamWriter writer = new (destiny))
-            //{
+                //using (StreamWriter writer = new (destiny))
+                //{
 
-            // If you want to include header
-            if (rowsNumber[0].Equals(1))
-            {
-                // Get the header (coluns name)
-                //rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
-                rowFull = table.Columns.Cast<DataColumn>().Select(column =>
-                 {
-                     //string cellValue = column.ColumnName;
-                     //if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-                     //{
-                     //    // Apply double quotes to surround the value and escape the inner double quotes
-                     //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                     //}
-                     //return cellValue;
-                     return TreatCell(column.ColumnName, separator);
-                 }).ToArray();
-            }
-            else
-            {
-                // Get the first row selected (after header - index-2)              
-                //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
-                rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
+                // If you want to include header
+                if (rowsNumber[0].Equals(1))
                 {
-                    //string cellValue = cell.ToString();
-                    //if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
-                    //{
-                    //    // Apply double quotes to surround the value and escape the inner double quotes
-                    //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                    //}
-                    //return cellValue;
-
-                    return TreatCell(cell.ToString(), separator);
-                }).ToArray();
-            }
-
-            // Save all rows by start and end  
-            foreach (int rowIndex in rowsNumber.Skip(1).Concat(new[] { rowsNumber.Last() })) // For each row in the worksheet
-            {
-                if (columnsASCII[0].Equals(0)) // If columns not specified - All
-                {
-                    output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
-                    //writer.Write(String.Join(separator, rowFull));                       
-                }
-                else // If specified columns - Selected
-                {
-                    StringBuilder rowSelected = new(); // Store the selected columns of the row                           
-
-                    foreach (int column in columnsASCII) // For each column of rows
+                    // Get the header (coluns name)
+                    //rowFull = table.Columns.Cast<DataColumn>().Select(column => column.ColumnName).ToArray();
+                    rowFull = table.Columns.Cast<DataColumn>().Select(column =>
                     {
-                        // Select column considering ASCII table and add separately                            
-                        rowSelected.Append(rowFull[column - 1]).Append(separator);
+                        //string cellValue = column.ColumnName;
+                        //if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+                        //{
+                        //    // Apply double quotes to surround the value and escape the inner double quotes
+                        //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                        //}
+                        //return cellValue;
+                        return TreatCell(column.ColumnName, separator);
+                    }).ToArray();
+                }
+                else
+                {
+                    // Get the first row selected (after header - index-2)              
+                    //rowFull = table.Rows[rowsNumber[0]].ItemArray.Select(cell => cell.ToString()).ToArray();
+                    rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
+                    {
+                        //string cellValue = cell.ToString();
+                        //if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
+                        //{
+                        //    // Apply double quotes to surround the value and escape the inner double quotes
+                        //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                        //}
+                        //return cellValue;
+
+                        return TreatCell(cell.ToString(), separator);
+                    }).ToArray();
+                }
+
+                // Save all rows by start and end  
+                foreach (int rowIndex in rowsNumber.Skip(1).Concat(new[] { rowsNumber.Last() })) // For each row in the worksheet
+                {
+                    if (columnsASCII[0].Equals(0)) // If columns not specified - All
+                    {
+                        output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
+                        //writer.Write(String.Join(separator, rowFull));                       
                     }
-                    output.AppendLine(string.Join(separator, rowSelected)); // Add the row with the selected columns                           
-                    //writer.Write(String.Join(separator, rowSelected));                    
-                }
-
-                if (countPercPrg >= 1) // If applicable, load the progress
-                {
-                    SheetHelper.Progress += (int)countPercPrg; // 90                                                               
-                    countPercPrg -= (int)countPercPrg;
-                }
-
-                countPercPrg += percPrg; // Increment progress counter                      
-
-                // Get the next row
-                if (rowIndex - 1 >= 0 && rowIndex - 2 < table.Rows.Count)
-                {
-                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
-                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
-                    //{
-                    //    string cellValue = cell.ToString();
-                    //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-                    //    {
-                    //        // Apply double quotes to surround the value and escape the inner double quotes
-                    //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-                    //    }
-                    //    return cellValue;
-                    //}).ToArray();
-                    //rowFull = TreatCell(table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray());
-                    //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
-                    //{
-                    //    return TreatCell(cell.ToString(), separator);
-
-                    //}).ToArray();
-
-
-
-                    if (rowIndex.Equals(1))  // If header
+                    else // If specified columns - Selected
                     {
-                        // Get the header (coluns name)                       
-                        rowFull = table.Columns.Cast<DataColumn>().Select(column =>
+                        StringBuilder rowSelected = new(); // Store the selected columns of the row                           
+
+                        foreach (int column in columnsASCII) // For each column of rows
                         {
-                            return TreatCell(column.ColumnName, separator);
-                        }).ToArray();
+                            // Select column considering ASCII table and add separately                            
+                            rowSelected.Append(rowFull[column - 1]).Append(separator);
+                        }
+                        output.AppendLine(string.Join(separator, rowSelected)); // Add the row with the selected columns                           
+                        //writer.Write(String.Join(separator, rowSelected));                    
                     }
-                    else
+
+                    if (countPercPrg >= 1) // If applicable, load the progress
                     {
-                        // Get the first row selected (after header - index-2) 
-                        rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
-                        {
-                            return TreatCell(cell.ToString(), separator);
-                        }).ToArray();
+                        SheetHelper.Progress += (int)countPercPrg; // 90                                                               
+                        countPercPrg -= (int)countPercPrg;
                     }
 
+                    countPercPrg += percPrg; // Increment progress counter                      
 
+                    // Get the next row
+                    if (rowIndex - 1 >= 0 && rowIndex - 2 < table.Rows.Count)
+                    {
+                        //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray();
+                        //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                        //{
+                        //    string cellValue = cell.ToString();
+                        //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
+                        //    {
+                        //        // Apply double quotes to surround the value and escape the inner double quotes
+                        //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
+                        //    }
+                        //    return cellValue;
+                        //}).ToArray();
+                        //rowFull = TreatCell(table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray());
+                        //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                        //{
+                        //    return TreatCell(cell.ToString(), separator);
+
+                        //}).ToArray();
+
+                        if (rowIndex.Equals(1))  // If header
+                        {
+                            // Get the header (coluns name)                       
+                            rowFull = table.Columns.Cast<DataColumn>().Select(column =>
+                            {
+                                return TreatCell(column.ColumnName, separator);
+                            }).ToArray();
+                        }
+                        else
+                        {
+                            // Get the first row selected (after header - index-2) 
+                            rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
+                            {
+                                return TreatCell(cell.ToString(), separator);
+                            }).ToArray();
+                        }
+                    }
+
+                    //writer.WriteLine();
                 }
 
-                //writer.WriteLine();
-            }
+                SheetHelper.Progress += 90 - SheetHelper.Progress; // If necessary, complete up to 90%
 
-            SheetHelper.Progress += 90 - SheetHelper.Progress; // If necessary, complete up to 90%
+                // Write new converted file (overwrite if existing)
+                //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
+                using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
 
-            // Write new converted file (overwrite if existing)
-            //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
-            using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
+                if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
-            if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
-
-            SheetHelper.Progress += 10; // 100
-            return true;
-
+                SheetHelper.Progress += 10; // 100
+                return true;            
         }
 
         //internal static T[] TreatCell<T>(T[] cells, string separator = ";")
