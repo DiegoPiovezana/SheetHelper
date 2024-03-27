@@ -43,15 +43,9 @@ namespace SH
         /// </summary>
         public static void CloseExcel()
         {
-            try
-            {
-                Features.CloseExcel();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            Features.CloseExcel();
         }
+
 
         /// <summary>
         /// Receives the column name and returns the index in the worksheet
@@ -60,14 +54,7 @@ namespace SH
         /// <returns>Index. E.g.: "A" = 1</returns>
         public static int GetIndexColumn(string columnName)
         {
-            try
-            {
-                return Features.GetIndexColumn(columnName);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetIndexColumn(columnName);
         }
 
         /// <summary>
@@ -77,14 +64,7 @@ namespace SH
         /// <returns>Column name (e.g.: "AB")</returns>
         public static string GetNameColumn(int columnIndex)
         {
-            try
-            {
-                return Features.GetNameColumn(columnIndex);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetNameColumn(columnIndex);
         }
 
         /// <summary>
@@ -95,14 +75,7 @@ namespace SH
         /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
         public static string? UnGZ(string zipFile, string pathDestiny)
         {
-            try
-            {
-               return Features.UnGZ(zipFile, pathDestiny);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.UnGZ(zipFile, pathDestiny);
         }
 
         /// <summary>
@@ -113,14 +86,7 @@ namespace SH
         /// <returns>The path of the extracted file.</returns>
         public static string? UnZIP(string? zipFile, string pathDestiny)
         {
-            try
-            {
-               return Features.UnZIP(zipFile, pathDestiny);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.UnZIP(zipFile, pathDestiny);
         }
 
         /// <summary>
@@ -133,18 +99,7 @@ namespace SH
         /// <returns>The path of the extracted file.</returns>
         public static string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
-            try
-            {
-                return Features.UnzipAuto(zipFile, pathDestiny, mandatory);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
-            }
+            return Features.UnzipAuto(zipFile, pathDestiny, mandatory);
         }
 
         /// <summary>
@@ -155,14 +110,7 @@ namespace SH
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
         public static DataRow ConvertToDataRow(string[] row, DataTable table)
         {
-            try
-            {
-                return Features.ConvertToDataRow(row, table);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.ConvertToDataRow(row, table);
         }
 
 
@@ -175,14 +123,7 @@ namespace SH
         /// <returns>An array of strings representing a row of the DataTable.</returns>
         public static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
-            try
-            {
-                return Features.GetRowArray(table, header, indexRow);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetRowArray(table, header, indexRow);
         }
 
         /// <summary>
@@ -194,14 +135,7 @@ namespace SH
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
         public static Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
-            try
-            {
-                return Features.GetAllSheets(filePath, minQtdRows, formatName);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetAllSheets(filePath, minQtdRows, formatName);
         }
 
         /// <summary>
@@ -214,14 +148,7 @@ namespace SH
         /// <returns>Text normalized.</returns>
         public static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
-            try
-            {
-                return Features.NormalizeText(text, replaceSpace, toLower);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.NormalizeText(text, replaceSpace, toLower);
         }
 
         /// <summary>
@@ -232,14 +159,7 @@ namespace SH
         /// <returns>The fixed string with proper item separation.</returns>
         public static string FixItems(string items)
         {
-            try
-            {
-                return Features.FixItems(items);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.FixItems(items);
         }
 
         /// <summary>
@@ -251,22 +171,7 @@ namespace SH
         /// <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
         public static Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
-            try
-            {
-                return Features.GetDictionaryJson(jsonTextItems);
-            }
-            catch (FileOriginInUse)
-            {
-                TryHandlerExceptions.TryTreatEx_FileOriginInUse(origin, countOpen);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
-            }
+            return Features.GetDictionaryJson(jsonTextItems);
         }
 
         /// <summary>
@@ -278,14 +183,7 @@ namespace SH
         /// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
         public static string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
-            try
-            {
-               return GetJsonDictionary(dictionary);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("E-0000-SH: An error occurred while serializing the dictionary to JSON.", ex);
-            }
+            return GetJsonDictionary(dictionary);
         }
 
         /// <summary>
@@ -296,14 +194,7 @@ namespace SH
         /// <returns>DataSet</returns>
         public static DataSet GetDataSet(string? origin)
         {
-            try
-            {
-                return Features.GetDataSet(origin);              
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetDataSet(origin);
         }
 
         /// <summary>
@@ -315,90 +206,7 @@ namespace SH
         /// <returns>DataTable</returns>
         public static DataTable? GetDataTable(string origin, string sheet = "1")
         {
-            int countOpen = 0; // Count of times Excel was open
-
-        again:
-
-            try
-            {
-               return Features.GetDataTable(origin, sheet);
-            }
-#if NETFRAMEWORK
-
-            #region If file not found       
-            catch (Exception ex) when (ex.InnerException.Message.Contains("file not found"))
-            {
-                var result1 = MessageBox.Show(
-                                   "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
-                                   + "\n\n" + origin,
-                                   "Aviso",
-                                   MessageBoxButtons.OKCancel,
-                                   MessageBoxIcon.Exclamation);
-
-
-                if (result1 == DialogResult.OK)
-                {
-                    goto again; // Try conversion again
-                }
-
-                return null;
-            }
-            #endregion
-
-            #region If file is in use
-            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
-            {
-                countOpen++; // Counter for failed attempts with open file
-
-                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
-                {
-
-                    var result2 = MessageBox.Show(
-                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
-                       "Aviso",
-                       MessageBoxButtons.YesNo,
-                       MessageBoxIcon.Exclamation);
-
-                    if (result2 == DialogResult.Yes)
-                    {
-                        CloseExcel(); // Close all Excel processes
-                        System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
-                        goto again; // Try conversion again
-
-                    } // If No, continue execution below
-                }
-
-                var result3 = MessageBox.Show(
-                    $"O arquivo '{Path.GetFileName(origin)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-                    "Aviso",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Error);
-
-                if (result3 == DialogResult.OK)
-                {
-                    goto again; // Try conversion again
-                }
-                else // If canceled
-                {
-                    return null;
-                }
-            }
-
-            #endregion
-#endif
-
-
-            #region If file in unsupported format
-            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
-            {
-                throw new Exception($"Erro E-99101-SH: Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
-            }
-            #endregion
-
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.GetDataTable(origin, sheet);
         }
 
         /// <summary>
@@ -411,68 +219,8 @@ namespace SH
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public static bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
-        { 
-            try
-            {
-                Features.SaveDataTable(dataTable, destiny, separator, columns, rows);
-            }            
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
-            }
-
-
-
-#if NETFRAMEWORK                        
-
-            #region If file is in use
-            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
-            {
-                countOpen++; // Counter for failed attempts with open file
-
-                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
-                {
-                    var result2 = MessageBox.Show(
-                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
-                       "Aviso",
-                       MessageBoxButtons.YesNo,
-                       MessageBoxIcon.Exclamation);
-
-                    if (result2 == DialogResult.Yes)
-                    {
-                        CloseExcel();
-                        System.Threading.Thread.Sleep(1500);
-                        goto again;
-
-                    } // If No, continue execution below
-                }
-
-                var result3 = MessageBox.Show(
-                    $"O arquivo '{Path.GetFileName(destiny)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-                    "Aviso",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Error);
-
-                if (result3 == DialogResult.OK)
-                {
-                    goto again;
-                }
-                else // If canceled
-                {
-                    return false;
-                }
-            }
-
-            #endregion
-#endif
-            catch (Exception)
-            {
-                throw;
-            }
+        {
+            return Features.SaveDataTable(dataTable, destiny, separator, columns, rows);
         }
 
         /// <summary>
@@ -488,14 +236,7 @@ namespace SH
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public static bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
-            try
-            {
-                return Features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
         }
 
         /// <summary>
@@ -512,14 +253,7 @@ namespace SH
         /// <returns>Number of tabs successfully saved.</returns>
         public static int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
         {
-            try
-            {
-                return Features.Converter(origin, destiny, sheets, separator, columns, rows, minRows);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.Converter(origin, destiny, sheets, separator, columns, rows, minRows);
         }
 
 
@@ -534,14 +268,7 @@ namespace SH
         /// <returns>True, if success.</returns>
         public static bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
-            try
-            {
-                return Features.ConvertAllSheets(origin, destiny, minRows, separator);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Features.ConvertAllSheets(origin, destiny, minRows, separator);
         }
 
 
