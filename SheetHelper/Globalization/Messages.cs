@@ -57,7 +57,7 @@ namespace SH.Globalization
             };
         }
 
-        internal static string SheetNameNotFind(string sheetName)
+        internal static string SheetNameNotFound(string sheetName)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
@@ -92,8 +92,6 @@ namespace SH.Globalization
                 _ => $"The number of tabs, columns and lines defined must be the same.",
             };
         }
-
-
 
         #endregion
 
@@ -244,8 +242,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O arquivo 'origin' é nulo ou vazio.",
-                _ => $"The 'origin' file is null or empty.",
+                "pt-BR" => $"O arquivo de origem 'origin' não pode ser lido pois o parâmetro está nulo ou vazio.",
+                _ => $"The 'origin' file cannot be read as the parameter is null or empty.",
             };
         }
 

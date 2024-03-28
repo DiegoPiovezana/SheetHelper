@@ -1,4 +1,5 @@
-﻿using SH.Exceptions;
+﻿using SH.ExcelHelper.Treatments;
+using SH.Exceptions;
 using SH.Globalization;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace SH
+namespace SH.ExcelHelper.Tools
 {
     internal class Features
     {
@@ -44,7 +45,7 @@ namespace SH
                 foreach (var character in columnName)
                 {
                     sum *= 26;
-                    sum += (character - 'A' + 1);
+                    sum += character - 'A' + 1;
                 }
 
                 return sum; // E.g.: A = 1, Z = 26, AA = 27
@@ -83,12 +84,12 @@ namespace SH
             }
         }
 
-        internal static string? UnGZ(string zipFile, string pathDestiny)
+        internal static string? UnGZ(string gzFile, string pathDestiny)
         {
             try
             {
-                if (string.IsNullOrEmpty(zipFile?.Trim()) || !File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnGZ));
-                
+                if (string.IsNullOrEmpty(gzFile?.Trim()) || !File.Exists(gzFile)) throw new ParamException(nameof(gzFile), nameof(UnGZ));
+
                 if (!string.IsNullOrEmpty(pathDestiny))
                 {
                     if (!Directory.Exists(pathDestiny)) Directory.CreateDirectory(pathDestiny);
@@ -98,7 +99,7 @@ namespace SH
                     throw new ParamException(nameof(pathDestiny), nameof(UnGZ));
                 }
 
-                using var compressedFileStream = File.Open(zipFile, FileMode.Open, FileAccess.Read);
+                using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
                 if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) // If the format to be converted is not specified, try to get it from the file name
@@ -121,7 +122,7 @@ namespace SH
             catch (SHException)
             {
                 throw;
-            }            
+            }
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(UnGZ), ex), ex);
@@ -132,7 +133,14 @@ namespace SH
         {
             try
             {
-                if (string.IsNullOrEmpty(zipFile?.Trim()) || !File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+                if (!string.IsNullOrEmpty(zipFile?.Trim()))
+                {
+                    if (!File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+                }
+                else
+                {
+                    throw new ParamException(nameof(zipFile), nameof(UnZIP));
+                }
 
                 if (!string.IsNullOrEmpty(pathDestiny))
                 {
@@ -160,7 +168,7 @@ namespace SH
             catch (SHException)
             {
                 throw;
-            }            
+            }
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(UnZIP), ex), ex);
@@ -286,7 +294,7 @@ namespace SH
 
                 foreach (var sheet in dataSet.Tables.Cast<DataTable>())
                 {
-                    if ((sheet.Rows.Count + (sheet.Columns.Count > 0 ? 1 : 0)) >= minQtdRows)
+                    if (sheet.Rows.Count + (sheet.Columns.Count > 0 ? 1 : 0) >= minQtdRows)
                     {
                         if (!formatName) { sheetDictionary.Add(sheet.TableName, sheet); }
                         else { sheetDictionary.Add(NormalizeText(sheet.TableName), sheet); }
@@ -370,7 +378,7 @@ namespace SH
             catch (SHException)
             {
                 throw;
-            }           
+            }
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
