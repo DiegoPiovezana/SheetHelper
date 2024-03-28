@@ -18,7 +18,16 @@ namespace SH.ExcelHelper.Tools
 {
     internal class Features
     {
-        internal static void CloseExcel()
+        private readonly SheetHelper _sheetHelper;
+
+        public Features(SheetHelper sheetHelper)
+        {
+            _sheetHelper = sheetHelper;
+        }
+
+
+
+        internal void CloseExcel()
         {
             try
             {
@@ -35,7 +44,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static int GetIndexColumn(string? columnName)
+        internal int GetIndexColumn(string? columnName)
         {
             try
             {
@@ -60,7 +69,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string GetNameColumn(int columnIndex)
+        internal string GetNameColumn(int columnIndex)
         {
             try
             {
@@ -84,7 +93,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string? UnGZ(string gzFile, string pathDestiny)
+        internal string? UnGZ(string gzFile, string pathDestiny)
         {
             try
             {
@@ -129,13 +138,13 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string? UnZIP(string? zipFile, string pathDestiny)
+        internal string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
             {
                 if (!string.IsNullOrEmpty(zipFile?.Trim()))
                 {
-                    if (!File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+                    if (!File.Exists(zipFile)) throw new FileOriginNotFound(nameof(zipFile));
                 }
                 else
                 {
@@ -175,7 +184,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
+        internal string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
             {
@@ -218,7 +227,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static DataRow ConvertToDataRow(string[] row, DataTable table)
+        internal DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
             {
@@ -245,7 +254,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
+        internal string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             try
             {
@@ -279,7 +288,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        internal  Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
             {
@@ -313,7 +322,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        internal string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
             try
             {
@@ -340,7 +349,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string FixItems(string items)
+        internal string FixItems(string items)
         {
             try
             {
@@ -362,7 +371,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
+        internal Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
             try
             {
@@ -373,7 +382,7 @@ namespace SH.ExcelHelper.Tools
             }
             catch (FileOriginInUse)
             {
-                TryHandlerExceptions.TryTreatEx_FileOriginInUse(origin, countOpen);
+                TryHandlerExceptions.FileOriginInUse(origin, countOpen);
             }
             catch (SHException)
             {
@@ -385,7 +394,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static string GetJsonDictionary(Dictionary<string, string> dictionary)
+        internal string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             try
             {
@@ -404,19 +413,19 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static DataSet GetDataSet(string? origin)
+        internal DataSet GetDataSet(string? origin)
         {
             try
             {
-                Treatment.ValidateOrigin(origin);
+                Validations.ValidateOrigin(origin);
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                Progress += 5; // 5 
+                _sheetHelper.Progress += 5; // 5 
 
                 DataSet result = Reading.GetDataSet(origin);
-                Progress += 25; // 35 (after reading the file)
+                _sheetHelper.Progress += 25; // 35 (after reading the file)
 
                 return result;
             }
@@ -430,7 +439,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static DataTable? GetDataTable(string origin, string sheet = "1")
+        internal DataTable? GetDataTable(string origin, string sheet = "1")
         {
             int countOpen = 0; // Count of times Excel was open
 
@@ -438,7 +447,7 @@ namespace SH.ExcelHelper.Tools
 
             try
             {
-                Treatment.ValidateSheet(sheet);
+                Validations.ValidateSheet(sheet);
 
                 var result = GetDataSet(origin); // 35 (after reading the file)
 
@@ -447,7 +456,7 @@ namespace SH.ExcelHelper.Tools
 
                 // Handling to allow header consideration (XLS case)
                 table = Reading.FirstRowToHeader(table, Path.GetExtension(origin));
-                Progress += 5; // 40
+                _sheetHelper.Progress += 5; // 40
 
                 return table;
             }
@@ -529,12 +538,12 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
+        internal bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
         {
 
             try
             {
-                Treatment.Validate(destiny, separator, columns, rows);
+                Validations.Validate(destiny, separator, columns, rows);
                 return Conversion.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
 
@@ -586,20 +595,20 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        internal bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
             try
             {
-                Progress = 5;
+                _sheetHelper.Progress = 5;
 
                 if (string.IsNullOrEmpty(destiny)) throw new ArgumentException($"E-0000-SH: The '{nameof(destiny)}' is null or empty.", destiny);
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
 
-                if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+                if (!Validations.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
                 {
                     // If no conversion is needed
-                    Progress = 100;
+                    _sheetHelper.Progress = 100;
                     File.Copy(origin, destiny, true);
                     if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
@@ -620,7 +629,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        internal int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
         {
             try
             {
@@ -685,7 +694,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal static bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
+        internal bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
             try
             {

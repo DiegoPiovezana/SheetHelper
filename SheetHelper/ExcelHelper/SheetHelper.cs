@@ -1,19 +1,7 @@
 ﻿using SH.ExcelHelper.Tools;
-using SH.Exceptions;
-using SH.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace SH
 {
@@ -25,26 +13,38 @@ namespace SH
         /// <summary>
         /// Represents the conversion progress. If 100%, the conversion is fully completed.
         /// </summary>    
-        public static int Progress { get; internal set; }
+        public int Progress { get; internal set; }
 
         /// <summary>
         /// (Optional) The dictionary can specify characters that should not be maintained after conversion (line breaks, for example) and which replacements should be performed in each case.
         /// </summary>
-        public static Dictionary<string, string>? ProhibitedItems { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string>? ProhibitedItems { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// (Optional) Ignored exceptions will attempt to be handled internally. If it is not possible, it will just return false and the exception will not be thrown.
         /// <para>By default, it will ignore the exception when the source or destination file is in use. If .NET Framework will display a warning to close the file, otherwise it will return false.</para>
         /// </summary>
-        public static List<string>? TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH" };
+        public List<string>? TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH" };
+
+
+        private readonly Features _features;
+
+
+        /// <summary>
+        /// Fast and lightweight library for easy read and conversion of large Excel files
+        /// </summary>
+        public SheetHelper()
+        {
+            _features = new(this);
+        }
 
 
         /// <summary>
         /// Terminates all Excel processes
         /// </summary>
-        public static void CloseExcel()
+        public void CloseExcel()
         {
-            Features.CloseExcel();
+            _features.CloseExcel();
         }
 
 
@@ -53,9 +53,9 @@ namespace SH
         /// </summary>
         /// <param name="columnName">Column name. E.g.: "A"</param>
         /// <returns>Index. E.g.: "A" = 1</returns>
-        public static int GetIndexColumn(string columnName)
+        public int GetIndexColumn(string columnName)
         {
-            return Features.GetIndexColumn(columnName);
+            return _features.GetIndexColumn(columnName);
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace SH
         /// </summary>
         /// <param name="columnIndex"> Column index</param>
         /// <returns>Column name (e.g.: "AB")</returns>
-        public static string GetNameColumn(int columnIndex)
+        public string GetNameColumn(int columnIndex)
         {
-            return Features.GetNameColumn(columnIndex);
+            return _features.GetNameColumn(columnIndex);
         }
 
         /// <summary>
@@ -74,9 +74,9 @@ namespace SH
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
         /// <param name="pathDestiny">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
         /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
-        public static string? UnGZ(string zipFile, string pathDestiny)
+        public string? UnGZ(string zipFile, string pathDestiny)
         {
-            return Features.UnGZ(zipFile, pathDestiny);
+            return _features.UnGZ(zipFile, pathDestiny);
         }
 
         /// <summary>
@@ -85,9 +85,9 @@ namespace SH
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <returns>The path of the extracted file.</returns>
-        public static string? UnZIP(string? zipFile, string pathDestiny)
+        public string? UnZIP(string? zipFile, string pathDestiny)
         {
-            return Features.UnZIP(zipFile, pathDestiny);
+            return _features.UnZIP(zipFile, pathDestiny);
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace SH
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <param name="mandatory">If true, it indicates that the extraction must occur, otherwise, it will show an error. If false, if the conversion does not happen, nothing happens.</param>
         /// <returns>The path of the extracted file.</returns>
-        public static string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
+        public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
-            return Features.UnzipAuto(zipFile, pathDestiny, mandatory);
+            return _features.UnzipAuto(zipFile, pathDestiny, mandatory);
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace SH
         /// <param name="row">The string array to be converted.</param>
         /// <param name="table">The target DataTable to which the new DataRow will be added.</param>
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
-        public static DataRow ConvertToDataRow(string[] row, DataTable table)
+        public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
-            return Features.ConvertToDataRow(row, table);
+            return _features.ConvertToDataRow(row, table);
         }
 
 
@@ -122,9 +122,9 @@ namespace SH
         /// <param name="header">If true, it will get the header (columns name).</param>
         /// <param name="indexRow">index of the line to be obtained (in addition to the header). Enter negative to get just the header.</param>
         /// <returns>An array of strings representing a row of the DataTable.</returns>
-        public static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
+        public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
-            return Features.GetRowArray(table, header, indexRow);
+            return _features.GetRowArray(table, header, indexRow);
         }
 
         /// <summary>
@@ -134,9 +134,9 @@ namespace SH
         /// <param name="minQtdRows">The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <param name="formatName">If true, all spaces and special characters from tab names will be removed.</param>
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
-        public static Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
-            return Features.GetAllSheets(filePath, minQtdRows, formatName);
+            return _features.GetAllSheets(filePath, minQtdRows, formatName);
         }
 
         /// <summary>
@@ -147,9 +147,9 @@ namespace SH
         /// <param name="replaceSpace">Character to replace spaces. E.g.: "_"</param>
         /// <param name="toLower">If true, the text will be converted to lowercase.</param>
         /// <returns>Text normalized.</returns>
-        public static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
-            return Features.NormalizeText(text, replaceSpace, toLower);
+            return _features.NormalizeText(text, replaceSpace, toLower);
         }
 
         /// <summary>
@@ -158,9 +158,9 @@ namespace SH
         /// </summary>
         /// <param name="items">The string containing items to be fixed.</param>
         /// <returns>The fixed string with proper item separation.</returns>
-        public static string FixItems(string items)
+        public string FixItems(string items)
         {
-            return Features.FixItems(items);
+            return _features.FixItems(items);
         }
 
         /// <summary>
@@ -170,9 +170,9 @@ namespace SH
         /// </summary>
         /// <param name="jsonTextItems">String JSON containing the key-value pairs to be converted.</param>        
         /// <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
-        public static Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
+        public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
-            return Features.GetDictionaryJson(jsonTextItems);
+            return _features.GetDictionaryJson(jsonTextItems);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SH
         /// <returns>A string containing the JSON representation of the provided dictionary.</returns>
         /// <exception cref="ArgumentException">Thrown if the dictionary is null or empty.</exception>
         /// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
-        public static string GetJsonDictionary(Dictionary<string, string> dictionary)
+        public string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             return GetJsonDictionary(dictionary);
         }
@@ -193,9 +193,9 @@ namespace SH
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>       
         /// <returns>DataSet</returns>
-        public static DataSet GetDataSet(string? origin)
+        public DataSet GetDataSet(string? origin)
         {
-            return Features.GetDataSet(origin);
+            return _features.GetDataSet(origin);
         }
 
         /// <summary>
@@ -205,9 +205,9 @@ namespace SH
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
         /// <returns>DataTable</returns>
-        public static DataTable? GetDataTable(string origin, string sheet = "1")
+        public DataTable? GetDataTable(string origin, string sheet = "1")
         {
-            return Features.GetDataTable(origin, sheet);
+            return _features.GetDataTable(origin, sheet);
         }
 
         /// <summary>
@@ -219,9 +219,9 @@ namespace SH
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
+        public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
         {
-            return Features.SaveDataTable(dataTable, destiny, separator, columns, rows);
+            return _features.SaveDataTable(dataTable, destiny, separator, columns, rows);
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace SH
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public static bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
-            return Features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
+            return _features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
         }
 
         /// <summary>
@@ -252,9 +252,9 @@ namespace SH
         /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>Number of tabs successfully saved.</returns>
-        public static int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
         {
-            return Features.Converter(origin, destiny, sheets, separator, columns, rows, minRows);
+            return _features.Converter(origin, destiny, sheets, separator, columns, rows, minRows);
         }
 
 
@@ -267,9 +267,9 @@ namespace SH
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <returns>True, if success.</returns>
-        public static bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
-            return Features.ConvertAllSheets(origin, destiny, minRows, separator);
+            return _features.ConvertAllSheets(origin, destiny, minRows, separator);
         }
 
 

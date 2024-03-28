@@ -16,13 +16,13 @@ namespace SH.ExcelHelper.Tools
         //{
         //    SheetHelper.Progress = 0;
 
-        //    Treatment.Validate(origin, destiny, sheet, separator, columns, rows);
+        //    Validations.Validate(origin, destiny, sheet, separator, columns, rows);
         //    SheetHelper.Progress += 5; // 5 
 
         //    origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
         //    if (origin == null) return false;
 
-        //    if (!Treatment.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+        //    if (!Validations.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
         //    {
         //        // If no conversion is needed
         //        SheetHelper.Progress = 100;
@@ -42,11 +42,11 @@ namespace SH.ExcelHelper.Tools
             string[] rowFull;
 
             // Defines the number of all rows to be considered
-            int[] rowsNumber = Treatment.DefineRows(rows ?? "", table);
+            int[] rowsNumber = Validations.DefineRows(rows ?? "", table);
             SheetHelper.Progress += 5; // 45                
 
             // Define in ASCII, which will be all the columns to be converted
-            int[] columnsASCII = Treatment.DefineColumnsASCII(columns ?? "", table);
+            int[] columnsASCII = Validations.DefineColumnsASCII(columns ?? "", table);
             SheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet

@@ -1,9 +1,12 @@
-﻿using System;
+﻿using SH.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
+using static System.Windows.Forms.DataFormats;
 
-namespace SH.ExcelHelper
+namespace SH.ExcelHelper.Treatments
 {
 
     /// <summary>
@@ -136,9 +139,21 @@ namespace SH.ExcelHelper
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
             };
-
             Task.WhenAll(validates).Wait();
         }
+
+        internal static void ValidateFormatFileOrigin(string pathFile, string desiredFormat)
+        {
+            if (!string.IsNullOrEmpty(pathFile?.Trim()))
+            {
+                if (!File.Exists(pathFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+            }
+            else
+            {
+                throw new ParamException(nameof(zipFile), nameof(UnZIP));
+            }
+        }
+
 
     }
 }
