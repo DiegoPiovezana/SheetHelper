@@ -25,7 +25,15 @@ namespace SH.Exceptions
 
 
 
+    [Serializable]
+    internal class ParamException : SHException
+    {
+        protected new int Number { get; } = 0;
 
+        internal ParamException(string argument, string method) : base(Messages.ArgumentException(argument, method)) { }
+
+        public ParamException(string argument, string method, Exception innerException) : base(Messages.ArgumentException(argument, method), innerException) { }
+    }
 
     [Serializable]
     internal class FileOriginInUse : SHException

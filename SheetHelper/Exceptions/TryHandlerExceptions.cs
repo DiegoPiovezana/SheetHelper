@@ -12,9 +12,25 @@ namespace SH.Exceptions
     /// </summary>
     internal static class TryHandlerExceptions
     {
-        internal static int FileExcelInUse(SHException exception, List<string>? tryIgnoreExceptions, string pathFile, int countOpen, bool fileOrigin)
+        //internal static int ExceptionManager(SHException exception, List<string>? tryIgnoreExceptions)
+        //{
+        //    switch (exception.Code)
+        //    {
+
+
+
+
+        //        default:
+        //            break;
+        //    }
+        //}
+
+
+
+
+        internal static int FileExcelInUse(SHException exception, string pathFile, int countOpen, bool fileOrigin)
         {
-            if (tryIgnoreExceptions == null || !tryIgnoreExceptions.Contains(exception.Code)) throw exception;
+            //if (tryIgnoreExceptions == null || !tryIgnoreExceptions.Contains(exception.Code)) throw exception;
 
             //#if !NETFRAMEWORK            
             //            throw exception; // Handle exception only to NETFRAMEWORK

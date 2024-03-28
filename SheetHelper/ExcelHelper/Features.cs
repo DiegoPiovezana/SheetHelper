@@ -5,19 +5,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO.Compression;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SH
 {
     internal class Features
-    { 
+    {
         internal static void CloseExcel()
         {
             try
@@ -25,18 +24,23 @@ namespace SH
                 var processes = from p in Process.GetProcessesByName("EXCEL") select p;
                 foreach (var process in processes) process.Kill();
             }
+            catch (SHException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
+                throw new Exception(Messages.UnmappedException(nameof(CloseExcel), ex), ex);
             }
         }
 
-        internal static int GetIndexColumn(string columnName)
+        internal static int GetIndexColumn(string? columnName)
         {
             try
             {
-                int sum = 0;
+                if (string.IsNullOrEmpty(columnName?.Trim())) throw new ParamException(nameof(columnName));
 
+                int sum = 0;
                 foreach (var character in columnName)
                 {
                     sum *= 26;
@@ -45,9 +49,13 @@ namespace SH
 
                 return sum; // E.g.: A = 1, Z = 26, AA = 27
             }
+            catch (SHException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
+                throw new Exception(Messages.UnmappedException(nameof(GetIndexColumn), ex), ex);
             }
         }
 
@@ -56,7 +64,6 @@ namespace SH
             try
             {
                 string columnName = string.Empty;
-
                 while (columnIndex > 0)
                 {
                     int remainder = (columnIndex - 1) % 26;
@@ -66,9 +73,13 @@ namespace SH
 
                 return columnName;
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
             }
         }
 
@@ -76,6 +87,17 @@ namespace SH
         {
             try
             {
+                if (string.IsNullOrEmpty(zipFile?.Trim()) || !File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnGZ));
+                
+                if (!string.IsNullOrEmpty(pathDestiny))
+                {
+                    if (!Directory.Exists(pathDestiny)) Directory.CreateDirectory(pathDestiny);
+                }
+                else
+                {
+                    throw new ParamException(nameof(pathDestiny), nameof(UnGZ));
+                }
+
                 using var compressedFileStream = File.Open(zipFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
@@ -96,16 +118,31 @@ namespace SH
 
                 return File.Exists(fileConverted) ? fileConverted : null;
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }            
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(UnGZ), ex), ex);
             }
         }
-        
+
         internal static string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
             {
+                if (string.IsNullOrEmpty(zipFile?.Trim()) || !File.Exists(zipFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+
+                if (!string.IsNullOrEmpty(pathDestiny))
+                {
+                    if (!Directory.Exists(pathDestiny)) Directory.CreateDirectory(pathDestiny);
+                }
+                else
+                {
+                    throw new ParamException(nameof(pathDestiny), nameof(UnZIP));
+                }
+
                 string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP); // Extract to a new directory
@@ -120,12 +157,16 @@ namespace SH
 
                 return fileDestiny;
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }            
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(UnZIP), ex), ex);
             }
         }
-                
+
         internal static string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
@@ -155,16 +196,20 @@ namespace SH
                 }
                 //}
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(UnzipAuto), ex), ex);
             }
             finally
             {
                 if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
             }
         }
-               
+
         internal static DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
@@ -182,13 +227,16 @@ namespace SH
 
                 return newRow;
             }
-            catch (Exception)
+            catch (SHException)
             {
-
                 throw;
             }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(ConvertToDataRow), ex), ex);
+            }
         }
-              
+
         internal static string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             try
@@ -213,10 +261,13 @@ namespace SH
                     }
                 }
             }
-            catch (Exception)
+            catch (SHException)
             {
-
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetRowArray), ex), ex);
             }
         }
 
@@ -244,13 +295,17 @@ namespace SH
 
                 return sheetDictionary;
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
             }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetAllSheets), ex), ex);
+            }
         }
 
-       internal static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        internal static string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
             try
             {
@@ -267,9 +322,13 @@ namespace SH
                 if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
                 return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(NormalizeText), ex), ex);
             }
         }
 
@@ -285,10 +344,13 @@ namespace SH
                 }
                 return items; // "123123,13514,31234"
             }
-            catch (Exception)
+            catch (SHException)
             {
-
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(FixItems), ex), ex);
             }
         }
 
@@ -308,7 +370,7 @@ namespace SH
             catch (SHException)
             {
                 throw;
-            }
+            }           
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
@@ -324,9 +386,13 @@ namespace SH
 
                 return JsonSerializer.Serialize(dictionary);
             }
+            catch (SHException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception("E-0000-SH: An error occurred while serializing the dictionary to JSON.", ex);
+                throw new Exception(Messages.UnmappedException(nameof(GetJsonDictionary), ex), ex);
             }
         }
 
@@ -346,9 +412,13 @@ namespace SH
 
                 return result;
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetDataSet), ex), ex);
             }
         }
 
@@ -445,9 +515,9 @@ namespace SH
             }
             #endregion
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw new Exception(Messages.UnmappedException(nameof(GetDataTable), ex), ex);
             }
         }
 
@@ -459,16 +529,6 @@ namespace SH
                 Treatment.Validate(destiny, separator, columns, rows);
                 return Conversion.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
-            }
-
-
 
 #if NETFRAMEWORK                        
 
@@ -512,9 +572,9 @@ namespace SH
 
             #endregion
 #endif
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
             }
         }
 
@@ -542,9 +602,13 @@ namespace SH
 
                 return SaveDataTable(table, destiny, separator, columns, rows);
             }
-            catch (Exception)
+            catch (SHException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
         }
 
@@ -591,8 +655,6 @@ namespace SH
                         //    -1;
                     }
 
-
-
                     //var columnSheet = columns.Skip(indexSheet).FirstOrDefault();
                     //var rowSheet = rows.Skip(indexSheet).FirstOrDefault();
 
@@ -605,13 +667,15 @@ namespace SH
 
                 return saveSuccess;
             }
-            catch (Exception)
+            catch (SHException)
             {
-
                 throw;
             }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
+            }
         }
-
 
         internal static bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
@@ -629,14 +693,15 @@ namespace SH
 
                 return true;
             }
-            catch (Exception)
+            catch (SHException)
             {
-
                 throw;
             }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(ConvertAllSheets), ex), ex);
+            }
         }
-
-
 
 
     }

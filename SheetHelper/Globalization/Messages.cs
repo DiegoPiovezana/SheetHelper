@@ -25,12 +25,21 @@ namespace SH.Globalization
             };
         }
 
+        internal static string ArgumentException(string argument, string method)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O parâmetro '{argument}' do método '{method}' não é válido! Por favor, verifique se está preenchido adequadamente. Considere consultar a documentação disponível em https://bit.ly/SheetHelper.",
+                _ => $"The '{argument}' parameter of the '{method}' method is not valid! Please check that it is filled out properly. Consider consulting the documentation available at https://bit.ly/SheetHelper.",
+            };
+        }
+
         internal static string UnmappedException(string nameMethod, System.Exception ex)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos e veja a 'InnerException' desta exceção. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
-                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct and see 'InnerException' of this exception. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
             };
         }
 
