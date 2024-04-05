@@ -1,6 +1,6 @@
 ﻿[![NuGet](https://img.shields.io/nuget/v/SheetHelper.svg)](https://www.nuget.org/packages/SheetHelper/)
 
-<img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/us.png" width=2.0% height=2.0%> See the documentation in English by [clicking here](../../Readme.md).<br/>
+<img src="https://raw.githubusercontent.com/DiegoPiovezana/DiegoPiovezana/main/Images/us.png" width=2.0% height=2.0%> See the documentation in English by [clicking here](../../Readme.md).<br/>
 
 # SheetHelper
 Biblioteca rápida e leve para fácil leitura e conversão de grandes arquivos Excel.<br/>
