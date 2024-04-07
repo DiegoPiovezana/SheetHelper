@@ -1,9 +1,11 @@
 ﻿using SH.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,15 +44,32 @@ namespace SH.ExcelHelper.Treatments
             return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
-        internal void ValidateString(string param, string paramName, string methodName)
+        internal string GetCallingMethodName(int indStack)
+        {
+            //StackFrame frame = new(indStack);
+            //StringBuilder nameMethod = new();
+
+            //for (int i = 1; frame.GetILOffset() != -1 && i <= levelPath; i++)
+            //{
+            //    nameMethod.Insert(0, "/" + frame.GetMethod().Name);
+            //    frame = new StackFrame(indStack + i);
+            //}
+
+            //return nameMethod.ToString();           
+
+            StackFrame callerFrame = new StackTrace().GetFrame(indStack); // 1 para obter o chamador do método atual
+            return callerFrame.GetMethod().Name;
+        }
+
+        internal void ValidateString(string? param, string paramName, string methodName)
         {
             if (string.IsNullOrEmpty(param))
             {
-                throw new ArgumentSHException(paramName, methodName); // GetCallingMethodName(indStack)
+                throw new ArgumentSHException(paramName, methodName); 
             }
         }
 
-        internal void ValidateFile(string pathFile, string paramName, string methodName)
+        internal void ValidateFile(string? pathFile, string paramName, string methodName)
         {
             ValidateString(pathFile, paramName, methodName);
 
@@ -78,7 +97,7 @@ namespace SH.ExcelHelper.Treatments
                     case 0: return;
                     case 1: goto again;
                     default: throw new FileDestinyInUseSHException(pathOrigin);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -86,14 +105,13 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateDestinyFile(string destiny)
+        internal void ValidateDestinyFile(string? destiny, string methodName)
         {
             int countOpen = 0;
 
         again:
             try
             {
-
                 File.WriteAllText(destiny, ""); // To check if the destination file is accessible
                 File.Delete(destiny); // Delete to prevent the file from being opened during conversion
             }
@@ -112,12 +130,14 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateDestinyFolder(string destiny, bool createIfNotExist)
+        internal void ValidateDestinyFolder(string destiny, bool createIfNotExist, string paramName, string methodName)
         {
             try
             {
+                ValidateString(destiny, paramName, methodName);
+
                 if (createIfNotExist) { Directory.CreateDirectory(destiny); }
-                if (!Directory.Exists(destiny)) throw new Exceptions.DirectoryNotFoundSHException("E-0000-SH: Destiny folder not found.");
+                if (!Directory.Exists(destiny)) throw new DirectoryNotFoundSHException("E-0000-SH: Destiny folder not found.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -129,7 +149,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSheet(string sheet)
+        internal void ValidateSheetId(string sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
@@ -172,13 +192,13 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal void Validate(string origin, string destiny, string sheet, string separator, string? columns, string? rows, string methodName)
+        internal void Validate(string? origin, string? destiny, string? sheet, string? separator, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {
                 Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
-                Task.Run(() => ValidateDestinyFile(destiny)),
-                Task.Run(() => ValidateSheet(sheet)),
+                Task.Run(() => ValidateDestinyFile(destiny, methodName)),
+                Task.Run(() => ValidateSheetId(sheet)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
@@ -190,16 +210,16 @@ namespace SH.ExcelHelper.Treatments
                 Task.WaitAll(validates.ToArray());
             }
             catch (AggregateException ex)
-            {                
+            {
                 throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
             }
         }
 
-        internal void Validate(string destiny, string separator, string? columns, string? rows)
+        internal void Validate(string destiny, string separator, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateDestinyFile(destiny)),
+                Task.Run(() => ValidateDestinyFile(destiny, methodName)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
@@ -217,24 +237,15 @@ namespace SH.ExcelHelper.Treatments
         //    {
         //        throw new ParamException(nameof(zipFile), nameof(UnZIP));
         //    }
-        //}
+        //}               
 
-        internal string GetCallingMethodName(int indStack)
+        internal void ValidateRowsMinDt(DataTable? table, int minRows, string methodName)
         {
-            //StackFrame frame = new(indStack);
-            //StringBuilder nameMethod = new();
+            if (table == null)
+                throw new ArgumentSHException(nameof(table), methodName);
 
-            //for (int i = 1; frame.GetILOffset() != -1 && i <= levelPath; i++)
-            //{
-            //    nameMethod.Insert(0, "/" + frame.GetMethod().Name);
-            //    frame = new StackFrame(indStack + i);
-            //}
-
-            //return nameMethod.ToString();           
-
-            StackFrame callerFrame = new StackTrace().GetFrame(indStack); // 1 para obter o chamador do método atual
-            return callerFrame.GetMethod().Name;
+            if (table.Rows.Count < minRows - 1)
+                throw new RowsMinDtSHException(table.TableName);
         }
-
     }
 }

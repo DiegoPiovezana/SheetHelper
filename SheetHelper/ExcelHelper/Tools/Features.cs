@@ -12,27 +12,27 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace SH.ExcelHelper.Tools
 {
-    internal class Features
+    internal class Features : ISheetHelper
     {
         private readonly SheetHelper _sheetHelper;
         private readonly Validations _validations;
+        private readonly Reading _reading;
         private readonly Writing _writing;
 
         public Features(SheetHelper sheetHelper)
         {
             _sheetHelper = sheetHelper;
             _validations = new Validations(sheetHelper);
+            _reading = new Reading();
             _writing = new Writing(sheetHelper);
-
         }
 
 
 
-        internal void CloseExcel()
+        public void CloseExcel()
         {
             try
             {
@@ -49,7 +49,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal int GetIndexColumn(string? columnName)
+        public int GetIndexColumn(string? columnName)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string GetNameColumn(int columnIndex)
+        public string GetNameColumn(int columnIndex)
         {
             try
             {
@@ -102,16 +102,8 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(gzFile?.Trim()) || !File.Exists(gzFile)) throw new ArgumentSHException(nameof(gzFile), nameof(UnGZ));
-
-                if (!string.IsNullOrEmpty(pathDestiny))
-                {
-                    if (!Directory.Exists(pathDestiny)) Directory.CreateDirectory(pathDestiny);
-                }
-                else
-                {
-                    throw new ArgumentSHException(nameof(pathDestiny), nameof(UnGZ));
-                }
+                _validations.ValidateFile(gzFile, nameof(gzFile), nameof(UnGZ));
+                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnGZ));
 
                 using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
@@ -147,35 +139,19 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (!string.IsNullOrEmpty(zipFile?.Trim()))
-                {
-                    if (!File.Exists(zipFile)) throw new FileNotFoundSHException(nameof(zipFile));
-                }
-                else
-                {
-                    throw new PathFileNullSHException(nameof(zipFile));
-                }
-
-                if (!string.IsNullOrEmpty(pathDestiny))
-                {
-                    if (!Directory.Exists(pathDestiny)) Directory.CreateDirectory(pathDestiny);
-                }
-                else
-                {
-                    throw new ArgumentSHException(nameof(pathDestiny), nameof(UnZIP));
-                }
+                _validations.ValidateFile(zipFile, nameof(zipFile), nameof(UnZIP));
+                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnZIP));
 
                 string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
-                ZipFile.ExtractToDirectory(zipFile, directoryZIP); // Extract to a new directory
+                ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
-                string fileLocation = Directory.EnumerateFiles(directoryZIP).First(); // Get the location of the file
-                string fileDestiny = Path.Combine(pathDestiny, Path.GetFileName(fileLocation)); // Destination location of the file
+                string fileLocation = Directory.EnumerateFiles(directoryZIP).First();
+                string fileDestiny = Path.Combine(pathDestiny, Path.GetFileName(fileLocation));
 
-                if (File.Exists(fileDestiny)) File.Delete(fileDestiny); // If the file already exists, delete it
-
-                File.Move(fileLocation, fileDestiny); // Move it to the target location
-                Directory.Delete(directoryZIP, true); // Delete the previously created directory
+                if (File.Exists(fileDestiny)) File.Delete(fileDestiny);
+                File.Move(fileLocation, fileDestiny);
+                Directory.Delete(directoryZIP, true);
 
                 return fileDestiny;
             }
@@ -193,13 +169,12 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                Directory.CreateDirectory(pathDestiny);
+                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnzipAuto));
 
             restart:
 
-                if (string.IsNullOrEmpty(zipFile)) return null;
-                //using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
-                //{
+                _validations.ValidateFile(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
+
                 switch (Path.GetExtension(zipFile).ToLower())
                 {
                     case ".gz":
@@ -215,7 +190,6 @@ namespace SH.ExcelHelper.Tools
                         if (mandatory) throw new UnableUnzipSHException(zipFile);
                         else return zipFile;
                 }
-                //}
             }
             catch (SHException)
             {
@@ -296,6 +270,8 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
+                _validations.ValidateFile(filePath, nameof(filePath), nameof(GetAllSheets));
+
                 var dataSet = GetDataSet(filePath);
 
                 if (minQtdRows == 0 && formatName == false)
@@ -330,7 +306,8 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(text)) throw new ArgumentSHException(nameof(text), nameof(NormalizeText));
+                if (string.IsNullOrEmpty(text)) return "";
+
                 string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
                 StringBuilder stringBuilder = new();
 
@@ -379,7 +356,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                _validations.ValidateString(jsonTextItems,nameof(jsonTextItems), _validations.GetCallingMethodName(1));
+                _validations.ValidateString(jsonTextItems, nameof(jsonTextItems), _validations.GetCallingMethodName(1));
 
                 //if (string.IsNullOrEmpty(jsonTextItems))
                 //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
@@ -421,12 +398,12 @@ namespace SH.ExcelHelper.Tools
             {
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));               
+                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 _sheetHelper.Progress += 5; // 5 
 
-                DataSet result = Reading.GetDataSet(origin);
+                DataSet result = _reading.GetDataSet(origin);
                 _sheetHelper.Progress += 25; // 35 (after reading the file)
 
                 return result;
@@ -443,90 +420,86 @@ namespace SH.ExcelHelper.Tools
 
         internal DataTable? GetDataTable(string origin, string sheet = "1")
         {
-            int countOpen = 0; // Count of times Excel was open
-
-        again:
-
             try
             {
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
-                _validations.ValidateSheet(sheet);
+                _validations.ValidateSheetId(sheet);
 
                 var result = GetDataSet(origin); // 35 (after reading the file)
 
                 // Get the sheet to be converted
-                DataTable table = Reading.GetTableByDataSet(sheet, result);
+                DataTable table = _reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
-                table = Reading.FirstRowToHeader(table, Path.GetExtension(origin));
+                table = _reading.FirstRowToHeader(table, Path.GetExtension(origin));
                 _sheetHelper.Progress += 5; // 40
 
                 return table;
             }
 
-//#if NETFRAMEWORK
+            //#if NETFRAMEWORK
 
-//            //#region If file not found       
-//            //catch (Exception ex) when (ex.InnerException.Message.Contains("file not found"))
-//            //{
-//            //    var result1 = MessageBox.Show(
-//            //                       "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
-//            //                       + "\n\n" + origin,
-//            //                       "Aviso",
-//            //                       MessageBoxButtons.OKCancel,
-//            //                       MessageBoxIcon.Exclamation);
+            //            //#region If file not found       
+            //            //catch (Exception ex) when (ex.InnerException.Message.Contains("file not found"))
+            //            //{
+            //            //    var result1 = MessageBox.Show(
+            //            //                       "O arquivo '" + Path.GetFileName(origin) + "' não foi localizado. Por favor, verifique se o arquivo está presente no repositório de origem e confirme para continuar: "
+            //            //                       + "\n\n" + origin,
+            //            //                       "Aviso",
+            //            //                       MessageBoxButtons.OKCancel,
+            //            //                       MessageBoxIcon.Exclamation);
 
 
-//            //    if (result1 == DialogResult.OK)
-//            //    {
-//            //        goto again; // Try conversion again
-//            //    }
+            //            //    if (result1 == DialogResult.OK)
+            //            //    {
+            //            //        goto again; // Try conversion again
+            //            //    }
 
-//            //    return null;
-//            //}
-//            //#endregion
+            //            //    return null;
+            //            //}
+            //            //#endregion
 
-//            //#region If file is in use
-//            //catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
-//            //{
-//            //    countOpen++; // Counter for failed attempts with open file
+            //            //#region If file is in use
+            //            //catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
+            //            //{
+            //            //    countOpen++; // Counter for failed attempts with open file
 
-//            //    if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
-//            //    {
+            //            //    if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
+            //            //    {
 
-//            //        var result2 = MessageBox.Show(
-//            //           "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
-//            //           "Aviso",
-//            //           MessageBoxButtons.YesNo,
-//            //           MessageBoxIcon.Exclamation);
+            //            //        var result2 = MessageBox.Show(
+            //            //           "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
+            //            //           "Aviso",
+            //            //           MessageBoxButtons.YesNo,
+            //            //           MessageBoxIcon.Exclamation);
 
-//            //        if (result2 == DialogResult.Yes)
-//            //        {
-//            //            CloseExcel(); // Close all Excel processes
-//            //            System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
-//            //            goto again; // Try conversion again
+            //            //        if (result2 == DialogResult.Yes)
+            //            //        {
+            //            //            CloseExcel(); // Close all Excel processes
+            //            //            System.Threading.Thread.Sleep(1500); // Wait for Excel to close completely for 1.5 seconds
+            //            //            goto again; // Try conversion again
 
-//            //        } // If No, continue execution below
-//            //    }
+            //            //        } // If No, continue execution below
+            //            //    }
 
-//            //    var result3 = MessageBox.Show(
-//            //        $"O arquivo '{Path.GetFileName(origin)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-//            //        "Aviso",
-//            //        MessageBoxButtons.OKCancel,
-//            //        MessageBoxIcon.Error);
+            //            //    var result3 = MessageBox.Show(
+            //            //        $"O arquivo '{Path.GetFileName(origin)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+            //            //        "Aviso",
+            //            //        MessageBoxButtons.OKCancel,
+            //            //        MessageBoxIcon.Error);
 
-//            //    if (result3 == DialogResult.OK)
-//            //    {
-//            //        goto again; // Try conversion again
-//            //    }
-//            //    else // If canceled
-//            //    {
-//            //        return null;
-//            //    }
-//            //}
+            //            //    if (result3 == DialogResult.OK)
+            //            //    {
+            //            //        goto again; // Try conversion again
+            //            //    }
+            //            //    else // If canceled
+            //            //    {
+            //            //        return null;
+            //            //    }
+            //            //}
 
-//            //#endregion
-//#endif
+            //            //#endregion
+            //#endif
 
 
             #region If file in unsupported format
@@ -547,52 +520,52 @@ namespace SH.ExcelHelper.Tools
 
             try
             {
-                _validations.Validate(destiny, separator, columns, rows);
+                _validations.Validate(destiny, separator, columns, rows, nameof(SaveDataTable));
                 return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
 
-//#if NETFRAMEWORK                        
+            //#if NETFRAMEWORK                        
 
-//            #region If file is in use
-//            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
-//            {
-//                countOpen++; // Counter for failed attempts with open file
+            //            #region If file is in use
+            //            catch (Exception eiEx) when (eiEx.Message.Contains("file being used by another process") || eiEx.Message.Contains("sendo usado por outro processo"))
+            //            {
+            //                countOpen++; // Counter for failed attempts with open file
 
-//                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
-//                {
-//                    var result2 = MessageBox.Show(
-//                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
-//                       "Aviso",
-//                       MessageBoxButtons.YesNo,
-//                       MessageBoxIcon.Exclamation);
+            //                if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
+            //                {
+            //                    var result2 = MessageBox.Show(
+            //                       "Parece que o arquivo ainda continua em uso. Deseja forçar o encerramento do Excel e tentar novamente? \n\nTodos os Excel abertos serão fechados e as alterações não serão salvas!",
+            //                       "Aviso",
+            //                       MessageBoxButtons.YesNo,
+            //                       MessageBoxIcon.Exclamation);
 
-//                    if (result2 == DialogResult.Yes)
-//                    {
-//                        CloseExcel();
-//                        System.Threading.Thread.Sleep(1500);
-//                        goto again;
+            //                    if (result2 == DialogResult.Yes)
+            //                    {
+            //                        CloseExcel();
+            //                        System.Threading.Thread.Sleep(1500);
+            //                        goto again;
 
-//                    } // If No, continue execution below
-//                }
+            //                    } // If No, continue execution below
+            //                }
 
-//                var result3 = MessageBox.Show(
-//                    $"O arquivo '{Path.GetFileName(destiny)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
-//                    "Aviso",
-//                    MessageBoxButtons.OKCancel,
-//                    MessageBoxIcon.Error);
+            //                var result3 = MessageBox.Show(
+            //                    $"O arquivo '{Path.GetFileName(destiny)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+            //                    "Aviso",
+            //                    MessageBoxButtons.OKCancel,
+            //                    MessageBoxIcon.Error);
 
-//                if (result3 == DialogResult.OK)
-//                {
-//                    goto again;
-//                }
-//                else // If canceled
-//                {
-//                    return false;
-//                }
-//            }
+            //                if (result3 == DialogResult.OK)
+            //                {
+            //                    goto again;
+            //                }
+            //                else // If canceled
+            //                {
+            //                    return false;
+            //                }
+            //            }
 
-//            #endregion
-//#endif
+            //            #endregion
+            //#endif
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
@@ -605,21 +578,20 @@ namespace SH.ExcelHelper.Tools
             {
                 _sheetHelper.Progress = 5;
 
-                if (string.IsNullOrEmpty(destiny)) throw new ArgumentException($"E-0000-SH: The '{nameof(destiny)}' is null or empty.", destiny);
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
                 if (!_validations.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
                 {
-                    // If no conversion is needed
                     _sheetHelper.Progress = 100;
                     File.Copy(origin, destiny, true);
                     if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
                 }
 
-                DataTable? table = GetDataTable(origin, sheet); // Progress 40        
-                if (table == null || table.Rows.Count < minRows - 1) throw new Exception("E-0000-SH: The sheet does not have the minimum number of rows.");
+                DataTable? table = GetDataTable(origin, sheet);   
+                _validations.ValidateRowsMinDt(table, minRows, nameof(Converter));                
 
                 return SaveDataTable(table, destiny, separator, columns, rows);
             }
@@ -637,9 +609,10 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateDestinyFile(destiny, nameof(Converter));
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));               
 
                 var sheetsDictionary = GetAllSheets(origin, minRows, true);
 
@@ -702,9 +675,10 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(destiny)) throw new Exception("E-0000-SH: The 'destiny' is null or empty.");
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateDestinyFile(destiny, nameof(Converter));
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
                 foreach (var sheet in GetAllSheets(origin, minRows, true))
                 {

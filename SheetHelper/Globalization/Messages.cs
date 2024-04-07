@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -181,12 +182,19 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O tamanho do vetor excede o número de colunas da dataTable!",
-                _ => $"The length of the row array exceeds the number of columns in the dataTable!",
+                "pt-BR" => $"O tamanho do vetor excede o número de linhas da dataTable!",
+                _ => $"The length of the array exceeds the number of rows in the dataTable!",
             };
         }
 
-
+        internal static string RowsMinDt(string nameDt)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O dataTable '{nameDt}' não possui a quantidade mínima de linhas desejada!",
+                _ => $"The dataTable '{nameDt}' does not have the minimum number of rows desired!",
+            };
+        }
 
 
         #endregion
@@ -375,11 +383,13 @@ namespace SH.Globalization
             };
         }
 
+       
+
         #endregion
 
 
 
-       
+
 
 
     }

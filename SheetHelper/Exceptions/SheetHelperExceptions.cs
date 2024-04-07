@@ -136,6 +136,16 @@ namespace SH.Exceptions
         public RowArrayOverflowDteSHException(Exception innerException) : base(Messages.RowArrayOverflowDt(), innerException) { }
     }
 
+    [Serializable]
+    internal class RowsMinDtSHException : SHException
+    {
+        protected new int Number { get; } = 0;
+
+        internal RowsMinDtSHException(string nameDt) : base(Messages.RowsMinDt(nameDt)) { }
+
+        public RowsMinDtSHException(string nameDt, Exception innerException) : base(Messages.RowsMinDt(nameDt), innerException) { }
+    }
+
     #endregion
 
 

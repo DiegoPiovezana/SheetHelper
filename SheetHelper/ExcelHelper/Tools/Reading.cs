@@ -11,7 +11,7 @@ namespace SH.ExcelHelper.Tools
         /// <summary>
         /// Reads .xls, .xlsx and .xlsb files
         /// </summary>
-        internal static DataSet ReadXLS(FileStream stream)
+        internal DataSet ReadXLS(FileStream stream)
         {
             // Autodetect format, supports:
             // - Binary Excel files (2.0-2003 format; *.xls)
@@ -45,7 +45,7 @@ namespace SH.ExcelHelper.Tools
         /// <summary>
         /// Reads .csv files
         /// </summary>
-        internal static DataSet ReadCSV(FileStream stream)
+        internal DataSet ReadCSV(FileStream stream)
         {
             using var reader = ExcelReaderFactory.CreateCsvReader(stream);
             return reader.AsDataSet();
@@ -58,7 +58,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="result">Dataset of the spreadsheet.</param>
         /// <returns>The DataTable representing the desired sheet.</returns>
         /// <exception cref="Exception">Throws an exception if there is an error locating the sheet.</exception>
-        internal static DataTable GetTableByDataSet(string sheet, DataSet result)
+        internal DataTable GetTableByDataSet(string sheet, DataSet result)
         {
             if (int.TryParse(sheet, out int sheetIndex)) // If the index of the desired sheet is provided
             {
@@ -90,7 +90,7 @@ namespace SH.ExcelHelper.Tools
         /// <summary>
         /// Open the file and perform the reading
         /// </summary>       
-        internal static DataSet GetDataSet(string origin)
+        internal DataSet GetDataSet(string origin)
         {
             using var stream = File.Open(origin, FileMode.Open, FileAccess.Read);
             return Path.GetExtension(origin).ToLower() switch
@@ -100,13 +100,13 @@ namespace SH.ExcelHelper.Tools
             };
         }
 
-        internal static bool IsCsvTxtRptExtension(string extension)
+        internal bool IsCsvTxtRptExtension(string extension)
         {
             string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
             return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
-        internal static DataTable FirstRowToHeader(DataTable dataTable, string extension)
+        internal DataTable FirstRowToHeader(DataTable dataTable, string extension)
         {
             if (IsCsvTxtRptExtension(extension))
             {

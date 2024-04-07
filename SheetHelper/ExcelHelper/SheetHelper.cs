@@ -8,7 +8,7 @@ namespace SH
     /// <summary>
     /// Fast and lightweight library for easy read and conversion of large Excel files
     /// </summary>
-    public class SheetHelper
+    public class SheetHelper : ISheetHelper
     {
         /// <summary>
         /// Represents the conversion progress. If 100%, the conversion is fully completed.
