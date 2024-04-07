@@ -1,8 +1,12 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace SH.Globalization
 {
+    //TODO: use Resouces
+
     internal static class Messages
     {
         #region Warning
@@ -126,7 +130,7 @@ namespace SH.Globalization
 
         #endregion
 
-        #region Row
+        #region Rows
 
         internal static string RowOutRange(string row, int limitIndexRows, int indexRow)
         {
@@ -200,6 +204,28 @@ namespace SH.Globalization
 
         #endregion
 
+        #region File Generic
+
+        internal static string FileNotFound(string pathFile)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O arquivo '{Path.GetFileName(pathFile)}' não foi localizado em '{pathFile}'.",
+                _ => $"The file '{Path.GetFileName(pathFile)}' was not found in '{pathFile}'..",
+            };
+        }
+
+        internal static string PathFileNull(string pathFile)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O caminho '{pathFile}' não é válido!",
+                _ => $"The path '{pathFile}' is not valid!",
+            };
+        }
+
+        #endregion
+
         #region FileOrigin
 
         internal static string FileOriginInUse(string pathFile)
@@ -227,16 +253,7 @@ namespace SH.Globalization
                 "pt-BR" => $"Ocorreu um erro ao validar o arquivo de origem!",
                 _ => $"An error occurred while validating the origin file!",
             };
-        }
-
-        internal static string FileOriginNotFound(string pathFile)
-        {
-            return CultureInfo.CurrentCulture.Name switch
-            {
-                "pt-BR" => $"Arquivo de origem não encontrado em '{pathFile}'.",
-                _ => $"Origin file not found in '{pathFile}'.",
-            };
-        }
+        }        
 
         internal static string FileOriginNameNull()
         {
@@ -345,7 +362,37 @@ namespace SH.Globalization
             };
         }
 
-        #endregion 
+        #endregion
+
+        #region Unzip
+
+        internal static string UnableUnzip(string pathFileZip)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Não é possível extrair o arquivo '{Path.GetFileNameWithoutExtension(pathFileZip)}' pois '{Path.GetExtension(pathFileZip).ToUpper()}' ainda não é suportado!",
+                _ => $"Unable to extract this file '{Path.GetFileNameWithoutExtension(pathFileZip)}' because '{Path.GetExtension(pathFileZip).ToUpper()}' isn't yet supported!",
+            };
+        }
+
+        #endregion
+
+
+
+        private static string GetCallingMethodName(int indStack, int levelPath)
+        {
+            StackFrame frame = new (indStack);
+            StringBuilder nameMethod = new ();
+
+            for (int i = 1; frame.GetILOffset() != -1 && i <= levelPath; i++)
+            {
+                nameMethod.Insert(0, "/" + frame.GetMethod().Name); 
+                frame = new StackFrame(indStack + i); 
+            }
+
+            return nameMethod.ToString();
+        }
+
 
     }
 }

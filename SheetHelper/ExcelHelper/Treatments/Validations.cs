@@ -1,10 +1,7 @@
-﻿using SH.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
-using static System.Windows.Forms.DataFormats;
 
 namespace SH.ExcelHelper.Treatments
 {
@@ -30,7 +27,7 @@ namespace SH.ExcelHelper.Treatments
             return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
-        internal static void ValidateOrigin(string? origin)
+        internal static void ValidateOriginFile(string? origin)
         {
             try
             {
@@ -55,12 +52,29 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateDestiny(string destiny)
+        internal static void ValidateDestinyFile(string destiny)
         {
             try
             {
                 File.WriteAllText(destiny, ""); // To check if the destination file is accessible
                 File.Delete(destiny); // Delete to prevent the file from being opened during conversion
+            }
+            catch (UnauthorizedAccessException)
+            {
+                throw new InvalidOperationException("E-0000-SH: The destination file is in use by another process.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
+            }
+        }
+
+        internal static void ValidateDestinyFolder(string destiny, bool createIfNotExist)
+        {
+            try
+            {
+                if (createIfNotExist) { Directory.CreateDirectory(destiny); }
+                if (!Directory.Exists(destiny)) throw new Exceptions.DirectoryNotFoundException("E-0000-SH: Destiny folder not found.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -119,8 +133,8 @@ namespace SH.ExcelHelper.Treatments
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateOrigin(origin)),
-                Task.Run(() => ValidateDestiny(destiny)),
+                Task.Run(() => ValidateOriginFile(origin)),
+                Task.Run(() => ValidateDestinyFile(destiny)),
                 Task.Run(() => ValidateSheet(sheet)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
@@ -134,7 +148,7 @@ namespace SH.ExcelHelper.Treatments
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateDestiny(destiny)),
+                Task.Run(() => ValidateDestinyFile(destiny)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
@@ -142,17 +156,17 @@ namespace SH.ExcelHelper.Treatments
             Task.WhenAll(validates).Wait();
         }
 
-        internal static void ValidateFormatFileOrigin(string pathFile, string desiredFormat)
-        {
-            if (!string.IsNullOrEmpty(pathFile?.Trim()))
-            {
-                if (!File.Exists(pathFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
-            }
-            else
-            {
-                throw new ParamException(nameof(zipFile), nameof(UnZIP));
-            }
-        }
+        //internal static void ValidateFormatFileOrigin(string pathFile, string desiredFormat)
+        //{
+        //    if (!string.IsNullOrEmpty(pathFile?.Trim()))
+        //    {
+        //        if (!File.Exists(pathFile)) throw new ParamException(nameof(zipFile), nameof(UnZIP));
+        //    }
+        //    else
+        //    {
+        //        throw new ParamException(nameof(zipFile), nameof(UnZIP));
+        //    }
+        //}
 
 
     }

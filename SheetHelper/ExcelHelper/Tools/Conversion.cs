@@ -42,11 +42,11 @@ namespace SH.ExcelHelper.Tools
             string[] rowFull;
 
             // Defines the number of all rows to be considered
-            int[] rowsNumber = Validations.DefineRows(rows ?? "", table);
+            int[] rowsNumber = Definitions.DefineRows(rows ?? "", table);
             SheetHelper.Progress += 5; // 45                
 
             // Define in ASCII, which will be all the columns to be converted
-            int[] columnsASCII = Validations.DefineColumnsASCII(columns ?? "", table);
+            int[] columnsASCII = Definitions.DefineColumnsASCII(columns ?? "", table);
             SheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet

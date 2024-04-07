@@ -48,7 +48,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(columnName?.Trim())) throw new ParamException(nameof(columnName));
+                if (string.IsNullOrEmpty(columnName?.Trim())) throw new ParamException(nameof(columnName), nameof(GetIndexColumn));
 
                 int sum = 0;
                 foreach (var character in columnName)
@@ -144,11 +144,11 @@ namespace SH.ExcelHelper.Tools
             {
                 if (!string.IsNullOrEmpty(zipFile?.Trim()))
                 {
-                    if (!File.Exists(zipFile)) throw new FileOriginNotFound(nameof(zipFile));
+                    if (!File.Exists(zipFile)) throw new FileNotFound(nameof(zipFile));
                 }
                 else
                 {
-                    throw new ParamException(nameof(zipFile), nameof(UnZIP));
+                    throw new PathFileNull(nameof(zipFile));
                 }
 
                 if (!string.IsNullOrEmpty(pathDestiny))
@@ -188,12 +188,11 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(zipFile)) return null;
-
                 Directory.CreateDirectory(pathDestiny);
 
             restart:
 
+                if (string.IsNullOrEmpty(zipFile)) return null;
                 //using (var stream = File.Open(zipFile, FileMode.Open, FileAccess.Read))
                 //{
                 switch (Path.GetExtension(zipFile).ToLower())
@@ -208,7 +207,7 @@ namespace SH.ExcelHelper.Tools
                         goto restart;
 
                     default:
-                        if (mandatory) throw new Exception("E-0000-SH: Unable to extract this file!");
+                        if (mandatory) throw new UnableUnzip(zipFile);
                         else return zipFile;
                 }
                 //}
@@ -239,7 +238,7 @@ namespace SH.ExcelHelper.Tools
                 }
                 else
                 {
-                    throw new ArgumentException("E-0000-SH: The length of the row array exceeds the number of columns in the table.");
+                    throw new RowArrayOverflowDteException();
                 }
 
                 return newRow;
@@ -288,7 +287,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal  Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        internal Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
             {
@@ -326,7 +325,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(text)) throw new ArgumentException("E-0000-SH: The text is null or empty.");
+                if (string.IsNullOrEmpty(text)) throw new ParamException(nameof(text), nameof(NormalizeText));
                 string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
                 StringBuilder stringBuilder = new();
 
@@ -376,13 +375,9 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 if (string.IsNullOrEmpty(jsonTextItems))
-                    throw new ArgumentException($"E-0000-SH: The '{nameof(jsonTextItems)}' parameter is null or empty.");
+                    throw new ParamException(nameof(jsonTextItems), nameof(GetDictionaryJson));
 
                 return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
-            }
-            catch (FileOriginInUse)
-            {
-                TryHandlerExceptions.FileOriginInUse(origin, countOpen);
             }
             catch (SHException)
             {
@@ -399,7 +394,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 if (dictionary == null || dictionary.Count == 0)
-                    throw new ArgumentException("E-0000-SH: The dictionary is null or empty.");
+                    throw new ParamException(nameof(dictionary), nameof(GetJsonDictionary)));
 
                 return JsonSerializer.Serialize(dictionary);
             }
@@ -417,9 +412,9 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                Validations.ValidateOrigin(origin);
+                Validations.ValidateOriginFile(origin);
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                if (string.IsNullOrEmpty(origin)) throw new Exception("E-0000-SH: The 'origin' is null or empty.");
+                Validations.ValidateOriginFile(origin);               
 
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 _sheetHelper.Progress += 5; // 5 
@@ -447,6 +442,7 @@ namespace SH.ExcelHelper.Tools
 
             try
             {
+                Validations.ValidateOriginFile(origin);
                 Validations.ValidateSheet(sheet);
 
                 var result = GetDataSet(origin); // 35 (after reading the file)
