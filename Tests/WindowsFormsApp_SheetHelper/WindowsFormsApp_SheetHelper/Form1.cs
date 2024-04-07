@@ -11,6 +11,8 @@ namespace WindowsFormsApp_SheetHelper
         // Crie um Timer
         private readonly System.Windows.Forms.Timer updateTimer;
 
+        SheetHelper sh = new SheetHelper();
+
 
         public SheetHelper_Menu()
         {
@@ -25,7 +27,7 @@ namespace WindowsFormsApp_SheetHelper
         private void UpdateProgressBar(object sender, EventArgs e)
         {
             // Atualiza a barra de progresso com o valor atual de SheetHelper.Progress
-            pgBarConvert.Value = SheetHelper.Progress;
+            pgBarConvert.Value = sh.Progress;
             this.lblConvertendo.Text = $"Convertendo... {pgBarConvert.Value}%";
         }
 
@@ -99,7 +101,7 @@ namespace WindowsFormsApp_SheetHelper
 
 
             //retorno = SheetHelper.ConvertAllSheet(origem, destino);
-            return SheetHelper.Converter(origem, destino, aba, ";", colunas, linhas);
+            return sh.Converter(origem, destino, aba, ";", colunas, linhas);
 
         }
     }

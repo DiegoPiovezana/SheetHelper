@@ -9,13 +9,20 @@ namespace SH.ExcelHelper.Treatments
     /// <summary>
     /// Used to process the information provided by the user
     /// </summary>
-    internal static class Definitions
+    internal class Definitions
     {
+        readonly SheetHelper _sheetHelper;
+
+        public Definitions(SheetHelper sheetHelper)
+        {
+            _sheetHelper = sheetHelper;
+        }
+
 
         /// <summary>
         /// Receives rows as a string and returns an array of integers with the first and last row.
         /// </summary>
-        internal static int[] DefineRows(string rows, DataTable table)
+        internal int[] DefineRows(string rows, DataTable table)
         {
             int limitIndexRows = table.Rows.Count + 1; // Add 1 to consider header
             List<int> indexRows = new();
@@ -26,7 +33,7 @@ namespace SH.ExcelHelper.Treatments
                 return indexRows.ToArray();
             }
 
-            rows = SheetHelper.FixItems(rows); //"1:23,34:-56,23:1,70,75,-1"
+            rows = _sheetHelper.FixItems(rows); //"1:23,34:-56,23:1,70,75,-1"
 
 
             foreach (string row in rows.Split(','))
@@ -90,7 +97,7 @@ namespace SH.ExcelHelper.Treatments
         /// <param name="table">DataTable a ser analisado.</param>        
         /// <returns>Array with all indexes of the columns to be converted.</returns>
         /// <exception cref="Exception"></exception>
-        internal static int[] DefineColumnsASCII(string columns, DataTable table)
+        internal int[] DefineColumnsASCII(string columns, DataTable table)
         {
             int limitIndexColumn = table.Columns.Count;
             List<int> indexColumns = new();
@@ -98,7 +105,7 @@ namespace SH.ExcelHelper.Treatments
             if (string.IsNullOrEmpty(columns) || string.IsNullOrEmpty(columns.Trim())) // If columns not specified                
                 return new int[] { 0 }; // Behavior to convert all columns
 
-            columns = SheetHelper.FixItems(columns);
+            columns = _sheetHelper.FixItems(columns);
             columns = columns.ToUpper();
 
             // "A:H,4:9,4:-9,B,75,-2"
@@ -141,7 +148,7 @@ namespace SH.ExcelHelper.Treatments
             {
                 int indexColumn;
 
-                if (column.All(c => char.IsLetter(c))) indexColumn = SheetHelper.GetIndexColumn(column);
+                if (column.All(c => char.IsLetter(c))) indexColumn = _sheetHelper.GetIndexColumn(column);
                 else indexColumn = Convert.ToInt32(column);
 
                 if (indexColumn >= 0)  // "75"

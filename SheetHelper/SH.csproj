@@ -53,6 +53,10 @@
 		</None>
 		<None Include="ExcelReader\ExcelDataReader.DataSet\ExcelDataReader.DataSet.csproj" />
 		<None Include="ExcelReader\ExcelDataReader\ExcelDataReader.csproj" />
+		<None Include="Images\SheetHelper_icon.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

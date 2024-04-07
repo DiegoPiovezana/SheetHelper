@@ -12,10 +12,12 @@ namespace SH.ExcelHelper.Tools
     internal class Writing
     {
         private readonly SheetHelper _sheetHelper;
+        private readonly Definitions _definitions;
 
         public Writing(SheetHelper sheetHelper)
         {
             _sheetHelper = sheetHelper;
+            _definitions = new Definitions(sheetHelper);
         }
 
 
@@ -51,11 +53,11 @@ namespace SH.ExcelHelper.Tools
             string[] rowFull;
 
             // Defines the number of all rows to be considered
-            int[] rowsNumber = Definitions.DefineRows(rows ?? "", table);
+            int[] rowsNumber = _definitions.DefineRows(rows ?? "", table);
             _sheetHelper.Progress += 5; // 45                
 
             // Define in ASCII, which will be all the columns to be converted
-            int[] columnsASCII = Definitions.DefineColumnsASCII(columns ?? "", table);
+            int[] columnsASCII = _definitions.DefineColumnsASCII(columns ?? "", table);
             _sheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet

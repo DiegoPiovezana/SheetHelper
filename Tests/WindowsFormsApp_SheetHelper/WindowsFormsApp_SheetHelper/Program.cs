@@ -100,7 +100,7 @@ namespace WindowsFormsApp_SheetHelper
             separador = ";";
             linhas = "3:5,2,3";
             colunas = "A,C,B";            
-            var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            var retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
 
             //linhas = "1:10";
             //carregamento.Value = 0;

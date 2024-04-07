@@ -29,10 +29,10 @@ namespace TestSheetHelper
             string columns = "A, 3, b, 12:-1"; // or null to convert all columns or "A:BC" for a column range
             string rows = ":4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
-
-            var dt = SheetHelper.GetDataTable(origin, "1");
-            var first = SheetHelper.GetRowArray(dt);
-            bool success = SheetHelper.SaveDataTable(dt, destination, delimiter, columns, rows);
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origin, "1");
+            var first = sh.GetRowArray(dt);
+            bool success = sh.SaveDataTable(dt, destination, delimiter, columns, rows);
 
             Assert.That(success, Is.EqualTo(true));
         }
@@ -52,7 +52,8 @@ namespace TestSheetHelper
             string columns = "A, 3, b, -5:-1"; // or null to convert all columns or "A:BC" for a column range
             string rows = "1:2,:4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
-            bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
+            var sh = new SheetHelper();
+            bool success = sh.Converter(source, destination, sheet, delimiter, columns, rows);
             Assert.That(success, Is.EqualTo(true));
         }
 
@@ -67,7 +68,8 @@ namespace TestSheetHelper
             string columns = "a:F"; // or null to convert all columns or "A:BC" for a column range
             string rows = "1:8"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
-            bool success = SheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
+            var sh = new SheetHelper();
+            bool success = sh.Converter(source, destination, sheet, delimiter, columns, rows);
             Assert.That(success, Is.EqualTo(true));
         }
 
@@ -83,7 +85,8 @@ namespace TestSheetHelper
             string? colunas = "A:";
             string? linhas = ":";
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            var sh = new SheetHelper();
+            bool retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -99,7 +102,7 @@ namespace TestSheetHelper
             string? colunas = "A:";
             string? linhas = ":";
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -115,7 +118,7 @@ namespace TestSheetHelper
             string? colunas = null;
             string? linhas = null;
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -131,7 +134,7 @@ namespace TestSheetHelper
             string? colunas = null;
             string? linhas = null;
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -149,7 +152,7 @@ namespace TestSheetHelper
             string? colunas = "A,2,c";
             string? linhas = "1:3,4,-1"; // Ex.: se "2:" extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -164,7 +167,7 @@ namespace TestSheetHelper
             string? colunas = null;
             string linhas = "1:3";
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -179,7 +182,7 @@ namespace TestSheetHelper
             string? colunas = null;
             string? linhas = null;
 
-            bool retorno = SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -194,14 +197,16 @@ namespace TestSheetHelper
             string? colunas = "";
             string? linhas = "1:";
 
-            SheetHelper.ProhibitedItems = new Dictionary<string, string>
+            var sh = new SheetHelper();
+
+            sh.ProhibitedItems = new Dictionary<string, string>
             {
                 { "\n", " " },
                 { "\r", " " },
                 { ";", "," },
             };
 
-            bool retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -216,14 +221,16 @@ namespace TestSheetHelper
             string? colunas = "";
             string? linhas = "1:";
 
-            SheetHelper.ProhibitedItems = new Dictionary<string, string>
+            var sh = new SheetHelper();
+
+            sh.ProhibitedItems = new Dictionary<string, string>
             {
                 { "\n", " " },
                 { "\r", " " },
                 { ";", "," },
             };
 
-            bool retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            bool retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 
@@ -245,7 +252,7 @@ namespace TestSheetHelper
             int minRows = 1;
 
 
-            var retorno = SheetHelper.Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
 
             Assert.That(retorno == abas.Count, Is.EqualTo(true));
         }
@@ -268,17 +275,19 @@ namespace TestSheetHelper
                 { ";", "," },
             };
 
-            //SheetHelper.ProhibitedItems = dic;
+            var sh = new SheetHelper();
+
+            //sh.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
             string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
             string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
             string jsonDictionary1 = System.Text.Json.JsonSerializer.Serialize(dic);
-            string jsonDictionary2 = SheetHelper.GetJsonDictionary(dic);
+            string jsonDictionary2 = sh.GetJsonDictionary(dic);
 
-            SheetHelper.ProhibitedItems = SheetHelper.GetDictionaryJson(jsonDictionary2);
+            sh.ProhibitedItems = sh.GetDictionaryJson(jsonDictionary2);
 
-            var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            var retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
 
             Assert.That(retorno, Is.EqualTo(true));
         }
@@ -295,7 +304,9 @@ namespace TestSheetHelper
             //string? rows = "1:3, 5, 1; 2";
             string? rows = "3:1, -1:-2; -2:-1";
 
-            bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
+            var sh = new SheetHelper();
+
+            bool result = sh.Converter(origin, destiny, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
         }
 
@@ -309,9 +320,9 @@ namespace TestSheetHelper
             string separator = ";";
             string? columns = "C:A, A; -1, -2:-3; -3:-1";
             string? rows = "1:3, 1, 3:1";
-           
 
-            bool result = SheetHelper.Converter(origin, destiny, sheet, separator, columns, rows);
+            var sh = new SheetHelper();
+            bool result = sh.Converter(origin, destiny, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
         }
 
@@ -336,7 +347,8 @@ namespace TestSheetHelper
             string separador = ";";
             string colunas = "A, 2,c";
 
-            return SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            var sh = new SheetHelper();
+            return sh.Converter(origem, destino, aba, separador, colunas, linhas);
         }
 
         [TestCase("A, C, b", 1, ExpectedResult = true, TestName = "Colunas maiuscula e minuscula e fora de ordem...")]
@@ -353,7 +365,8 @@ namespace TestSheetHelper
             string separador = ";";
             string linhas = "2:";
 
-            return SH.SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            var sh = new SheetHelper();
+            return sh.Converter(origem, destino, aba, separador, colunas, linhas);
         }
 
         // --------------------------------------------------------------------------------
@@ -434,7 +447,7 @@ namespace TestSheetHelper
             string? colunas = "A, b, 4,-1";
             string? linhas = ":10,-1";
 
-            return SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            return new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
 
         }
 

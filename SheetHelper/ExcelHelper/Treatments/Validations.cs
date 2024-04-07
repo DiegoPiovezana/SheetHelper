@@ -176,15 +176,23 @@ namespace SH.ExcelHelper.Treatments
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName),
+                Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
                 Task.Run(() => ValidateDestinyFile(destiny)),
                 Task.Run(() => ValidateSheet(sheet)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
-                Task.Run(() => ValidateRows(rows)))
+                Task.Run(() => ValidateRows(rows))
             };
 
-            Task.WhenAll(validates).Wait();
+            try
+            {
+                //Task.WhenAll(validates).Wait();
+                Task.WaitAll(validates.ToArray());
+            }
+            catch (AggregateException ex)
+            {                
+                throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
+            }
         }
 
         internal void Validate(string destiny, string separator, string? columns, string? rows)
