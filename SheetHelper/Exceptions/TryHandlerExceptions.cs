@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader.Log.Logger;
 using SH.Globalization;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -10,8 +11,19 @@ namespace SH.Exceptions
     /// <para>1: Try again.</para>
     /// <para>Or throw exception</para>
     /// </summary>
-    internal static class TryHandlerExceptions
+    internal class TryHandlerExceptions
     {
+        private readonly SheetHelper _sheethelper;
+
+        public TryHandlerExceptions(SheetHelper sheetHelper)
+        {
+            _sheethelper = sheetHelper;
+        }
+
+
+
+
+
         //internal static int ExceptionManager(SHException exception, List<string>? tryIgnoreExceptions)
         //{
         //    switch (exception.Code)
@@ -27,8 +39,12 @@ namespace SH.Exceptions
 
 
 
-
-        internal static int FileExcelInUse(SHException exception, string pathFile, int countOpen, bool fileOrigin)
+        /// <summary>
+        /// <para>0: Ignore the exception and no warning will be thrown;</para>
+        /// <para>1: Try again.</para>
+        /// <para>Or throw exception</para>
+        /// </summary>
+        internal int FileExcelInUse(Exception exception, string pathFile, int countOpen, bool fileOrigin)
         {
             //if (tryIgnoreExceptions == null || !tryIgnoreExceptions.Contains(exception.Code)) throw exception;
 
@@ -48,7 +64,7 @@ namespace SH.Exceptions
 
                 if (result2 == DialogResult.Yes)
                 {
-                    SheetHelper.CloseExcel();
+                    _sheethelper.CloseExcel();
                     System.Threading.Thread.Sleep(1500);
                     return 1;
 

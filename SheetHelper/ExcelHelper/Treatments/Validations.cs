@@ -1,6 +1,10 @@
-﻿using System;
+﻿using SH.Exceptions;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SH.ExcelHelper.Treatments
@@ -9,13 +13,24 @@ namespace SH.ExcelHelper.Treatments
     /// <summary>
     /// Used to process the information provided by the user
     /// </summary>
-    internal static class Validations
+    internal class Validations
     {
+        readonly TryHandlerExceptions _tryHandlerExceptions;
+
+        public Validations(SheetHelper sheetHelper)
+        {
+            _tryHandlerExceptions = new TryHandlerExceptions(sheetHelper);
+        }
+
+
+
+
+
         /// <summary>
         /// Checks if it is necessary to convert the file.
         /// </summary>
         /// <returns>True if conversion is required.</returns>
-        internal static bool CheckConvertNecessary(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        internal bool CheckConvertNecessary(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         {
             bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny), StringComparison.OrdinalIgnoreCase); // The formats is the same?
             bool isOriginTextFormat = Path.GetExtension(origin).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(origin).Equals(".txt", StringComparison.OrdinalIgnoreCase);                                                                             // 
@@ -27,24 +42,43 @@ namespace SH.ExcelHelper.Treatments
             return !((checkFormat || checkFormatText) && checkColumns && checkRows);
         }
 
-        internal static void ValidateOriginFile(string? origin)
+        internal void ValidateString(string param, string paramName, string methodName)
         {
+            if (string.IsNullOrEmpty(param))
+            {
+                throw new ArgumentSHException(paramName, methodName); // GetCallingMethodName(indStack)
+            }
+        }
+
+        internal void ValidateFile(string pathFile, string paramName, string methodName)
+        {
+            ValidateString(pathFile, paramName, methodName);
+
+            if (!File.Exists(pathFile))
+            {
+                throw new FileNotFoundSHException(pathFile);
+            }
+        }
+
+        internal void ValidateOriginFile(string? pathOrigin, string paramName, string methodName)
+        {
+
+            int countOpen = 0;
+
+        again:
             try
             {
-                if (string.IsNullOrEmpty(origin)) throw new Exception($"E-0000-SH: The '{nameof(origin)}' is null or empty.");
-
-                if (!File.Exists(origin))
-                {
-                    throw new FileNotFoundException("E-0000-SH: Origin file not found.", origin);
-                }
-                else
-                {
-                    File.OpenRead(origin).Dispose(); // To check if the file is accessible
-                }
+                ValidateFile(pathOrigin, paramName, methodName);
+                File.OpenRead(pathOrigin).Dispose(); // To check if the file is accessible
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new InvalidOperationException("E-0000-SH: The origin file is in use by another process.");
+                switch (_tryHandlerExceptions.FileExcelInUse(ex, pathOrigin, countOpen, true))
+                {
+                    case 0: return;
+                    case 1: goto again;
+                    default: throw new FileDestinyInUseSHException(pathOrigin);
+                }                
             }
             catch (Exception ex)
             {
@@ -52,16 +86,25 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateDestinyFile(string destiny)
+        internal void ValidateDestinyFile(string destiny)
         {
+            int countOpen = 0;
+
+        again:
             try
             {
+
                 File.WriteAllText(destiny, ""); // To check if the destination file is accessible
                 File.Delete(destiny); // Delete to prevent the file from being opened during conversion
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new InvalidOperationException("E-0000-SH: The destination file is in use by another process.");
+                switch (_tryHandlerExceptions.FileExcelInUse(ex, destiny, countOpen, false))
+                {
+                    case 0: return;
+                    case 1: goto again;
+                    default: throw new FileDestinyInUseSHException(destiny);
+                }
             }
             catch (Exception ex)
             {
@@ -69,12 +112,12 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateDestinyFolder(string destiny, bool createIfNotExist)
+        internal void ValidateDestinyFolder(string destiny, bool createIfNotExist)
         {
             try
             {
                 if (createIfNotExist) { Directory.CreateDirectory(destiny); }
-                if (!Directory.Exists(destiny)) throw new Exceptions.DirectoryNotFoundException("E-0000-SH: Destiny folder not found.");
+                if (!Directory.Exists(destiny)) throw new Exceptions.DirectoryNotFoundSHException("E-0000-SH: Destiny folder not found.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -86,7 +129,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateSheet(string sheet)
+        internal void ValidateSheet(string sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
@@ -101,7 +144,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateSeparator(string separator)
+        internal void ValidateSeparator(string separator)
         {
             // ";"
 
@@ -111,14 +154,14 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal static void ValidateColumns(string? columns)
+        internal void ValidateColumns(string? columns)
         {
             // "A:H, 4:9, B, 75, -2"
 
             // TODO: Add specific validation logic for columns
         }
 
-        internal static void ValidateRows(string? rows)
+        internal void ValidateRows(string? rows)
         {
             // "1:23, 34:56, 70, 75, -1"
 
@@ -129,22 +172,22 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal static void Validate(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        internal void Validate(string origin, string destiny, string sheet, string separator, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateOriginFile(origin)),
+                Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName),
                 Task.Run(() => ValidateDestinyFile(destiny)),
                 Task.Run(() => ValidateSheet(sheet)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
-                Task.Run(() => ValidateRows(rows))
+                Task.Run(() => ValidateRows(rows)))
             };
 
             Task.WhenAll(validates).Wait();
         }
 
-        internal static void Validate(string destiny, string separator, string? columns, string? rows)
+        internal void Validate(string destiny, string separator, string? columns, string? rows)
         {
             List<Task> validates = new()
             {
@@ -168,6 +211,22 @@ namespace SH.ExcelHelper.Treatments
         //    }
         //}
 
+        internal string GetCallingMethodName(int indStack)
+        {
+            //StackFrame frame = new(indStack);
+            //StringBuilder nameMethod = new();
+
+            //for (int i = 1; frame.GetILOffset() != -1 && i <= levelPath; i++)
+            //{
+            //    nameMethod.Insert(0, "/" + frame.GetMethod().Name);
+            //    frame = new StackFrame(indStack + i);
+            //}
+
+            //return nameMethod.ToString();           
+
+            StackFrame callerFrame = new StackTrace().GetFrame(indStack); // 1 para obter o chamador do método atual
+            return callerFrame.GetMethod().Name;
+        }
 
     }
 }

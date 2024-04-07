@@ -1,5 +1,4 @@
 ﻿using SH.ExcelHelper.Treatments;
-using SH.Exceptions;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -10,8 +9,18 @@ namespace SH.ExcelHelper.Tools
     /// <summary>
     /// Fast and lightweight library for easy conversion of large Excel files
     /// </summary>
-    internal static class Conversion
+    internal class Writing
     {
+        private readonly SheetHelper _sheetHelper;
+
+        public Writing(SheetHelper sheetHelper)
+        {
+            _sheetHelper = sheetHelper;
+        }
+
+
+
+
         //internal static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
         //{
         //    SheetHelper.Progress = 0;
@@ -35,7 +44,7 @@ namespace SH.ExcelHelper.Tools
         //    return ConverterDataTable(table, destiny, separator, columns, rows);
         //}
 
-        internal static bool SaveDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
+        internal bool SaveDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
         {
 
             StringBuilder output = new();
@@ -43,11 +52,11 @@ namespace SH.ExcelHelper.Tools
 
             // Defines the number of all rows to be considered
             int[] rowsNumber = Definitions.DefineRows(rows ?? "", table);
-            SheetHelper.Progress += 5; // 45                
+            _sheetHelper.Progress += 5; // 45                
 
             // Define in ASCII, which will be all the columns to be converted
             int[] columnsASCII = Definitions.DefineColumnsASCII(columns ?? "", table);
-            SheetHelper.Progress += 5; // 50 (tratativas ok)
+            _sheetHelper.Progress += 5; // 50 (tratativas ok)
 
             double countPercPrg = 40.0 / rowsNumber.Count(); // Percentage to be progressed for each row of the worksheet
             double percPrg = countPercPrg;
@@ -115,7 +124,7 @@ namespace SH.ExcelHelper.Tools
 
                 if (countPercPrg >= 1) // If applicable, load the progress
                 {
-                    SheetHelper.Progress += (int)countPercPrg; // 90                                                               
+                    _sheetHelper.Progress += (int)countPercPrg; // 90                                                               
                     countPercPrg -= (int)countPercPrg;
                 }
 
@@ -163,7 +172,7 @@ namespace SH.ExcelHelper.Tools
                 //writer.WriteLine();
             }
 
-            SheetHelper.Progress += 90 - SheetHelper.Progress; // If necessary, complete up to 90%
+            _sheetHelper.Progress += 90 - _sheetHelper.Progress; // If necessary, complete up to 90%
 
             // Write new converted file (overwrite if existing)
             //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
@@ -171,12 +180,12 @@ namespace SH.ExcelHelper.Tools
 
             if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
-            SheetHelper.Progress += 10; // 100
+            _sheetHelper.Progress += 10; // 100
             return true;
         }
 
         //internal static T[] TreatCell<T>(T[] cells, string separator = ";")
-        internal static string TreatCell(string cellValue, string separator)
+        internal string TreatCell(string cellValue, string separator)
         {
             //// Header
             //rowFull = table.Columns.Cast<DataColumn>().Select(column =>
@@ -230,9 +239,9 @@ namespace SH.ExcelHelper.Tools
             {
                 cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""
 
-                if (SheetHelper.ProhibitedItems != null && SheetHelper.ProhibitedItems.Count > 0)
+                if (_sheetHelper.ProhibitedItems != null && _sheetHelper.ProhibitedItems.Count > 0)
                 {
-                    foreach (var item in SheetHelper.ProhibitedItems)
+                    foreach (var item in _sheetHelper.ProhibitedItems)
                     {
                         cellValue = cellValue.Replace(item.Key, item.Value);
                     }

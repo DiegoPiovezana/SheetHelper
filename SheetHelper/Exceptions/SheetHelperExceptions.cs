@@ -32,13 +32,13 @@ namespace SH.Exceptions
     #region Generic Params
 
     [Serializable]
-    internal class ParamException : SHException
+    internal class ArgumentSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal ParamException(string argumentName, string methodName) : base(Messages.ArgumentException(argumentName, methodName)) { }
+        internal ArgumentSHException(string argumentName, string methodName) : base(Messages.ArgumentException(argumentName, methodName)) { }
 
-        public ParamException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentException(argumentName, methodName), innerException) { }
+        public ArgumentSHException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentException(argumentName, methodName), innerException) { }
     }
 
     #endregion
@@ -46,23 +46,23 @@ namespace SH.Exceptions
     #region File Generic
 
     [Serializable]
-    internal class FileNotFound : SHException
+    internal class FileNotFoundSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal FileNotFound(string pathFile) : base(Messages.FileNotFound(pathFile)) { }
+        internal FileNotFoundSHException(string pathFile) : base(Messages.FileNotFound(pathFile)) { }
 
-        public FileNotFound(string pathFile, Exception innerException) : base(Messages.FileNotFound(pathFile), innerException) { }
+        public FileNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FileNotFound(pathFile), innerException) { }
     }
 
     [Serializable]
-    internal class PathFileNull : SHException
+    internal class PathFileNullSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal PathFileNull(string pathFile) : base(Messages.PathFileNull(pathFile)) { }
+        internal PathFileNullSHException(string pathFile) : base(Messages.PathFileNull(pathFile)) { }
 
-        public PathFileNull(string pathFile, Exception innerException) : base(Messages.PathFileNull(pathFile), innerException) { }
+        public PathFileNullSHException(string pathFile, Exception innerException) : base(Messages.PathFileNull(pathFile), innerException) { }
     }
 
 
@@ -71,13 +71,13 @@ namespace SH.Exceptions
     #region FileOrigin
 
     [Serializable]
-    internal class FileOriginInUse : SHException
+    internal class FileOriginInUseSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal FileOriginInUse(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
+        internal FileOriginInUseSHException(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
 
-        public FileOriginInUse(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
+        public FileOriginInUseSHException(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
     }    
 
     #endregion
@@ -85,13 +85,13 @@ namespace SH.Exceptions
     #region FileDestiny
 
     [Serializable]
-    internal class FileDestinyInUse : SHException
+    internal class FileDestinyInUseSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal FileDestinyInUse(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
+        internal FileDestinyInUseSHException(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
 
-        public FileDestinyInUse(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
+        public FileDestinyInUseSHException(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
     }
 
     #endregion
@@ -99,13 +99,13 @@ namespace SH.Exceptions
     #region Directory
 
     [Serializable]
-    internal class DirectoryNotFoundException : SHException
+    internal class DirectoryNotFoundSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal DirectoryNotFoundException(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
+        internal DirectoryNotFoundSHException(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
 
-        public DirectoryNotFoundException(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
+        public DirectoryNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
     }
 
     #endregion
@@ -113,13 +113,13 @@ namespace SH.Exceptions
     #region Unzip
 
     [Serializable]
-    internal class UnableUnzip : SHException
+    internal class UnableUnzipSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal UnableUnzip(string pathFileZip) : base(Messages.UnableUnzip(pathFileZip)) { }
+        internal UnableUnzipSHException(string pathFileZip) : base(Messages.UnableUnzip(pathFileZip)) { }
 
-        public UnableUnzip(string pathFileZip, Exception innerException) : base(Messages.UnableUnzip(pathFileZip), innerException) { }
+        public UnableUnzipSHException(string pathFileZip, Exception innerException) : base(Messages.UnableUnzip(pathFileZip), innerException) { }
     }
 
     #endregion
@@ -127,13 +127,13 @@ namespace SH.Exceptions
     #region Rows
 
     [Serializable]
-    internal class RowArrayOverflowDteException : SHException
+    internal class RowArrayOverflowDteSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal RowArrayOverflowDteException() : base(Messages.RowArrayOverflowDt()) { }
+        internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
 
-        public RowArrayOverflowDteException(Exception innerException) : base(Messages.RowArrayOverflowDt(), innerException) { }
+        public RowArrayOverflowDteSHException(Exception innerException) : base(Messages.RowArrayOverflowDt(), innerException) { }
     }
 
     #endregion

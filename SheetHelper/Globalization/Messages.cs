@@ -379,19 +379,7 @@ namespace SH.Globalization
 
 
 
-        private static string GetCallingMethodName(int indStack, int levelPath)
-        {
-            StackFrame frame = new (indStack);
-            StringBuilder nameMethod = new ();
-
-            for (int i = 1; frame.GetILOffset() != -1 && i <= levelPath; i++)
-            {
-                nameMethod.Insert(0, "/" + frame.GetMethod().Name); 
-                frame = new StackFrame(indStack + i); 
-            }
-
-            return nameMethod.ToString();
-        }
+       
 
 
     }
