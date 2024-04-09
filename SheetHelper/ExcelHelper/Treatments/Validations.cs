@@ -6,6 +6,7 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,7 +82,7 @@ namespace SH.ExcelHelper.Treatments
         {
             if (string.IsNullOrEmpty(param?.Trim()))
             {
-                throw new ArgumentNullOrEmptySHException(paramName, methodName); 
+                throw new ArgumentNullOrEmptySHException(paramName, methodName);
             }
         }
 
@@ -165,7 +166,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSheetId(string sheet)
+        internal void ValidateSheetId(string? sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
@@ -180,7 +181,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSeparator(string separator)
+        internal void ValidateSeparator(string? separator)
         {
             // ";"
 
@@ -208,20 +209,43 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
+        internal async Task ValidateAsync(List<string?> origins, List<string?> destinations, List<string?> sheets, List<string?> separators, List<string?> columns, List<string?> rows, string methodName)
+        {
+            try
+            {
+                List<Task> validates = new();
+
+                validates.AddRange(origins.Select(origin => Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))));
+                validates.AddRange(destinations.Select(destiny => Task.Run(() => ValidateDestinyFile(destiny, methodName))));
+                validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetId(sheet))));
+                validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparator(separator))));
+                validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumns(column))));
+                validates.AddRange(rows.Select(row => Task.Run(() => ValidateRows(row))));
+
+                await Task.WhenAll(validates.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
+            }
+        }
+
+
         internal void Validate(string? origin, string? destiny, string? sheet, string? separator, string? columns, string? rows, string methodName)
         {
-            List<Task> validates = new()
+            try
             {
+
+                List<Task> validates = new()
+                {
                 Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
                 Task.Run(() => ValidateDestinyFile(destiny, methodName)),
                 Task.Run(() => ValidateSheetId(sheet)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))
-            };
+                };
 
-            try
-            {
                 //Task.WhenAll(validates).Wait();
                 Task.WaitAll(validates.ToArray());
             }

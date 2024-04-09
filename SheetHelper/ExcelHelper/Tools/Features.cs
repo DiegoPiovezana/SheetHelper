@@ -39,22 +39,16 @@ namespace SH.ExcelHelper.Tools
                 var processes = from p in Process.GetProcessesByName("EXCEL") select p;
                 foreach (var process in processes) process.Kill();
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(CloseExcel), ex), ex);
             }
         }
 
         public int GetIndexColumn(string? columnName)
         {
             try
-            {
-                _validations.ValidateStringNullOrEmpty(columnName, nameof(columnName), nameof(GetIndexColumn));
-
+            {                
                 int sum = 0;
                 foreach (var character in columnName)
                 {
@@ -64,22 +58,16 @@ namespace SH.ExcelHelper.Tools
 
                 return sum; // E.g.: A = 1, Z = 26, AA = 27
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetIndexColumn), ex), ex);
             }
         }
 
         public string GetNameColumn(int columnIndex)
         {
             try
-            {
-                _validations.ValidateIntMin(columnIndex, nameof(columnIndex), nameof(GetNameColumn),1);
-
+            {                
                 string columnName = string.Empty;
                 while (columnIndex > 0)
                 {
@@ -90,23 +78,16 @@ namespace SH.ExcelHelper.Tools
 
                 return columnName;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
             }
         }
 
         public string? UnGZ(string gzFile, string pathDestiny)
         {
             try
-            {
-                _validations.ValidateFile(gzFile, nameof(gzFile), nameof(UnGZ));
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnGZ));
-
+            {                
                 using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
@@ -128,23 +109,16 @@ namespace SH.ExcelHelper.Tools
 
                 return File.Exists(fileConverted) ? fileConverted : null;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(UnGZ), ex), ex);
             }
         }
 
         public string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
-            {
-                _validations.ValidateFile(zipFile, nameof(zipFile), nameof(UnZIP));
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnZIP));
-
+            {                
                 string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
@@ -158,21 +132,16 @@ namespace SH.ExcelHelper.Tools
 
                 return fileDestiny;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(UnZIP), ex), ex);
             }
         }
 
         public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
-            {
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnzipAuto));
+            {               
 
             restart:
 
@@ -194,13 +163,9 @@ namespace SH.ExcelHelper.Tools
                         else return zipFile;
                 }
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(UnzipAuto), ex), ex);
             }
             finally
             {
@@ -211,10 +176,7 @@ namespace SH.ExcelHelper.Tools
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
-            {
-                _validations.ValidateArgumentNull(row, nameof(row), nameof(ConvertToDataRow));
-                _validations.ValidateArgumentNull(table, nameof(table), nameof(ConvertToDataRow));
-
+            {                
                 DataRow newRow = table.NewRow();
 
                 if (row.Length <= table.Columns.Count)
@@ -228,23 +190,16 @@ namespace SH.ExcelHelper.Tools
 
                 return newRow;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(ConvertToDataRow), ex), ex);
             }
         }
 
         public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             try
-            {
-                _validations.ValidateArgumentNull(table, nameof(table), nameof(GetRowArray));
-                _validations.ValidateIntMin(indexRow, nameof(indexRow), nameof(GetRowArray));
-
+            {                
                 if (header)
                 {
                     return table.Columns.Cast<DataColumn>()
@@ -265,23 +220,16 @@ namespace SH.ExcelHelper.Tools
                     }
                 }
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetRowArray), ex), ex);
             }
         }
 
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
-            {
-                _validations.ValidateFile(filePath, nameof(filePath), nameof(GetAllSheets));
-                _validations.ValidateIntMin(minQtdRows, nameof(minQtdRows), nameof(GetAllSheets));
-
+            {      
                 var dataSet = GetDataSet(filePath);
 
                 if (minQtdRows == 0 && formatName == false)
@@ -302,13 +250,9 @@ namespace SH.ExcelHelper.Tools
 
                 return sheetDictionary;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetAllSheets), ex), ex);
             }
         }
 
@@ -330,13 +274,9 @@ namespace SH.ExcelHelper.Tools
                 if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
                 return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(NormalizeText), ex), ex);
             }
         }
 
@@ -352,13 +292,9 @@ namespace SH.ExcelHelper.Tools
                 }
                 return items; // "123123,13514,31234"
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(FixItems), ex), ex);
             }
         }
 
@@ -366,20 +302,14 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                _validations.ValidateStringNullOrEmpty(jsonTextItems, nameof(jsonTextItems), _validations.GetCallingMethodName(1));
-
                 //if (string.IsNullOrEmpty(jsonTextItems))
                 //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
 
                 return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetDictionaryJson), ex), ex);
             }
         }
 
@@ -392,21 +322,16 @@ namespace SH.ExcelHelper.Tools
 
                 return JsonSerializer.Serialize(dictionary);
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetJsonDictionary), ex), ex);
             }
         }
 
         public DataSet GetDataSet(string? origin)
         {
             try
-            {
-                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
+            {                
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
@@ -418,13 +343,9 @@ namespace SH.ExcelHelper.Tools
 
                 return result;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetDataSet), ex), ex);
             }
         }
 
@@ -432,9 +353,6 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
-                _validations.ValidateSheetId(sheet);
-
                 var result = GetDataSet(origin); // 35 (after reading the file)
 
                 // Get the sheet to be converted
@@ -519,9 +437,9 @@ namespace SH.ExcelHelper.Tools
             }
             #endregion
 
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception(Messages.UnmappedException(nameof(GetDataTable), ex), ex);
+                throw;
             }
         }
 
@@ -530,8 +448,7 @@ namespace SH.ExcelHelper.Tools
 
             try
             {
-                _validations.Validate(destiny, separator, columns, rows, nameof(SaveDataTable));
-                return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
+                                return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
 
             //#if NETFRAMEWORK                        
@@ -587,8 +504,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 _sheetHelper.Progress = 5;
-
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                                
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -605,22 +521,16 @@ namespace SH.ExcelHelper.Tools
 
                 return SaveDataTable(table, destiny, separator, columns, rows);
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
         }
 
         public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
         {
             try
-            {
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
-                _validations.ValidateDestinyFile(destiny, nameof(Converter));
+            {               
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -671,22 +581,16 @@ namespace SH.ExcelHelper.Tools
 
                 return saveSuccess;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
         }
 
         public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
             try
-            {
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
-                _validations.ValidateDestinyFile(destiny, nameof(Converter));
+            {                
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -698,14 +602,11 @@ namespace SH.ExcelHelper.Tools
 
                 return true;
             }
-            catch (SHException)
+            catch (Exception)
             {
                 throw;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(ConvertAllSheets), ex), ex);
-            }
+            
         }
 
 
