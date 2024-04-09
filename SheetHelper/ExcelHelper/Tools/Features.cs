@@ -48,7 +48,7 @@ namespace SH.ExcelHelper.Tools
         public int GetIndexColumn(string? columnName)
         {
             try
-            {                
+            {
                 int sum = 0;
                 foreach (var character in columnName)
                 {
@@ -67,7 +67,7 @@ namespace SH.ExcelHelper.Tools
         public string GetNameColumn(int columnIndex)
         {
             try
-            {                
+            {
                 string columnName = string.Empty;
                 while (columnIndex > 0)
                 {
@@ -87,12 +87,12 @@ namespace SH.ExcelHelper.Tools
         public string? UnGZ(string gzFile, string pathDestiny)
         {
             try
-            {                
+            {
                 using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
                 // If the format to be converted is not specified, try to get it from the file name
-                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) 
+                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny)))
                 {
                     string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
                     string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
@@ -118,7 +118,7 @@ namespace SH.ExcelHelper.Tools
         public string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
-            {                
+            {
                 string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
 
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
@@ -141,7 +141,7 @@ namespace SH.ExcelHelper.Tools
         public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
-            {               
+            {
 
             restart:
 
@@ -176,7 +176,7 @@ namespace SH.ExcelHelper.Tools
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
-            {                
+            {
                 DataRow newRow = table.NewRow();
 
                 if (row.Length <= table.Columns.Count)
@@ -199,7 +199,7 @@ namespace SH.ExcelHelper.Tools
         public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             try
-            {                
+            {
                 if (header)
                 {
                     return table.Columns.Cast<DataColumn>()
@@ -229,7 +229,7 @@ namespace SH.ExcelHelper.Tools
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
-            {      
+            {
                 var dataSet = GetDataSet(filePath);
 
                 if (minQtdRows == 0 && formatName == false)
@@ -331,7 +331,7 @@ namespace SH.ExcelHelper.Tools
         public DataSet GetDataSet(string? origin)
         {
             try
-            {                
+            {
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
@@ -359,6 +359,7 @@ namespace SH.ExcelHelper.Tools
                 DataTable table = _reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
+                // TODO: Refactor
                 table = _reading.FirstRowToHeader(table, Path.GetExtension(origin));
                 _sheetHelper.Progress += 5; // 40
 
@@ -448,7 +449,7 @@ namespace SH.ExcelHelper.Tools
 
             try
             {
-                                return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
+                return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
 
             //#if NETFRAMEWORK                        
@@ -504,7 +505,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 _sheetHelper.Progress = 5;
-                                
+
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -527,10 +528,20 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, ICollection<int> minRows)
         {
             try
-            {               
+            {
+                /* possibilities:
+                 * origin = 1;
+                 * destinations = 1 or X;
+                 * sheets = X quantity;
+                 * separators = 1 or X;
+                 * columns = null or X;
+                 * rows = null or X;
+                 * minRows = 1 or X.                
+                 */
+
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -575,8 +586,8 @@ namespace SH.ExcelHelper.Tools
                     var columnSheet = columns.Skip(i).FirstOrDefault();
                     var rowSheet = rows.Skip(i).FirstOrDefault();
 
-                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}__{sheetId}{Path.GetExtension(destiny)}");
-                    saveSuccess += SaveDataTable(dtSheet, dest, separator, columnSheet, rowSheet) ? 1 : 0;
+                    string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
+                    saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;
@@ -590,7 +601,7 @@ namespace SH.ExcelHelper.Tools
         public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
             try
-            {                
+            {
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
@@ -606,7 +617,7 @@ namespace SH.ExcelHelper.Tools
             {
                 throw;
             }
-            
+
         }
 
 

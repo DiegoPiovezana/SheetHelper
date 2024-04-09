@@ -354,12 +354,12 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, int minRows = 1)
         {
             try
             {
-                _validations.Validate(origin, destiny, sheets, separator, columns, rows, nameof(Converter));               
-                return _features.Converter(origin, destiny, sheets, separator, columns, rows, minRows);
+                _validations.ValidateAsync(origin, destinations, sheets, separators, columns, rows, nameof(Converter));               
+                return _features.Converter(origin, destinations, sheets, separators, columns, rows, minRows);
             }
             catch (SHException)
             {

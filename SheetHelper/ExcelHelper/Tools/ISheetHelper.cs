@@ -11,6 +11,7 @@ namespace SH.ExcelHelper.Tools
         /// </summary>
         void CloseExcel();
 
+
         /// <summary>
         /// Receives the column name and returns the index in the worksheet
         /// </summary>
@@ -18,12 +19,14 @@ namespace SH.ExcelHelper.Tools
         /// <returns>Index. E.g.: "A" = 1</returns>
         int GetIndexColumn(string columnName);
 
+
         /// <summary>
         /// Gets the column name by index
         /// </summary>
         /// <param name="columnIndex"> Column index</param>
         /// <returns>Column name (e.g.: "AB")</returns>
         string GetNameColumn(int columnIndex);
+
 
         /// <summary>
         /// Unpacks a .GZ file.
@@ -33,6 +36,7 @@ namespace SH.ExcelHelper.Tools
         /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
         public string? UnGZ(string zipFile, string pathDestiny);
 
+
         /// <summary>
         /// Extracts a .ZIP file.
         /// </summary>
@@ -40,6 +44,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <returns>The path of the extracted file.</returns>
         public string? UnZIP(string? zipFile, string pathDestiny);
+
 
         /// <summary>
         /// Unzip a .zip or .gz file.
@@ -51,6 +56,7 @@ namespace SH.ExcelHelper.Tools
         /// <returns>The path of the extracted file.</returns>
         public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true);
 
+
         /// <summary>
         /// Converts a string array to a DataRow and returns the resulting DataRow.
         /// </summary>
@@ -58,6 +64,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="table">The target DataTable to which the new DataRow will be added.</param>
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
         public DataRow ConvertToDataRow(string[] row, DataTable table);
+
 
         /// <summary>
         /// Retrieves a row of a DataTable.
@@ -68,6 +75,7 @@ namespace SH.ExcelHelper.Tools
         /// <returns>An array of strings representing a row of the DataTable.</returns>
         public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0);
 
+
         /// <summary>
         /// Gets the sheets in the workbook with the respective dataTable.
         /// </summary>
@@ -76,6 +84,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="formatName">If true, all spaces and special characters from tab names will be removed.</param>
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false);
+
 
         /// <summary>
         /// Normalizes the text by removing accents and spaces.
@@ -87,6 +96,7 @@ namespace SH.ExcelHelper.Tools
         /// <returns>Text normalized.</returns>
         public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true);
 
+
         /// <summary>
         /// Fixes a string containing items by replacing line breaks and semicolons with commas,
         /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
@@ -94,6 +104,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="items">The string containing items to be fixed.</param>
         /// <returns>The fixed string with proper item separation.</returns>
         public string FixItems(string items);
+
 
         /// <summary>
         /// Converts a string in JSON format to a dictionary.
@@ -104,6 +115,7 @@ namespace SH.ExcelHelper.Tools
         /// <returns>A dictionary containing the extracted key-value pairs from the string.</returns>
         public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems);
 
+
         /// <summary>
         /// Serializes a dictionary of strings into a JSON representation.
         /// </summary>
@@ -113,6 +125,7 @@ namespace SH.ExcelHelper.Tools
         /// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
         public string GetJsonDictionary(Dictionary<string, string> dictionary);
 
+
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.
         /// <br>Note.: The header is the name of the columns.</br>
@@ -120,6 +133,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx"</param>       
         /// <returns>DataSet</returns>
         public DataSet GetDataSet(string? origin);
+
 
         /// <summary>
         /// Reads the file and gets the datatable of the specified sheet.
@@ -129,6 +143,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName"</param>
         /// <returns>DataTable</returns>
         public DataTable? GetDataTable(string origin, string sheet = "1");
+
 
         /// <summary>
         /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
@@ -140,6 +155,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null);
+
 
         /// <summary>
         /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
@@ -154,19 +170,21 @@ namespace SH.ExcelHelper.Tools
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
         public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1);
 
+
         /// <summary>
-        /// Converts all spreadsheet tabs considering all rows and columns.
+        /// Converts the desired spreadsheet tabs, considering the destination in the desired format, using the desired separator, columns and rows for each conversion.
         /// <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
-        /// <param name="sheets">Enter the names or indexes of the sheets to be converted. Enter null to convert all sheets.</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
-        /// <param name="columns">"Enter the the group of columns or their range for each sheet.</param>
+        /// <param name="destinations">Enter the group of directory + destinations files names + format."</param>
+        /// <param name="sheets">Enter the names or indexes of the sheets to be converted.</param>
+        /// <param name="separators">The group of separators to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="columns">"Enter the group of columns or their range for each sheet.</param>
         /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
-        /// <returns>Number of tabs successfully saved.</returns>
-        public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1);
+        /// <returns>Number of successful conversions.</returns>
+        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, int minRows = 1);
+
 
         /// <summary>
         /// Converts all spreadsheet tabs considering all rows and columns.

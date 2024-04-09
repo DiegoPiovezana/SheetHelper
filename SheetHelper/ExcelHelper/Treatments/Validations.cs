@@ -194,6 +194,7 @@ namespace SH.ExcelHelper.Treatments
         internal void ValidateColumns(string? columns)
         {
             // "A:H, 4:9, B, 75, -2"
+            // Null Ok
 
             // TODO: Add specific validation logic for columns
         }
@@ -209,13 +210,19 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal async Task ValidateAsync(List<string?> origins, List<string?> destinations, List<string?> sheets, List<string?> separators, List<string?> columns, List<string?> rows, string methodName)
+        internal async Task ValidateAsync(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, string methodName)
         {
             try
             {
-                List<Task> validates = new();
+                
 
-                validates.AddRange(origins.Select(origin => Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))));
+
+
+                List<Task> validates = new()
+                {
+                    Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))
+                };
+
                 validates.AddRange(destinations.Select(destiny => Task.Run(() => ValidateDestinyFile(destiny, methodName))));
                 validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetId(sheet))));
                 validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparator(separator))));
@@ -238,16 +245,16 @@ namespace SH.ExcelHelper.Treatments
 
                 List<Task> validates = new()
                 {
-                Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
-                Task.Run(() => ValidateDestinyFile(destiny, methodName)),
-                Task.Run(() => ValidateSheetId(sheet)),
-                Task.Run(() => ValidateSeparator(separator)),
-                Task.Run(() => ValidateColumns(columns)),
-                Task.Run(() => ValidateRows(rows))
+                    Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
+                    Task.Run(() => ValidateDestinyFile(destiny, methodName)),
+                    Task.Run(() => ValidateSheetId(sheet)),
+                    Task.Run(() => ValidateSeparator(separator)),
+                    Task.Run(() => ValidateColumns(columns)),
+                    Task.Run(() => ValidateRows(rows))
                 };
 
                 //Task.WhenAll(validates).Wait();
-                Task.WaitAll(validates.ToArray());
+                Task.WhenAll(validates.ToArray());
             }
             catch (AggregateException ex)
             {
