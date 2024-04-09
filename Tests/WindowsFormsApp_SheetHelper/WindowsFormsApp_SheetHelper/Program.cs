@@ -95,12 +95,16 @@ namespace WindowsFormsApp_SheetHelper
             //carregamento.Value = 0;
             //var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
+            SH.SheetHelper sheetHelper = new SH.SheetHelper();
+
             origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
             destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\TesteXLSX.csv";
             separador = ";";
             linhas = "3:5,2,3";
             colunas = "A,C,B";            
-            var retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
+            var retorno = sheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
+
+           
 
             //linhas = "1:10";
             //carregamento.Value = 0;

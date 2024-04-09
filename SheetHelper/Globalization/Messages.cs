@@ -28,23 +28,32 @@ namespace SH.Globalization
                 "pt-BR" => $"Por favor, visite https://bit.ly/SheetHelper_Exceptions para saber mais.",
                 _ => $"Please visit https://bit.ly/SheetHelper_Exceptions to learn more.",
             };
-        }
+        }       
 
-        internal static string ArgumentException(string argument, string method)
+        internal static string ArgumentNullOrEmptyException(string argumentName, string methodName)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O parâmetro '{argument}' do método '{method}' não é válido! Por favor, verifique se está preenchido adequadamente. Considere consultar a documentação disponível em https://bit.ly/SheetHelper.",
-                _ => $"The '{argument}' parameter of the '{method}' method is not valid! Please check that it is filled out properly. Consider consulting the documentation available at https://bit.ly/SheetHelper.",
+                "pt-BR" => $"O parâmetro '{argumentName}' do método '{methodName}' não é válido pois está vazio ou inexistente! Por favor, verifique se está preenchido adequadamente. Considere consultar a documentação disponível em https://bit.ly/SheetHelper.",
+                _ => $"The '{argumentName}' parameter of the '{methodName}' method is not valid because it is empty or non-existent! Please check that it is filled out properly. Consider consulting the documentation available at https://bit.ly/SheetHelper.",
             };
         }
 
-        internal static string UnmappedException(string nameMethod, System.Exception ex)
+        internal static string ArgumentMinException(string argumentName, string methodName, int value, int min)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{nameMethod}'! Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
-                _ => $"An error occurred when using the '{nameMethod}' method! Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                "pt-BR" => $"O parâmetro '{argumentName}' do método '{methodName}' não é válido pois é '{value}' e deve ser no mínimo '{min}'! Por favor, verifique se está preenchido adequadamente. Considere consultar a documentação disponível em https://bit.ly/SheetHelper.",
+                _ => $"The '{argumentName}' parameter of the '{methodName}' method is not valid because it is '{value}' and must be at least '{min}'! Please check that it is filled out properly. Consider consulting the documentation available at https://bit.ly/SheetHelper.",
+            };
+        }
+
+        internal static string UnmappedException(string methodName, Exception ex)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{methodName}'! Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                _ => $"An error occurred when using the '{methodName}' method! Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
             };
         }
 

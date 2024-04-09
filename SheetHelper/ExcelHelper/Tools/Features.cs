@@ -53,7 +53,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(columnName?.Trim())) throw new ArgumentSHException(nameof(columnName), nameof(GetIndexColumn));
+                _validations.ValidateStringNullOrEmpty(columnName, nameof(columnName), nameof(GetIndexColumn));
 
                 int sum = 0;
                 foreach (var character in columnName)
@@ -78,6 +78,8 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
+                _validations.ValidateIntMin(columnIndex, nameof(columnIndex), nameof(GetNameColumn),1);
+
                 string columnName = string.Empty;
                 while (columnIndex > 0)
                 {
@@ -98,7 +100,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string? UnGZ(string gzFile, string pathDestiny)
+        public string? UnGZ(string gzFile, string pathDestiny)
         {
             try
             {
@@ -108,7 +110,8 @@ namespace SH.ExcelHelper.Tools
                 using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
-                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) // If the format to be converted is not specified, try to get it from the file name
+                // If the format to be converted is not specified, try to get it from the file name
+                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny))) 
                 {
                     string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
                     string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
@@ -135,7 +138,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string? UnZIP(string? zipFile, string pathDestiny)
+        public string? UnZIP(string? zipFile, string pathDestiny)
         {
             try
             {
@@ -165,7 +168,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
+        public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
         {
             try
             {
@@ -205,10 +208,13 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal DataRow ConvertToDataRow(string[] row, DataTable table)
+        public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
             {
+                _validations.ValidateArgumentNull(row, nameof(row), nameof(ConvertToDataRow));
+                _validations.ValidateArgumentNull(table, nameof(table), nameof(ConvertToDataRow));
+
                 DataRow newRow = table.NewRow();
 
                 if (row.Length <= table.Columns.Count)
@@ -232,10 +238,13 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
+        public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             try
             {
+                _validations.ValidateArgumentNull(table, nameof(table), nameof(GetRowArray));
+                _validations.ValidateIntMin(indexRow, nameof(indexRow), nameof(GetRowArray));
+
                 if (header)
                 {
                     return table.Columns.Cast<DataColumn>()
@@ -266,11 +275,12 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
+        public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             try
             {
                 _validations.ValidateFile(filePath, nameof(filePath), nameof(GetAllSheets));
+                _validations.ValidateIntMin(minQtdRows, nameof(minQtdRows), nameof(GetAllSheets));
 
                 var dataSet = GetDataSet(filePath);
 
@@ -302,7 +312,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
             try
             {
@@ -330,7 +340,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string FixItems(string items)
+        public string FixItems(string items)
         {
             try
             {
@@ -352,11 +362,11 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
+        public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
             try
             {
-                _validations.ValidateString(jsonTextItems, nameof(jsonTextItems), _validations.GetCallingMethodName(1));
+                _validations.ValidateStringNullOrEmpty(jsonTextItems, nameof(jsonTextItems), _validations.GetCallingMethodName(1));
 
                 //if (string.IsNullOrEmpty(jsonTextItems))
                 //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
@@ -373,12 +383,12 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal string GetJsonDictionary(Dictionary<string, string> dictionary)
+        public string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             try
             {
                 if (dictionary == null || dictionary.Count == 0)
-                    throw new ArgumentSHException(nameof(dictionary), nameof(GetJsonDictionary));
+                    throw new ArgumentNullOrEmptySHException(nameof(dictionary), nameof(GetJsonDictionary));
 
                 return JsonSerializer.Serialize(dictionary);
             }
@@ -392,7 +402,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal DataSet GetDataSet(string? origin)
+        public DataSet GetDataSet(string? origin)
         {
             try
             {
@@ -418,7 +428,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal DataTable? GetDataTable(string origin, string sheet = "1")
+        public DataTable? GetDataTable(string origin, string sheet = "1")
         {
             try
             {
@@ -515,7 +525,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
+        public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
         {
 
             try
@@ -572,7 +582,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
             try
             {
@@ -590,8 +600,8 @@ namespace SH.ExcelHelper.Tools
                     return true;
                 }
 
-                DataTable? table = GetDataTable(origin, sheet);   
-                _validations.ValidateRowsMinDt(table, minRows, nameof(Converter));                
+                DataTable? table = GetDataTable(origin, sheet);
+                _validations.ValidateRowsMinDt(table, minRows, nameof(Converter));
 
                 return SaveDataTable(table, destiny, separator, columns, rows);
             }
@@ -605,14 +615,14 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
+        public int Converter(string? origin, string? destiny, ICollection<string>? sheets, string separator = ";", ICollection<string>? columns = default, ICollection<string>? rows = default, int minRows = 1)
         {
             try
             {
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
                 _validations.ValidateDestinyFile(destiny, nameof(Converter));
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));               
+                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
                 var sheetsDictionary = GetAllSheets(origin, minRows, true);
 
@@ -671,7 +681,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        internal bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
         {
             try
             {

@@ -1,7 +1,5 @@
 ﻿using SH.Globalization;
 using System;
-using System.Diagnostics;
-using System.Text;
 
 namespace SH.Exceptions
 {
@@ -32,13 +30,23 @@ namespace SH.Exceptions
     #region Generic Params
 
     [Serializable]
-    internal class ArgumentSHException : SHException
+    internal class ArgumentNullOrEmptySHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal ArgumentSHException(string argumentName, string methodName) : base(Messages.ArgumentException(argumentName, methodName)) { }
+        internal ArgumentNullOrEmptySHException(string argumentName, string methodName) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName)) { }
 
-        public ArgumentSHException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentException(argumentName, methodName), innerException) { }
+        public ArgumentNullOrEmptySHException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName), innerException) { }
+    }
+
+    [Serializable]
+    internal class ArgumentMinSHException : SHException
+    {
+        protected new int Number { get; } = 0;
+
+        internal ArgumentMinSHException(string argumentName, string methodName, int value, int min) : base(Messages.ArgumentMinException(argumentName, methodName, value, min)) { }
+
+        public ArgumentMinSHException(string argumentName, string methodName, int value, int min, Exception innerException) : base(Messages.ArgumentMinException(argumentName, methodName, value, min), innerException) { }
     }
 
     #endregion
@@ -78,7 +86,7 @@ namespace SH.Exceptions
         internal FileOriginInUseSHException(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
 
         public FileOriginInUseSHException(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
-    }    
+    }
 
     #endregion
 

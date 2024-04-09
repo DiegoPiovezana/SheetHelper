@@ -61,17 +61,33 @@ namespace SH.ExcelHelper.Treatments
             return callerFrame.GetMethod().Name;
         }
 
-        internal void ValidateString(string? param, string paramName, string methodName)
+        internal void ValidateIntMin(int number, string paramName, string methodName, int min = 0)
         {
-            if (string.IsNullOrEmpty(param))
+            if (number < min)
             {
-                throw new ArgumentSHException(paramName, methodName); 
+                throw new ArgumentMinSHException(paramName, methodName, number, min);
+            }
+        }
+
+        internal void ValidateArgumentNull(object? param, string paramName, string methodName)
+        {
+            if (param is null)
+            {
+                throw new ArgumentNullOrEmptySHException(paramName, methodName);
+            }
+        }
+
+        internal void ValidateStringNullOrEmpty(string? param, string paramName, string methodName)
+        {
+            if (string.IsNullOrEmpty(param?.Trim()))
+            {
+                throw new ArgumentNullOrEmptySHException(paramName, methodName); 
             }
         }
 
         internal void ValidateFile(string? pathFile, string paramName, string methodName)
         {
-            ValidateString(pathFile, paramName, methodName);
+            ValidateStringNullOrEmpty(pathFile, paramName, methodName);
 
             if (!File.Exists(pathFile))
             {
@@ -134,7 +150,7 @@ namespace SH.ExcelHelper.Treatments
         {
             try
             {
-                ValidateString(destiny, paramName, methodName);
+                ValidateStringNullOrEmpty(destiny, paramName, methodName);
 
                 if (createIfNotExist) { Directory.CreateDirectory(destiny); }
                 if (!Directory.Exists(destiny)) throw new DirectoryNotFoundSHException("E-0000-SH: Destiny folder not found.");
@@ -242,7 +258,7 @@ namespace SH.ExcelHelper.Treatments
         internal void ValidateRowsMinDt(DataTable? table, int minRows, string methodName)
         {
             if (table == null)
-                throw new ArgumentSHException(nameof(table), methodName);
+                throw new ArgumentNullOrEmptySHException(nameof(table), methodName);
 
             if (table.Rows.Count < minRows - 1)
                 throw new RowsMinDtSHException(table.TableName);
