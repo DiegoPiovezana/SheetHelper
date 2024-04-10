@@ -57,7 +57,7 @@ namespace SH.Exceptions
             if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
             {
                 var result2 = MessageBox.Show(
-                   fileOrigin ? Messages.FileOriginInUseAndCloseExcel(pathFile) : Messages.FileDestinyInUseAndCloseExcel(pathFile),
+                   fileOrigin ? Messages.FileOriginInUseAndCloseExcel(pathFile) : Messages.FileDestinationInUseAndCloseExcel(pathFile),
                    Messages.Warning(),
                    MessageBoxButtons.YesNo,
                    MessageBoxIcon.Exclamation);
@@ -72,7 +72,7 @@ namespace SH.Exceptions
             }
 
             var result1 = MessageBox.Show(
-                fileOrigin ? Messages.FileOriginInUse(pathFile) : Messages.FileDestinyInUse(pathFile),
+                fileOrigin ? Messages.FileOriginInUse(pathFile) : Messages.FileDestinationInUse(pathFile),
                 Messages.Warning(),
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Error);

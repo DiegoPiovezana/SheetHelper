@@ -98,13 +98,13 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public string? UnGZ(string gzFile, string pathDestiny)
+        public string? UnGZ(string gzFile, string pathDestination)
         {
             try
             {
                 _validations.ValidateFile(gzFile, nameof(gzFile), nameof(UnGZ));
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnGZ));
-                return _features.UnGZ(gzFile, pathDestiny);
+                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnGZ));
+                return _features.UnGZ(gzFile, pathDestination);
             }
             catch (SHException)
             {
@@ -117,13 +117,13 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public string? UnZIP(string? zipFile, string pathDestiny)
+        public string? UnZIP(string? zipFile, string pathDestination)
         {
             try
             {
                 _validations.ValidateFile(zipFile, nameof(zipFile), nameof(UnZIP));
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnZIP));
-                return _features.UnZIP(zipFile, pathDestiny);
+                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnZIP));
+                return _features.UnZIP(zipFile, pathDestination);
             }
             catch (SHException)
             {
@@ -136,13 +136,13 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
+        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
         {
             try
             {
                 _validations.ValidateFile(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
-                _validations.ValidateDestinyFolder(pathDestiny, true, nameof(pathDestiny), nameof(UnzipAuto));
-                return _features.UnzipAuto(zipFile, pathDestiny, mandatory);
+                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnzipAuto));
+                return _features.UnzipAuto(zipFile, pathDestination, mandatory);
             }
             catch (SHException)
             {
@@ -318,12 +318,12 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
+        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null)
         {
             try
             {
-                _validations.ValidateSaveDataTable(destiny, separator, columns, rows, nameof(SaveDataTable));
-                return _features.SaveDataTable(dataTable, destiny, separator, columns, rows);
+                _validations.ValidateSaveDataTable(destination, separator, columns, rows, nameof(SaveDataTable));
+                return _features.SaveDataTable(dataTable, destination, separator, columns, rows);
             }
             catch (SHException)
             {
@@ -336,12 +336,12 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        public bool Converter(string? origin, string? destination, string sheet, string separator, string? columns, string? rows, int minRows = 1)
         {
             try
             {
-                _validations.ValidateOneConverterAsync(origin, destiny, sheet, separator, columns, rows, nameof(Converter));
-                return _features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
+                _validations.ValidateOneConverterAsync(origin, destination, sheet, separator, columns, rows, nameof(Converter));
+                return _features.Converter(origin, destination, sheet, separator, columns, rows, minRows);
             }
             catch (SHException)
             {
@@ -372,14 +372,14 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")
         {
             try
             {
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
-                _validations.ValidateDestinyFile(destiny, nameof(Converter));
+                _validations.ValidateDestinationFile(destination, nameof(Converter));
                 _validations.ValidateStringNullOrEmpty(separator, nameof(separator), nameof(Converter));
-                return _features.ConvertAllSheets(origin, destiny, minRows, separator);
+                return _features.ConvertAllSheets(origin, destination, minRows, separator);
             }
             catch (SHException)
             {

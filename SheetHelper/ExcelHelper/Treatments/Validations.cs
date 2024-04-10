@@ -35,12 +35,12 @@ namespace SH.ExcelHelper.Treatments
         /// Checks if it is necessary to convert the file.
         /// </summary>
         /// <returns>True if conversion is required.</returns>
-        internal bool CheckConvertNecessary(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        internal bool CheckConvertNecessary(string origin, string destination, string sheet, string separator, string? columns, string? rows)
         {
-            bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destiny), StringComparison.OrdinalIgnoreCase); // The formats is the same?
+            bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destination), StringComparison.OrdinalIgnoreCase); // The formats is the same?
             bool isOriginTextFormat = Path.GetExtension(origin).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(origin).Equals(".txt", StringComparison.OrdinalIgnoreCase);                                                                             // 
-            bool isDestinyTextFormat = Path.GetExtension(destiny).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(destiny).Equals(".txt", StringComparison.OrdinalIgnoreCase);
-            bool checkFormatText = isOriginTextFormat == isDestinyTextFormat;
+            bool isDestinationTextFormat = Path.GetExtension(destination).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(destination).Equals(".txt", StringComparison.OrdinalIgnoreCase);
+            bool checkFormatText = isOriginTextFormat == isDestinationTextFormat;
             bool checkColumns = string.IsNullOrEmpty(columns) || columns.Trim().Equals(":") || columns.Trim().Equals("1:") || columns.Trim().Equals("A:"); // All columns?
             bool checkRows = string.IsNullOrEmpty(rows) || rows.Trim().Equals(":") || rows.Trim().Equals("1:"); // All rows?
 
@@ -115,7 +115,7 @@ namespace SH.ExcelHelper.Treatments
                 {
                     case 0: return;
                     case 1: goto again;
-                    default: throw new FileDestinyInUseSHException(pathOrigin);
+                    default: throw new FileDestinationInUseSHException(pathOrigin);
                 }
             }
             catch (Exception ex)
@@ -124,23 +124,23 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateDestinyFile(string? destiny, string methodName)
+        internal void ValidateDestinationFile(string? destination, string methodName)
         {
             int countOpen = 0;
 
         again:
             try
             {
-                File.WriteAllText(destiny, ""); // To check if the destination file is accessible
-                File.Delete(destiny); // Delete to prevent the file from being opened during conversion
+                File.WriteAllText(destination, ""); // To check if the destination file is accessible
+                File.Delete(destination); // Delete to prevent the file from being opened during conversion
             }
             catch (UnauthorizedAccessException ex)
             {
-                switch (_tryHandlerExceptions.FileExcelInUse(ex, destiny, countOpen, false))
+                switch (_tryHandlerExceptions.FileExcelInUse(ex, destination, countOpen, false))
                 {
                     case 0: return;
                     case 1: goto again;
-                    default: throw new FileDestinyInUseSHException(destiny);
+                    default: throw new FileDestinationInUseSHException(destination);
                 }
             }
             catch (Exception ex)
@@ -149,14 +149,14 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateDestinyFolder(string destiny, bool createIfNotExist, string paramName, string methodName)
+        internal void ValidateDestinationFolder(string destination, bool createIfNotExist, string paramName, string methodName)
         {
             try
             {
-                ValidateStringNullOrEmpty(destiny, paramName, methodName);
+                ValidateStringNullOrEmpty(destination, paramName, methodName);
 
-                if (createIfNotExist) { Directory.CreateDirectory(destiny); }
-                if (!Directory.Exists(destiny)) throw new DirectoryNotFoundSHException("E-0000-SH: Destiny folder not found.");
+                if (createIfNotExist) { Directory.CreateDirectory(destination); }
+                if (!Directory.Exists(destination)) throw new DirectoryNotFoundSHException("E-0000-SH: Destination folder not found.");
             }
             catch (UnauthorizedAccessException)
             {
@@ -228,7 +228,7 @@ namespace SH.ExcelHelper.Treatments
                     Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))
                 };
 
-                validates.AddRange(destinations.Select(destiny => Task.Run(() => ValidateDestinyFile(destiny, methodName))));
+                validates.AddRange(destinations.Select(destination => Task.Run(() => ValidateDestinationFile(destination, methodName))));
                 validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetId(sheet))));
                 validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparator(separator))));
                 validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumns(column))));
@@ -243,14 +243,14 @@ namespace SH.ExcelHelper.Treatments
         }
 
 
-        internal async Task ValidateOneConverterAsync(string? origin, string? destiny, string? sheet, string? separator, string? columns, string? rows, string methodName)
+        internal async Task ValidateOneConverterAsync(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, string methodName)
         {
             try
             {
                 List<Task> validates = new()
                 {
                     Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
-                    Task.Run(() => ValidateDestinyFile(destiny, methodName)),
+                    Task.Run(() => ValidateDestinationFile(destination, methodName)),
                     Task.Run(() => ValidateSheetId(sheet)),
                     Task.Run(() => ValidateSeparator(separator)),
                     Task.Run(() => ValidateColumns(columns)),
@@ -266,11 +266,11 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSaveDataTable(string destiny, string separator, string? columns, string? rows, string methodName)
+        internal void ValidateSaveDataTable(string destination, string separator, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {
-                Task.Run(() => ValidateDestinyFile(destiny, methodName)),
+                Task.Run(() => ValidateDestinationFile(destination, methodName)),
                 Task.Run(() => ValidateSeparator(separator)),
                 Task.Run(() => ValidateColumns(columns)),
                 Task.Run(() => ValidateRows(rows))

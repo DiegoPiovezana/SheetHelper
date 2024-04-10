@@ -23,30 +23,30 @@ namespace SH.ExcelHelper.Tools
 
 
 
-        //internal static bool Converter(string origin, string destiny, string sheet, string separator, string? columns, string? rows)
+        //internal static bool Converter(string origin, string destination, string sheet, string separator, string? columns, string? rows)
         //{
         //    SheetHelper.Progress = 0;
 
-        //    Validations.Validate(origin, destiny, sheet, separator, columns, rows);
+        //    Validations.Validate(origin, destination, sheet, separator, columns, rows);
         //    SheetHelper.Progress += 5; // 5 
 
         //    origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
         //    if (origin == null) return false;
 
-        //    if (!Validations.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+        //    if (!Validations.CheckConvertNecessary(origin, destination, sheet, separator, columns, rows))
         //    {
         //        // If no conversion is needed
         //        SheetHelper.Progress = 100;
-        //        File.Copy(origin, destiny, true);
+        //        File.Copy(origin, destination, true);
         //        return true;
         //    }
 
         //    DataTable table = SheetHelper.GetDataTable(origin, sheet);
 
-        //    return ConverterDataTable(table, destiny, separator, columns, rows);
+        //    return ConverterDataTable(table, destination, separator, columns, rows);
         //}
 
-        internal bool SaveDataTable(DataTable table, string destiny, string separator, string? columns, string? rows)
+        internal bool SaveDataTable(DataTable table, string destination, string separator, string? columns, string? rows)
         {
 
             StringBuilder output = new();
@@ -65,7 +65,7 @@ namespace SH.ExcelHelper.Tools
 
             //table.Rows.Add(); // To avoid IndexOutOfRangeException (last rows will be ignored)
 
-            //using (StreamWriter writer = new (destiny))
+            //using (StreamWriter writer = new (destination))
             //{
 
             // If you want to include header
@@ -177,8 +177,8 @@ namespace SH.ExcelHelper.Tools
             _sheetHelper.Progress += 90 - _sheetHelper.Progress; // If necessary, complete up to 90%
 
             // Write new converted file (overwrite if existing)
-            //File.WriteAllText(destiny, output.ToString(), Encoding.UTF8);
-            using (StreamWriter writer = new(destiny, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
+            //File.WriteAllText(destination, output.ToString(), Encoding.UTF8);
+            using (StreamWriter writer = new(destination, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
 
             if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 

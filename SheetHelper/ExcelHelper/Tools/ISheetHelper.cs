@@ -32,18 +32,18 @@ namespace SH.ExcelHelper.Tools
         /// Unpacks a .GZ file.
         /// </summary>
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
-        /// <param name="pathDestiny">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
+        /// <param name="pathDestination">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
         /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
-        public string? UnGZ(string zipFile, string pathDestiny);
+        public string? UnGZ(string zipFile, string pathDestination);
 
 
         /// <summary>
         /// Extracts a .ZIP file.
         /// </summary>
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
-        /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
+        /// <param name="pathDestination">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <returns>The path of the extracted file.</returns>
-        public string? UnZIP(string? zipFile, string pathDestiny);
+        public string? UnZIP(string? zipFile, string pathDestination);
 
 
         /// <summary>
@@ -51,10 +51,10 @@ namespace SH.ExcelHelper.Tools
         /// <para>Please visit https://bit.ly/SheetHelper_Features to learn more.</para>
         /// </summary>
         /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
-        /// <param name="pathDestiny">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
+        /// <param name="pathDestination">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <param name="mandatory">If true, it indicates that the extraction must occur, otherwise, it will show an error. If false, if the conversion does not happen, nothing happens.</param>
         /// <returns>The path of the extracted file.</returns>
-        public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true);
+        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true);
 
 
         /// <summary>
@@ -146,29 +146,29 @@ namespace SH.ExcelHelper.Tools
 
 
         /// <summary>
-        /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destiny"/>. 
+        /// Performs the conversion of the <paramref name="dataTable"/>, saves in <paramref name="destination"/>. 
         /// </summary>
         /// <param name="dataTable">DataTable to be converted.</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
+        /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null);
+        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null);
 
 
         /// <summary>
-        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destiny"/>.      
+        /// Performs the conversion of the Excel file located in <paramref name="origin"/>, saves in <paramref name="destination"/>.      
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName".</param>
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1);
+        public bool Converter(string? origin, string? destination, string sheet, string separator, string? columns, string? rows, int minRows = 1);
 
 
         /// <summary>
@@ -191,11 +191,11 @@ namespace SH.ExcelHelper.Tools
         /// <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
-        /// <param name="destiny">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
+        /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
         /// <returns>True, if success.</returns>
-        public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";");
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";");
 
     }
 }

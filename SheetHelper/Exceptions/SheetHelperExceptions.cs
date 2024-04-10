@@ -90,16 +90,16 @@ namespace SH.Exceptions
 
     #endregion
 
-    #region FileDestiny
+    #region FileDestination
 
     [Serializable]
-    internal class FileDestinyInUseSHException : SHException
+    internal class FileDestinationInUseSHException : SHException
     {
         protected new int Number { get; } = 0;
 
-        internal FileDestinyInUseSHException(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
+        internal FileDestinationInUseSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
 
-        public FileDestinyInUseSHException(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
+        public FileDestinationInUseSHException(string pathFile, Exception innerException) : base(Messages.FileDestinationInUse(pathFile), innerException) { }
     }
 
     #endregion
@@ -111,9 +111,9 @@ namespace SH.Exceptions
     {
         protected new int Number { get; } = 0;
 
-        internal DirectoryNotFoundSHException(string pathFile) : base(Messages.FileDestinyInUse(pathFile)) { }
+        internal DirectoryNotFoundSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
 
-        public DirectoryNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FileDestinyInUse(pathFile), innerException) { }
+        public DirectoryNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FileDestinationInUse(pathFile), innerException) { }
     }
 
     #endregion

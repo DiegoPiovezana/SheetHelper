@@ -84,7 +84,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public string? UnGZ(string gzFile, string pathDestiny)
+        public string? UnGZ(string gzFile, string pathDestination)
         {
             try
             {
@@ -92,15 +92,15 @@ namespace SH.ExcelHelper.Tools
                 string fileConverted;
 
                 // If the format to be converted is not specified, try to get it from the file name
-                if (string.IsNullOrEmpty(Path.GetExtension(pathDestiny)))
+                if (string.IsNullOrEmpty(Path.GetExtension(pathDestination)))
                 {
                     string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
                     string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
-                    fileConverted = $"{pathDestiny}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
+                    fileConverted = $"{pathDestination}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
                 }
                 else
                 {
-                    fileConverted = pathDestiny;
+                    fileConverted = pathDestination;
                 }
 
                 using FileStream outputFileStream = File.Create(fileConverted);
@@ -115,22 +115,22 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public string? UnZIP(string? zipFile, string pathDestiny)
+        public string? UnZIP(string? zipFile, string pathDestination)
         {
             try
             {
-                string directoryZIP = Path.Combine(pathDestiny, "CnvrtdZIP");
+                string directoryZIP = Path.Combine(pathDestination, "CnvrtdZIP");
 
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
                 string fileLocation = Directory.EnumerateFiles(directoryZIP).First();
-                string fileDestiny = Path.Combine(pathDestiny, Path.GetFileName(fileLocation));
+                string fileDestination = Path.Combine(pathDestination, Path.GetFileName(fileLocation));
 
-                if (File.Exists(fileDestiny)) File.Delete(fileDestiny);
-                File.Move(fileLocation, fileDestiny);
+                if (File.Exists(fileDestination)) File.Delete(fileDestination);
+                File.Move(fileLocation, fileDestination);
                 Directory.Delete(directoryZIP, true);
 
-                return fileDestiny;
+                return fileDestination;
             }
             catch (Exception)
             {
@@ -138,7 +138,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public string? UnzipAuto(string? zipFile, string pathDestiny, bool mandatory = true)
+        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
         {
             try
             {
@@ -150,12 +150,12 @@ namespace SH.ExcelHelper.Tools
                 switch (Path.GetExtension(zipFile).ToLower())
                 {
                     case ".gz":
-                        zipFile = UnGZ(zipFile, pathDestiny);
+                        zipFile = UnGZ(zipFile, pathDestination);
                         goto restart;
 
                     case ".zip":
                         //stream.Close();
-                        zipFile = UnZIP(zipFile, pathDestiny);
+                        zipFile = UnZIP(zipFile, pathDestination);
                         goto restart;
 
                     default:
@@ -528,7 +528,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int Converter(string origin, ICollection<string> destinations, ICollection<string> sheets, ICollection<string?> separators, ICollection<string?> columns, ICollection<string?> rows, ICollection<int> minRows)
+        public int Converter(string origin, ICollection<string> destinations, ICollection<string> sheets, ICollection<string?> separators, ICollection<string?> columns, ICollection<string?> rows, int minRows)
         {
             try
             {
@@ -576,8 +576,8 @@ namespace SH.ExcelHelper.Tools
                     var columnSheet = columns.Skip(i).FirstOrDefault();
                     var rowSheet = rows.Skip(i).FirstOrDefault();
 
-                    string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
-                    saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
+                    //string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
+                    //saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;

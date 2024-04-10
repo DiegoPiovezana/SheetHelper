@@ -292,18 +292,18 @@ namespace SH.Globalization
 
         #endregion
 
-        #region FileDestiny
+        #region FileDestination
 
-        internal static string FileDestinyInUse(string pathFile)
+        internal static string FileDestinationInUse(string pathFile)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
                 "pt-BR" => $"O arquivo de destino '{Path.GetFileName(pathFile)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente",
-                _ => $"The destiny file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again",
+                _ => $"The destination file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again",
             };
         }
 
-        internal static string FileDestinyInUseAndCloseExcel(string pathFile)
+        internal static string FileDestinationInUseAndCloseExcel(string pathFile)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
@@ -312,7 +312,7 @@ namespace SH.Globalization
             };
         }
 
-        internal static string FileDestinyErrorValid()
+        internal static string FileDestinationErrorValid()
         {
             return CultureInfo.CurrentCulture.Name switch
             {
@@ -321,12 +321,12 @@ namespace SH.Globalization
             };
         }
 
-        internal static string FileDestinyNameNull()
+        internal static string FileDestinationNameNull()
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O caminho de destino para o arquivo ('destiny') é nulo ou vazio.",
-                _ => $"The destination path for the file ('destiny') is null or empty.",
+                "pt-BR" => $"O caminho de destino para o arquivo ('destination') é nulo ou vazio.",
+                _ => $"The destination path for the file ('destination') is null or empty.",
             };
         }
 

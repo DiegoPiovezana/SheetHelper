@@ -72,7 +72,7 @@ namespace UnitTestSheetHelper
         //public class TestsFormats
         //{
         //    [Test, TestCaseSource(typeof(CasosDeTesteDeFormatos), nameof(CasosDeTesteDeFormatos.FormatsConverts))]
-        //    public bool ValidarFormatosValidos(string origin, string destiny) => TestFormats(origin, destiny);
+        //    public bool ValidarFormatosValidos(string origin, string destination) => TestFormats(origin, destination);
         //}
 
         //public class CasosDeTesteDeFormatos
