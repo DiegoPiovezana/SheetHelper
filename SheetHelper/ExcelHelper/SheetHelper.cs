@@ -322,7 +322,7 @@ namespace SH
         {
             try
             {
-                _validations.Validate(destiny, separator, columns, rows, nameof(SaveDataTable));
+                _validations.ValidateSaveDataTable(destiny, separator, columns, rows, nameof(SaveDataTable));
                 return _features.SaveDataTable(dataTable, destiny, separator, columns, rows);
             }
             catch (SHException)
@@ -340,7 +340,7 @@ namespace SH
         {
             try
             {
-                _validations.Validate(origin, destiny, sheet, separator, columns, rows, nameof(Converter));
+                _validations.ValidateOneConverterAsync(origin, destiny, sheet, separator, columns, rows, nameof(Converter));
                 return _features.Converter(origin, destiny, sheet, separator, columns, rows, minRows);
             }
             catch (SHException)
@@ -358,7 +358,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateAsync(origin, destinations, sheets, separators, columns, rows, nameof(Converter));               
+                _validations.ValidateConverterMultiAsync(origin, destinations, sheets, separators, columns, rows, nameof(Converter));               
                 return _features.Converter(origin, destinations, sheets, separators, columns, rows, minRows);
             }
             catch (SHException)

@@ -500,7 +500,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public bool Converter(string? origin, string? destiny, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        public bool Converter(string origin, string destination, string sheet, string separator, string columns, string rows, int minRows = 1)
         {
             try
             {
@@ -509,10 +509,10 @@ namespace SH.ExcelHelper.Tools
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
-                if (!_validations.CheckConvertNecessary(origin, destiny, sheet, separator, columns, rows))
+                if (!_validations.CheckConvertNecessary(origin, destination, sheet, separator, columns, rows))
                 {
                     _sheetHelper.Progress = 100;
-                    File.Copy(origin, destiny, true);
+                    File.Copy(origin, destination, true);
                     if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
                 }
@@ -520,7 +520,7 @@ namespace SH.ExcelHelper.Tools
                 DataTable? table = GetDataTable(origin, sheet);
                 _validations.ValidateRowsMinDt(table, minRows, nameof(Converter));
 
-                return SaveDataTable(table, destiny, separator, columns, rows);
+                return SaveDataTable(table, destination, separator, columns, rows);
             }
             catch (Exception)
             {
@@ -528,20 +528,10 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, ICollection<int> minRows)
+        public int Converter(string origin, ICollection<string> destinations, ICollection<string> sheets, ICollection<string?> separators, ICollection<string?> columns, ICollection<string?> rows, ICollection<int> minRows)
         {
             try
             {
-                /* possibilities:
-                 * origin = 1;
-                 * destinations = 1 or X;
-                 * sheets = X quantity;
-                 * separators = 1 or X;
-                 * columns = null or X;
-                 * rows = null or X;
-                 * minRows = 1 or X.                
-                 */
-
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 

@@ -19,10 +19,12 @@ namespace SH.ExcelHelper.Treatments
     internal class Validations
     {
         readonly TryHandlerExceptions _tryHandlerExceptions;
+        readonly Definitions _definitions;
 
         public Validations(SheetHelper sheetHelper)
         {
             _tryHandlerExceptions = new TryHandlerExceptions(sheetHelper);
+            _definitions = new Definitions(sheetHelper);
         }
 
 
@@ -210,14 +212,17 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal async Task ValidateAsync(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, string methodName)
+        internal async Task ValidateConverterMultiAsync(string? origin, object destinationsInput, object sheetsInput, object separatorsInput, object columnsInput, object rowsInput, string methodName)
         {
             try
             {
+                _definitions.DefineMultiplesInputsConverter(ref destinationsInput, ref sheetsInput, ref separatorsInput, ref columnsInput, ref rowsInput);
+                ICollection<string?> destinations = (ICollection<string?>)destinationsInput;
+                ICollection<string?> sheets = (ICollection<string?>)sheetsInput;
+                ICollection<string?> separators = (ICollection<string?>)separatorsInput;
+                ICollection<string?> columns = (ICollection<string?>)columnsInput;
+                ICollection<string?> rows = (ICollection<string?>)rowsInput;
                 
-
-
-
                 List<Task> validates = new()
                 {
                     Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))
@@ -238,11 +243,10 @@ namespace SH.ExcelHelper.Treatments
         }
 
 
-        internal void Validate(string? origin, string? destiny, string? sheet, string? separator, string? columns, string? rows, string methodName)
+        internal async Task ValidateOneConverterAsync(string? origin, string? destiny, string? sheet, string? separator, string? columns, string? rows, string methodName)
         {
             try
             {
-
                 List<Task> validates = new()
                 {
                     Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
@@ -254,7 +258,7 @@ namespace SH.ExcelHelper.Treatments
                 };
 
                 //Task.WhenAll(validates).Wait();
-                Task.WhenAll(validates.ToArray());
+                await Task.WhenAll(validates.ToArray());
             }
             catch (AggregateException ex)
             {
@@ -262,7 +266,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void Validate(string destiny, string separator, string? columns, string? rows, string methodName)
+        internal void ValidateSaveDataTable(string destiny, string separator, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {

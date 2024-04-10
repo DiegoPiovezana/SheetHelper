@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace SH.ExcelHelper.Treatments
 {
@@ -166,6 +169,103 @@ namespace SH.ExcelHelper.Treatments
                     return limitIndexColumn + indexColumn + 1;
                 }
             }
+        }
+
+        internal void DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object separators, ref object columns, ref object rows)
+        {
+            /* POSSIBILITIES:
+                 * origin = 1;
+                 * destinations = 1 or X;
+                 * sheets = X quantity;
+                 * separators = 1 or X;
+                 * columns = null or X;
+                 * rows = null or X;
+                 * minRows = 1 or X.                
+                 */
+
+            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
+            int countConversions = sheetsCollection.Count;
+
+            ICollection<string?> destinationsCollection = ConvertToCollection(destinations);
+            ICollection<string?> separatorsCollection = ConvertToCollection(separators);
+            ICollection<string?> columnsCollection = ConvertToCollection(columns);
+            ICollection<string?> rowsCollection = ConvertToCollection(rows);
+
+            destinationsCollection = ExpandCollectionDestinations(destinationsCollection, sheetsCollection);
+            separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
+            columnsCollection = ExpandCollection(columnsCollection, countConversions);
+            rowsCollection = ExpandCollection(rowsCollection, countConversions);
+
+
+            if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
+            {
+                throw new ArgumentException("All parameters must have the same number of items or be single values.");
+            }
+          
+            destinations = destinationsCollection;
+            separators = separatorsCollection;
+            columns = columnsCollection;
+            rows = rowsCollection;
+
+
+
+            static ICollection<string?> ConvertToCollection(object obj)
+            {
+                return obj switch
+                {
+                    ICollection<string?> collection => collection,
+                    string str => new ReadOnlyCollection<string?>(new List<string?> { str }),
+                    _ => throw new ArgumentException("Invalid input type."),
+                };
+            }
+
+            static ICollection<string?> ExpandCollection(ICollection<string?> collection, int targetCount)
+            {
+                if (collection.Count == 1 && targetCount > 1)
+                {
+                    string? item = collection.FirstOrDefault();
+                    return Enumerable.Repeat(item, targetCount).ToList();
+                }
+                else if (collection.Count == 0)
+                {
+                    return Enumerable.Repeat<string?>(null, targetCount).ToList();
+                }
+                else
+                {
+                    return collection;
+                }
+            }
+
+            static ICollection<string?> ExpandCollectionDestinations(ICollection<string?> collectionDestinations, ICollection<string> sheetsCollection)
+            {
+                if (collectionDestinations.Count == 1 && sheetsCollection.Count > 1)
+                {
+                    string? destination = collectionDestinations.FirstOrDefault();
+                    
+                    if(Path.HasExtension(destination))
+                    {
+                        string directory = Path.GetDirectoryName(destination);
+                        string fileName = Path. GetFileNameWithoutExtension(destination);
+                        string extension = Path.GetExtension(destination);  
+                        
+                        return sheetsCollection.Select(sheet => $@"{Path.Combine(directory,fileName)}_{sheet}.{extension}").ToList();
+                    }
+                    else
+                    {
+                        return sheetsCollection.Select(sheet => $"{destination}{sheet}").ToList();
+                    }                      
+                }
+                else if (collectionDestinations.Count == 0)
+                {
+                    throw new ArgumentException("The destination parameter must have at least one item.");
+                }
+                else
+                {
+                    return collectionDestinations;
+                }
+            }
+
+
         }
 
     }
