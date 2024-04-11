@@ -146,11 +146,11 @@ namespace TestSheetHelper
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_xlsx.csv";
 
-            string aba = "sheet1"; // Utilize "1" para a primeira aba (índice ou nome)
+            string aba = "sheet1"; // Utilize "1" para a primeira aba (ï¿½ndice ou nome)
             string separador = ";";
             //string[]? colunas = { "" }; // { "A", "C", "b" } ou null, para converter todas as colunas ou {"A:BC"} para intervalo de colunas
             string? colunas = "A,2,c";
-            string? linhas = "1:3,4,-1"; // Ex.: se "2:" extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
+            string? linhas = "1:3,4,-1"; // Ex.: se "2:" extrai a partir da 2ï¿½ linha da planilha atï¿½ a ï¿½ltima (retira a 1ï¿½ linha)          
 
             bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -252,9 +252,9 @@ namespace TestSheetHelper
             int minRows = 1;
 
 
-            //var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
 
-            //Assert.That(retorno == abas.Count, Is.EqualTo(true));
+            Assert.That(retorno == abas.Count, Is.EqualTo(true));
         }
 
         [Test]
@@ -296,7 +296,7 @@ namespace TestSheetHelper
         public void TestConvertRowsToBack()
         {
             string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
-            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackRows_xlsx.csv";
+            string destination = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackRows_xlsx.csv";
 
             string sheet = "1";
             string separator = ";";
@@ -306,7 +306,7 @@ namespace TestSheetHelper
 
             var sh = new SheetHelper();
 
-            bool result = sh.Converter(origin, destiny, sheet, separator, columns, rows);
+            bool result = sh.Converter(origin, destination, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
         }
 
@@ -314,7 +314,7 @@ namespace TestSheetHelper
         public void TestConvertColumnsToBack()
         {
             string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
-            string destiny = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackColumns_xlsx.csv";
+            string destination = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_BackColumns_xlsx.csv";
 
             string sheet = "1";
             string separator = ";";
@@ -322,7 +322,7 @@ namespace TestSheetHelper
             string? rows = "1:3, 1, 3:1";
 
             var sh = new SheetHelper();
-            bool result = sh.Converter(origin, destiny, sheet, separator, columns, rows);
+            bool result = sh.Converter(origin, destination, sheet, separator, columns, rows);
             Assert.That(result, Is.EqualTo(true));
         }
 
@@ -352,7 +352,7 @@ namespace TestSheetHelper
         }
 
         [TestCase("A, C, b", 1, ExpectedResult = true, TestName = "Colunas maiuscula e minuscula e fora de ordem...")]
-        [TestCase("A:D", 2, ExpectedResult = true, TestName = "Colunas em intervalo contínuo...")]
+        [TestCase("A:D", 2, ExpectedResult = true, TestName = "Colunas em intervalo contï¿½nuo...")]
         [TestCase("", 3, ExpectedResult = true, TestName = "Colunas com string vazia...")]
         [TestCase(" ", 4, ExpectedResult = true, TestName = "Colunas vazio...")]
         [TestCase(null, 5, ExpectedResult = true, TestName = "Colunas nulo...")]
@@ -376,7 +376,7 @@ namespace TestSheetHelper
         public class TestsFormats
         {
             [Test, TestCaseSource(typeof(CasosDeTesteDeFormatos), nameof(CasosDeTesteDeFormatos.FormatsConverts))]
-            public bool ValidarFormatosValidos(string origin, string destiny) => TestFormats(origin, destiny);
+            public bool ValidarFormatosValidos(string origin, string destination) => TestFormats(origin, destination);
         }
 
         public class CasosDeTesteDeFormatos
@@ -389,7 +389,7 @@ namespace TestSheetHelper
 
                     return new List<TestCaseData>()
                      {
-                         //new TestCaseData("", "").Returns(new Exception().Message == "'' é inválido!").SetName("Origem e destino vazio"),
+                         //new TestCaseData("", "").Returns(new Exception().Message == "'' ï¿½ invï¿½lido!").SetName("Origem e destino vazio"),
                          
                          // Txt
                          new TestCaseData($"{path}\\Converter\\ColunasExcel.txt", $"{path}\\Convertidos\\ColunasExcel_TXT.csv").Returns(true).SetName("TXT__CSV"),

@@ -176,26 +176,29 @@ namespace SH.ExcelHelper.Treatments
             /* POSSIBILITIES:
                  * origin = 1;
                  * destinations = 1 or X;
-                 * sheets = X quantity;
+                 * sheets = 1 or X;
                  * separators = 1 or X;
-                 * columns = null or X;
-                 * rows = null or X;
+                 * columns = 1/null or X;
+                 * rows = 1/null or X;
                  * minRows = 1 or X.                
                  */
 
-            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
-            int countConversions = sheetsCollection.Count;
 
+            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
             ICollection<string?> destinationsCollection = ConvertToCollection(destinations);
             ICollection<string?> separatorsCollection = ConvertToCollection(separators);
             ICollection<string?> columnsCollection = ConvertToCollection(columns);
             ICollection<string?> rowsCollection = ConvertToCollection(rows);
 
+            var collections = new List<ICollection<string?>> { (ICollection<string?>)destinations, (ICollection<string?>)sheets, (ICollection<string?>)separators, (ICollection<string?>)columns, (ICollection<string?>)rows };
+
+            int countConversions = collections.Max(collection => collection.Count);
+
+
             destinationsCollection = ExpandCollectionDestinations(destinationsCollection, sheetsCollection);
             separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
             columnsCollection = ExpandCollection(columnsCollection, countConversions);
             rowsCollection = ExpandCollection(rowsCollection, countConversions);
-
 
             if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
             {
@@ -209,13 +212,14 @@ namespace SH.ExcelHelper.Treatments
 
 
 
-            static ICollection<string?> ConvertToCollection(object obj)
+            static ICollection<string?> ConvertToCollection(object? obj)
             {
                 return obj switch
                 {
                     ICollection<string?> collection => collection,
-                    string str => new ReadOnlyCollection<string?>(new List<string?> { str }),
-                    _ => throw new ArgumentException("Invalid input type."),
+                    //string str => new ReadOnlyCollection<string?>(new List<string?> { str }),
+                    string str => new List<string?> { str },
+                    _ => throw new ArgumentException("Unsupported input type."),
                 };
             }
 
@@ -264,6 +268,8 @@ namespace SH.ExcelHelper.Treatments
                     return collectionDestinations;
                 }
             }
+
+            
 
 
         }

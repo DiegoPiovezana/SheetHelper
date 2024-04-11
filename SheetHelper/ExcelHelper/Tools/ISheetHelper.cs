@@ -183,7 +183,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>Number of successful conversions.</returns>
-        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, int minRows = 1);
+        public int Converter(string? origin, object? destinations, ICollection<string?>? sheets, object? separators, object? columns, object? rows, int minRows = 1);
 
 
         /// <summary>

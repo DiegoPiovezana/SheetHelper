@@ -444,12 +444,12 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public bool SaveDataTable(DataTable dataTable, string destiny, string separator = ";", string? columns = null, string? rows = null)
+        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null)
         {
 
             try
             {
-                return _writing.SaveDataTable(dataTable, destiny, separator, columns, rows);
+                return _writing.SaveDataTable(dataTable, destination, separator, columns, rows);
             }
 
             //#if NETFRAMEWORK                        
@@ -477,7 +477,7 @@ namespace SH.ExcelHelper.Tools
             //                }
 
             //                var result3 = MessageBox.Show(
-            //                    $"O arquivo '{Path.GetFileName(destiny)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
+            //                    $"O arquivo '{Path.GetFileName(destination)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida confirme para continuar.",
             //                    "Aviso",
             //                    MessageBoxButtons.OKCancel,
             //                    MessageBoxIcon.Error);
@@ -528,12 +528,17 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int Converter(string origin, ICollection<string> destinations, ICollection<string> sheets, ICollection<string?> separators, ICollection<string?> columns, ICollection<string?> rows, int minRows)
+        public int Converter(string origin, object destinations, object sheets, object separators, object columns, object rows, int minRows)
         {
             try
             {
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+
+                destinations = destinations as ICollection<string?>;
+                separators = separators as ICollection<string?>;
+                columns = columns as ICollection<string?>;
+                rows = rows as ICollection<string?>;
 
                 var sheetsDictionary = GetAllSheets(origin, minRows, true);
 
@@ -576,8 +581,8 @@ namespace SH.ExcelHelper.Tools
                     var columnSheet = columns.Skip(i).FirstOrDefault();
                     var rowSheet = rows.Skip(i).FirstOrDefault();
 
-                    //string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
-                    //saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
+                    string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
+                    saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;
@@ -588,7 +593,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public bool ConvertAllSheets(string? origin, string? destiny, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")
         {
             try
             {
@@ -597,7 +602,7 @@ namespace SH.ExcelHelper.Tools
 
                 foreach (var sheet in GetAllSheets(origin, minRows, true))
                 {
-                    string dest = Path.Combine(Path.GetDirectoryName(destiny), $"{Path.GetFileNameWithoutExtension(destiny)}__{sheet.Key}{Path.GetExtension(destiny)}");
+                    string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheet.Key}{Path.GetExtension(destination)}");
                     SaveDataTable(sheet.Value, dest, separator, "", "");
                 }
 

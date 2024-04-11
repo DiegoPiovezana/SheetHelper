@@ -354,7 +354,7 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public int Converter(string? origin, ICollection<string?>? destinations, ICollection<string?>? sheets, ICollection<string?>? separators, ICollection<string?>? columns, ICollection<string?>? rows, int minRows = 1)
+        public int Converter(string? origin, object? destinations, object? sheets, object? separators, object? columns, object? rows, int minRows = 1)
         {
             try
             {
@@ -369,7 +369,7 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
-        }
+        }        
 
         /// <inheritdoc/> 
         public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")

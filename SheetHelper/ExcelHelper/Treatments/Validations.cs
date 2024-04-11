@@ -60,8 +60,10 @@ namespace SH.ExcelHelper.Treatments
 
             //return nameMethod.ToString();           
 
-            StackFrame callerFrame = new StackTrace().GetFrame(indStack); // 1 para obter o chamador do método atual
+            StackFrame callerFrame = new StackTrace().GetFrame(indStack); // 1 to get the current method caller
             return callerFrame.GetMethod().Name;
+
+            // TODO: Get the method name after SheetHelper main
         }
 
         internal void ValidateIntMin(int number, string paramName, string methodName, int min = 0)
@@ -174,7 +176,7 @@ namespace SH.ExcelHelper.Treatments
 
             if (string.IsNullOrEmpty(sheet))
             {
-                throw new ArgumentException("E-0000-SH: Invalid sheet name.", nameof(sheet));
+                throw new ArgumentNullOrEmptySHException(nameof(sheet), GetCallingMethodName(2));
             }
 
             if (int.TryParse(sheet, out int sheetNumber) && sheetNumber <= 0)
@@ -212,13 +214,13 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal async Task ValidateConverterMultiAsync(string? origin, object destinationsInput, object sheetsInput, object separatorsInput, object columnsInput, object rowsInput, string methodName)
+        internal async Task ValidateConverterMultiAsync(string? origin, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
         {
             try
             {
                 _definitions.DefineMultiplesInputsConverter(ref destinationsInput, ref sheetsInput, ref separatorsInput, ref columnsInput, ref rowsInput);
-                ICollection<string?> destinations = (ICollection<string?>)destinationsInput;
                 ICollection<string?> sheets = (ICollection<string?>)sheetsInput;
+                ICollection<string?> destinations = (ICollection<string?>)destinationsInput;                
                 ICollection<string?> separators = (ICollection<string?>)separatorsInput;
                 ICollection<string?> columns = (ICollection<string?>)columnsInput;
                 ICollection<string?> rows = (ICollection<string?>)rowsInput;
