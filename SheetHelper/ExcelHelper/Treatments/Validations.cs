@@ -185,6 +185,14 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
+        internal void ValidateSheetsDictionary(Dictionary<string, DataTable>? sheetsDictionary)
+        {
+            if(sheetsDictionary is null || sheetsDictionary.Count == 0)
+            {
+                throw new ArgumentNullOrEmptySHException(nameof(sheetsDictionary), GetCallingMethodName(2));
+            }
+        }
+
         internal void ValidateSeparator(string? separator)
         {
             // ";"

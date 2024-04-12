@@ -156,7 +156,29 @@ namespace SH.Exceptions
 
     #endregion
 
+    #region Sheets
 
+    [Serializable]
+    internal class SheetNullSHException : SHException
+    {
+        protected new int Number { get; } = 0;
+
+        internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
+
+        public RowArrayOverflowDteSHException(Exception innerException) : base(Messages.RowArrayOverflowDt(), innerException) { }
+    }
+
+    [Serializable]
+    internal class SheetNullSHException : SHException
+    {
+        protected new int Number { get; } = 0;
+
+        internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
+
+        public RowArrayOverflowDteSHException(Exception innerException) : base(Messages.RowArrayOverflowDt(), innerException) { }
+    }
+
+    #endregion
 
 
 }

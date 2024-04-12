@@ -66,7 +66,7 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Erro ao selecionar a aba desejada! Verifique se o índice '{sheetIndex}' da aba está correto.",
+                "pt-BR" => $"Erro ao selecionar a aba desejada! Verifique se '{sheetIndex}' é o índice da aba correta.",
                 _ => $"Error selecting the desired sheet! Please check if the sheet index '{sheetIndex}' is correct.",
             };
         }
@@ -106,6 +106,8 @@ namespace SH.Globalization
                 _ => $"The number of tabs, columns and lines defined must be the same.",
             };
         }
+
+        internal static string SheetNo
 
         #endregion
 

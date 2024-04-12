@@ -171,6 +171,29 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
+        internal void DefineSheets(ref object sheets, Dictionary<string, DataTable> sheetsDictionary)
+        {
+            if (sheets == null)
+            {
+                sheets = sheetsDictionary.Keys;
+            }
+            else if (sheets is string sheet)
+            {
+                sheets = new List<string> { sheet };
+            }
+            else if (sheets is ICollection<string> sheetsCollection)
+            {
+                if (sheetsCollection.Count == 0)
+                {
+                    sheets = Enumerable.Range(1, countSheets).Select(i => i.ToString()).ToList();
+                }
+            }
+            else
+            {
+                throw new ArgumentException("The sheets parameter must be a string or a collection of strings.");
+            }
+        }
+
         internal void DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object separators, ref object columns, ref object rows)
         {
             /* POSSIBILITIES:

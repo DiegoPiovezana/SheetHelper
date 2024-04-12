@@ -232,6 +232,11 @@ namespace SH.ExcelHelper.Tools
             {
                 var dataSet = GetDataSet(filePath);
 
+                if (dataSet.Tables.Count == 0)
+                {
+                    throw new Exception("E-0000-SH: No sheets found in the file.");
+                }
+
                 if (minQtdRows == 0 && formatName == false)
                 {
                     return dataSet.Tables.Cast<DataTable>().ToDictionary(table => table.TableName);
@@ -260,7 +265,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                if (string.IsNullOrEmpty(text)) return "";
+                if (string.IsNullOrEmpty(text?.Trim())) return "";
 
                 string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
                 StringBuilder stringBuilder = new();
@@ -540,7 +545,8 @@ namespace SH.ExcelHelper.Tools
                 columns = columns as ICollection<string?>;
                 rows = rows as ICollection<string?>;
 
-                var sheetsDictionary = GetAllSheets(origin, minRows, true);
+                Dictionary<string, DataTable>? sheetsDictionary = GetAllSheets(origin, minRows, true);
+
 
                 if (sheets == null || sheets.Count == 0) sheets = sheetsDictionary.Keys;
                 if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
