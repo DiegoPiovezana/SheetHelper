@@ -180,5 +180,19 @@ namespace SH.Exceptions
 
     #endregion
 
+    #region Converter
+
+    [Serializable]
+    internal class ParamMissingConverterSHException : SHException
+    {
+        protected new int Number { get; } = 0;
+
+        internal ParamMissingConverterSHException() : base(Messages.ParamMissingConverter()) { }
+
+        public ParamMissingConverterSHException(Exception innerException) : base(Messages.ParamMissingConverter(), innerException) { }
+    }
+
+    #endregion
+
 
 }

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SH.Exceptions;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 
 namespace SH.ExcelHelper.Treatments
 {
@@ -222,7 +221,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object separators, ref object columns, ref object rows)
+        internal int DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object separators, ref object columns, ref object rows)
         {
             /* POSSIBILITIES:
                  * origin = 1;
@@ -234,11 +233,11 @@ namespace SH.ExcelHelper.Treatments
                  * minRows = 1 or X.                
                  */
 
-            ICollection<string?> destinationsCollection = ConvertToCollection(destinations);
-            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
-            ICollection<string?> separatorsCollection = ConvertToCollection(separators);
-            ICollection<string?> columnsCollection = ConvertToCollection(columns);
-            ICollection<string?> rowsCollection = ConvertToCollection(rows);
+            ICollection<string?> destinationsCollection = TryConvertToCollection(destinations);
+            ICollection<string?> sheetsCollection = TryConvertToCollection(sheets);
+            ICollection<string?> separatorsCollection = TryConvertToCollection(separators);
+            ICollection<string?> columnsCollection = TryConvertToCollection(columns);
+            ICollection<string?> rowsCollection = TryConvertToCollection(rows);
 
             var collections = new List<ICollection<string?>> { destinationsCollection, sheetsCollection, separatorsCollection, columnsCollection, rowsCollection };
             int countConversions = collections.Max(collection => collection.Count);
@@ -248,19 +247,16 @@ namespace SH.ExcelHelper.Treatments
             separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
             columnsCollection = ExpandCollection(columnsCollection, countConversions);
             rowsCollection = ExpandCollection(rowsCollection, countConversions);
-
-            if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
-            {
-                throw new ArgumentException("All parameters must have the same number of items or be single values.");
-            }
-
+                        
             destinations = destinationsCollection;
             sheets = sheetsCollection;
             separators = separatorsCollection;
             columns = columnsCollection;
             rows = rowsCollection;
 
-            static ICollection<string?> ConvertToCollection(object? obj)
+            return countConversions;
+
+            static ICollection<string?> TryConvertToCollection(object? obj)
             {
                 if (obj is null) return new List<string?>() { "" };
 

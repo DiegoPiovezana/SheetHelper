@@ -361,7 +361,7 @@ namespace SH
             try
             {
                 _definitions.DefineMultiplesInputsConverter(ref destinations, ref sheets, ref separators, ref columns, ref rows);
-                _validations.ValidateConverterMultiAsync(origin, destinations, sheets, separators, columns, rows, nameof(Converter));               
+                _validations.ValidateConverter(origin, destinations, sheets, separators, columns, rows, nameof(Converter));
                 return _features.Converter(origin, destinations, sheets, separators, columns, rows, minRows);
             }
             catch (SHException)
@@ -372,7 +372,7 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
-        }        
+        }
 
         /// <inheritdoc/> 
         public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")

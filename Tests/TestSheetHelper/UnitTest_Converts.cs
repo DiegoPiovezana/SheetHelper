@@ -258,6 +258,52 @@ namespace TestSheetHelper
         }
 
         [Test]
+        public void TestConvertMultiSheets2()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
+
+            //string aba = "2";
+            string abas = null;
+            string separador = ";";
+            //string? colunas = null;
+            string[]? colunas = null;
+            //string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
+            //string? linhas = null;
+            //List<string>? linhas = new ();
+            List<string>? linhas = null;
+            int minRows = 1;
+
+
+            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+
+            Assert.That(retorno > 1, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvertMultiSheets3()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
+
+            //string aba = "2";
+            var abas = new List<string>() { "aba 6", "1", "sheet3" };
+            string separador = ";";
+            //string? colunas = null;
+            string[]? colunas = null;
+            //string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
+            //string? linhas = null;
+            //List<string>? linhas = new ();
+            List<string>? linhas = new() { "1:3", "1:10", "1" };
+            int minRows = 1;
+
+
+            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+
+            Assert.That(retorno == abas.Count, Is.EqualTo(true));
+        }
+
+        [Test]
         public void TestProhibitedItems()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ProhibitedItems.xlsx";
@@ -280,7 +326,7 @@ namespace TestSheetHelper
             //sh.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
-            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
+            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";
             string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
             string jsonDictionary1 = System.Text.Json.JsonSerializer.Serialize(dic);
             string jsonDictionary2 = sh.GetJsonDictionary(dic);

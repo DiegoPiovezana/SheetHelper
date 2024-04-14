@@ -555,13 +555,17 @@ namespace SH.ExcelHelper.Tools
                 //if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
                 //if (rows == null || rows.Count == 0) rows = Enumerable.Repeat("", sheets.Count).ToList();
 
-                //if (sheets.Count != columns.Count || sheets.Count != rows.Count)
+
+                _definitions.DefineSheets(ref sheetsCollection, sheetsDictionary);
+                _definitions.DefineDestinations(ref destinationsCollection, sheetsCollection);
+
+                //int count = sheetsCollection.Count;
+                //if (count == destinationsCollection.Count && count == separatorsCollection.Count && count == columnsCollection.Count && count == rowsCollection.Count)
                 //{
                 //    throw new Exception("E-0000-SH: The number of sheets, columns and rows must be the same.");
                 //}
 
-                _definitions.DefineSheets(ref sheetsCollection, sheetsDictionary);
-                _definitions.DefineDestinations(ref destinationsCollection, sheetsCollection);
+                _validations.ValidateConverter(origin, destinationsCollection, sheetsCollection, separatorsCollection, columnsCollection, rowsCollection, nameof(Converter));
 
                 int saveSuccess = default;
 

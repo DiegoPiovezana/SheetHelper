@@ -2,12 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SH.ExcelHelper.Treatments
@@ -187,7 +184,7 @@ namespace SH.ExcelHelper.Treatments
 
         internal void ValidateSheetsDictionary(Dictionary<string, DataTable>? sheetsDictionary)
         {
-            if(sheetsDictionary is null || sheetsDictionary.Count == 0)
+            if (sheetsDictionary is null || sheetsDictionary.Count == 0)
             {
                 throw new ArgumentNullOrEmptySHException(nameof(sheetsDictionary), GetCallingMethodName(2));
             }
@@ -222,15 +219,22 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal async Task ValidateConverterMultiAsync(string? origin, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
+        internal void ValidateConverter(string? origin, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
         {
             try
-            {                
-                HashSet<string?> sheets = new((ICollection<string?>)sheetsInput);
-                HashSet<string?> destinations = new((ICollection<string?>)destinationsInput); // Remove duplicates            
-                HashSet<string?> separators = new ((ICollection<string?>)separatorsInput);
-                HashSet<string?> columns = new((ICollection<string?>)columnsInput);
-                HashSet<string?> rows = new((ICollection<string?>)rowsInput);
+            {
+                ICollection<string?> destinationsCollection = (ICollection<string?>)destinationsInput;
+                ICollection<string?> sheetsCollection = (ICollection<string?>)sheetsInput;
+                ICollection<string?> separatorsCollection = (ICollection<string?>)separatorsInput;
+                ICollection<string?> columnsCollection = (ICollection<string?>)columnsInput;
+                ICollection<string?> rowsCollection = (ICollection<string?>)rowsInput;
+
+                // Remove duplicates  
+                HashSet<string?> destinations = new(destinationsCollection);          
+                HashSet<string?> sheets = new(sheetsCollection);
+                HashSet<string?> separators = new(separatorsCollection);
+                HashSet<string?> columns = new(columnsCollection);
+                HashSet<string?> rows = new(rowsCollection);
 
                 List<Task> validates = new()
                 {
@@ -243,7 +247,14 @@ namespace SH.ExcelHelper.Treatments
                 validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumns(column))));
                 validates.AddRange(rows.Select(row => Task.Run(() => ValidateRows(row))));
 
-                await Task.WhenAll(validates.ToArray());
+                Task.WaitAll(validates.ToArray());
+
+                int countConversions = Math.Max(destinations.Count, Math.Max(sheets.Count, Math.Max(separators.Count, Math.Max(columns.Count, rows.Count))));               
+                if (destinationsCollection.Count != countConversions || sheetsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
+                {
+                    //throw new ArgumentException("All parameters must have the same number of items or be single values.");
+                    throw new ParamMissingConverterSHException();
+                }
             }
             catch (AggregateException ex)
             {

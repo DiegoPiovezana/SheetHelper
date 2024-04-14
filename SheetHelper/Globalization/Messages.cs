@@ -52,11 +52,24 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{methodName}'! Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
-                _ => $"An error occurred when using the '{methodName}' method! Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{methodName}'. Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                _ => $"An error occurred when using the '{methodName}' method. Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
             };
         }
 
+
+        #endregion
+
+        #region Converter
+
+        internal static string ParamMissingConverter()
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"Nem todas as conversões possuem todos os parametros definidos. A quantidade total de parâmetros não está correta. Por favor verifique se há alguma informação ausente.",
+                _ => $"Not all conversions have all parameters defined. The total number of parameters is not correct. Please check if there is any missing information.",
+            };
+        }
 
         #endregion
 
@@ -96,18 +109,7 @@ namespace SH.Globalization
                 "pt-BR" => $"Nome de aba '{sheetName}' é inválido.",
                 _ => $"Invalid sheet name '{sheetName}'.",
             };
-        }
-
-        internal static string SheetRowColumnNumberSame()
-        {
-            return CultureInfo.CurrentCulture.Name switch
-            {
-                "pt-BR" => $"A quantidade de abas, colunas e linhas definidas deve ser igual.",
-                _ => $"The number of tabs, columns and lines defined must be the same.",
-            };
-        }
-
-       
+        } 
 
         #endregion
 
