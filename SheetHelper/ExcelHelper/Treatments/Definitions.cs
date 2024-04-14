@@ -255,6 +255,7 @@ namespace SH.ExcelHelper.Treatments
             }
 
             destinations = destinationsCollection;
+            sheets = sheetsCollection;
             separators = separatorsCollection;
             columns = columnsCollection;
             rows = rowsCollection;
