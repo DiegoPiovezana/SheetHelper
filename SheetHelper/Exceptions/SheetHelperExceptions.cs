@@ -6,7 +6,7 @@ namespace SH.Exceptions
     #region Principal
 
     [Serializable]
-    internal class SHException : Exception
+    public class SHException : Exception
     {
         protected int Number { get; } = 0;
         public string Code => $"E-{Number:D4}-SH"; // E-0000-SH
@@ -30,7 +30,7 @@ namespace SH.Exceptions
     #region Generic Params
 
     [Serializable]
-    internal class ArgumentNullOrEmptySHException : SHException
+    public class ArgumentNullOrEmptySHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -40,7 +40,7 @@ namespace SH.Exceptions
     }
 
     [Serializable]
-    internal class ArgumentMinSHException : SHException
+    public class ArgumentMinSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -54,7 +54,7 @@ namespace SH.Exceptions
     #region File Generic
 
     [Serializable]
-    internal class FileNotFoundSHException : SHException
+    public class FileNotFoundSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -64,7 +64,7 @@ namespace SH.Exceptions
     }
 
     [Serializable]
-    internal class PathFileNullSHException : SHException
+    public class PathFileNullSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -79,7 +79,7 @@ namespace SH.Exceptions
     #region FileOrigin
 
     [Serializable]
-    internal class FileOriginInUseSHException : SHException
+    public class FileOriginInUseSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -93,7 +93,7 @@ namespace SH.Exceptions
     #region FileDestination
 
     [Serializable]
-    internal class FileDestinationInUseSHException : SHException
+    public class FileDestinationInUseSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -107,7 +107,7 @@ namespace SH.Exceptions
     #region Directory
 
     [Serializable]
-    internal class DirectoryNotFoundSHException : SHException
+    public class DirectoryNotFoundSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -121,7 +121,7 @@ namespace SH.Exceptions
     #region Unzip
 
     [Serializable]
-    internal class UnableUnzipSHException : SHException
+    public class UnableUnzipSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -135,7 +135,7 @@ namespace SH.Exceptions
     #region Rows
 
     [Serializable]
-    internal class RowArrayOverflowDteSHException : SHException
+    public class RowArrayOverflowDteSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -145,7 +145,7 @@ namespace SH.Exceptions
     }
 
     [Serializable]
-    internal class RowsMinDtSHException : SHException
+    public class RowsMinDtSHException : SHException
     {
         protected new int Number { get; } = 0;
 
@@ -159,7 +159,7 @@ namespace SH.Exceptions
     #region Sheets
 
     //[Serializable]
-    //internal class SheetNullSHException : SHException
+    //public class SheetNullSHException : SHException
     //{
     //    protected new int Number { get; } = 0;
 
@@ -169,7 +169,7 @@ namespace SH.Exceptions
     //}
 
     //[Serializable]
-    //internal class SheetNullSHException : SHException
+    //public class SheetNullSHException : SHException
     //{
     //    protected new int Number { get; } = 0;
 
@@ -183,7 +183,7 @@ namespace SH.Exceptions
     #region Converter
 
     [Serializable]
-    internal class ParamMissingConverterSHException : SHException
+    public class ParamMissingConverterSHException : SHException
     {
         protected new int Number { get; } = 0;
 

@@ -247,10 +247,10 @@ namespace SH.ExcelHelper.Treatments
                 validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumns(column))));
                 validates.AddRange(rows.Select(row => Task.Run(() => ValidateRows(row))));
 
-                Task.WaitAll(validates.ToArray());
+                Task.WaitAll(validates.ToArray()); // TODO: Task.WhenAll
 
-                int countConversions = Math.Max(destinations.Count, Math.Max(sheets.Count, Math.Max(separators.Count, Math.Max(columns.Count, rows.Count))));               
-                if (destinationsCollection.Count != countConversions || sheetsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
+                int countConversions = sheetsCollection.Count;               
+                if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
                 {
                     //throw new ArgumentException("All parameters must have the same number of items or be single values.");
                     throw new ParamMissingConverterSHException();

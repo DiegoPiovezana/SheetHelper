@@ -260,6 +260,8 @@ namespace TestSheetHelper
         [Test]
         public void TestConvertMultiSheets2()
         {
+            var sheetHelper = new SheetHelper();
+
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
 
@@ -274,10 +276,9 @@ namespace TestSheetHelper
             List<string>? linhas = null;
             int minRows = 1;
 
-
-            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
-
-            Assert.That(retorno > 1, Is.EqualTo(true));
+            Assert.Throws <SH.Exceptions.ParamMissingConverterSHException>(() =>
+                       sheetHelper.Converter(origem, destino, abas, separador, colunas, linhas, minRows)
+                   );
         }
 
         [Test]
@@ -326,7 +327,7 @@ namespace TestSheetHelper
             //sh.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
-            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";
+            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
             string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
             string jsonDictionary1 = System.Text.Json.JsonSerializer.Serialize(dic);
             string jsonDictionary2 = sh.GetJsonDictionary(dic);
