@@ -235,7 +235,7 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestConvertMultiSheets()
+        public void TestConvertMultiSheets1()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";

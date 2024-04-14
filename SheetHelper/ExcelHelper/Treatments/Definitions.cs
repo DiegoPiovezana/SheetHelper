@@ -190,33 +190,35 @@ namespace SH.ExcelHelper.Treatments
             //}
         }
 
-        internal void DefineDestinations(ref ICollection<string?> collectionDestinations, ICollection<string?> sheetsCollection)
+        internal void DefineDestinations(ref ICollection<string?> destinationsCollection, ICollection<string?> sheetsCollection)
         {
-            if (collectionDestinations.Count > 1)
+            if (destinationsCollection.Count > 1)
             {
                 Dictionary<string, int> counts = new();
                 List<string?> result = new();
-                var sheets = new List<string?>(sheetsCollection);
+                var sheetsCollect = new List<string?>(sheetsCollection);
 
-                foreach (var dest in collectionDestinations)
+                foreach (var dest in destinationsCollection)
                 {
                     string directory = Path.GetDirectoryName(dest);
                     string fileName = Path.GetFileNameWithoutExtension(dest);
                     string extension = Path.GetExtension(dest);
 
-                    string item = $"{Path.Combine(directory, fileName)}__{sheets[0]}";
+                    string item = $"{Path.Combine(directory, fileName)}__{sheetsCollect[counts.Count]}";
 
                     if (counts.ContainsKey(item))
                     {
                         counts[item]++;
-                        result.Add($"{item}_{counts[item]}.{extension}");
+                        result.Add($"{item}_{counts[item]}{extension}");
                     }
                     else
                     {
                         counts[item] = 1;
-                        result.Add($"{item}.{extension}");
+                        result.Add($"{item}{extension}");
                     }
                 }
+
+                destinationsCollection = result;
             }
         }
 
@@ -238,7 +240,7 @@ namespace SH.ExcelHelper.Treatments
             ICollection<string?> columnsCollection = ConvertToCollection(columns);
             ICollection<string?> rowsCollection = ConvertToCollection(rows);
 
-            var collections = new List<ICollection<string?>> { (ICollection<string?>)destinations, (ICollection<string?>)sheets, (ICollection<string?>)separators, (ICollection<string?>)columns, (ICollection<string?>)rows };
+            var collections = new List<ICollection<string?>> { destinationsCollection, sheetsCollection, separatorsCollection, columnsCollection, rowsCollection };
             int countConversions = collections.Max(collection => collection.Count);
 
             destinationsCollection = ExpandCollection(destinationsCollection, countConversions);
@@ -259,6 +261,8 @@ namespace SH.ExcelHelper.Treatments
 
             static ICollection<string?> ConvertToCollection(object? obj)
             {
+                if (obj is null) return new List<string?>() { "" };
+
                 return obj switch
                 {
                     ICollection<string?> collection => collection,

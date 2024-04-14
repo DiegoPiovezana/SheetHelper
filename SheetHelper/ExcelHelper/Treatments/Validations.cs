@@ -225,14 +225,13 @@ namespace SH.ExcelHelper.Treatments
         internal async Task ValidateConverterMultiAsync(string? origin, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
         {
             try
-            {
-                _definitions.DefineMultiplesInputsConverter(ref destinationsInput, ref sheetsInput, ref separatorsInput, ref columnsInput, ref rowsInput);
-                ICollection<string?> sheets = (ICollection<string?>)sheetsInput;
-                ICollection<string?> destinations = (ICollection<string?>)destinationsInput;                
-                ICollection<string?> separators = (ICollection<string?>)separatorsInput;
-                ICollection<string?> columns = (ICollection<string?>)columnsInput;
-                ICollection<string?> rows = (ICollection<string?>)rowsInput;
-                
+            {                
+                HashSet<string?> sheets = new((ICollection<string?>)sheetsInput);
+                HashSet<string?> destinations = new((ICollection<string?>)destinationsInput); // Remove duplicates            
+                HashSet<string?> separators = new ((ICollection<string?>)separatorsInput);
+                HashSet<string?> columns = new((ICollection<string?>)columnsInput);
+                HashSet<string?> rows = new((ICollection<string?>)rowsInput);
+
                 List<Task> validates = new()
                 {
                     Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))

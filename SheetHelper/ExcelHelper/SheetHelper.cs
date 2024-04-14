@@ -32,6 +32,7 @@ namespace SH
 
         private readonly Features _features;
         private readonly Validations _validations;
+        private readonly Definitions _definitions;
 
         /// <summary>
         /// Fast and lightweight library for easy read and conversion of large Excel files
@@ -40,6 +41,7 @@ namespace SH
         {
             _features = new(this);
             _validations = new(this);
+            _definitions = new(this);
         }
 
 
@@ -358,6 +360,7 @@ namespace SH
         {
             try
             {
+                _definitions.DefineMultiplesInputsConverter(ref destinations, ref sheets, ref separators, ref columns, ref rows);
                 _validations.ValidateConverterMultiAsync(origin, destinations, sheets, separators, columns, rows, nameof(Converter));               
                 return _features.Converter(origin, destinations, sheets, separators, columns, rows, minRows);
             }

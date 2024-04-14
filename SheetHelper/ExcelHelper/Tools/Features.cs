@@ -595,8 +595,8 @@ namespace SH.ExcelHelper.Tools
                     var destination = destinationsCollection.Skip(i).FirstOrDefault();
                     var separator = separatorsCollection.Skip(i).FirstOrDefault();
 
-                    string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheetId}{Path.GetExtension(destination)}");
-                    saveSuccess += SaveDataTable(dtSheet, dest, separator, columnSheet, rowSheet) ? 1 : 0;
+                    //string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheetId}{Path.GetExtension(destination)}");
+                    saveSuccess += SaveDataTable(dtSheet, destination, separator, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;
