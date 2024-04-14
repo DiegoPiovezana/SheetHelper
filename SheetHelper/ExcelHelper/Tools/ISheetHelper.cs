@@ -168,7 +168,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public bool Converter(string? origin, string? destination, string sheet, string separator, string? columns, string? rows, int minRows = 1);
+        public bool Converter(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, int minRows = 1);
 
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>Number of successful conversions.</returns>
-        public int Converter(string? origin, object? destinations, ICollection<string?>? sheets, object? separators, object? columns, object? rows, int minRows = 1);
+        public int Converter(string? origin, object? destinations, object? sheets, object? separators, object? columns, object? rows, int minRows = 1);
 
 
         /// <summary>

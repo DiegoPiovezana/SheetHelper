@@ -171,26 +171,52 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void DefineSheets(ref object sheets, Dictionary<string, DataTable> sheetsDictionary)
+        internal void DefineSheets(ref ICollection<string?> sheets, Dictionary<string, DataTable> sheetsDictionary)
         {
-            if (sheets == null)
+            if (string.IsNullOrEmpty(sheets.FirstOrDefault()) && sheets.Count == 1)
             {
                 sheets = sheetsDictionary.Keys;
             }
-            else if (sheets is string sheet)
+            //else if (sheets is ICollection<string> sheetsCollection)
+            //{
+            //    if (sheetsCollection.Count == 0)
+            //    {
+            //        sheets = Enumerable.Range(1, countSheets).Select(i => i.ToString()).ToList();
+            //    }
+            //}
+            //else
+            //{
+            //    throw new ArgumentException("The sheets parameter must be a string or a collection of strings.");
+            //}
+        }
+
+        internal void DefineDestinations(ref ICollection<string?> collectionDestinations, ICollection<string?> sheetsCollection)
+        {
+            if (collectionDestinations.Count > 1)
             {
-                sheets = new List<string> { sheet };
-            }
-            else if (sheets is ICollection<string> sheetsCollection)
-            {
-                if (sheetsCollection.Count == 0)
+                Dictionary<string, int> counts = new();
+                List<string?> result = new();
+                var sheets = new List<string?>(sheetsCollection);
+
+                foreach (var dest in collectionDestinations)
                 {
-                    sheets = Enumerable.Range(1, countSheets).Select(i => i.ToString()).ToList();
+                    string directory = Path.GetDirectoryName(dest);
+                    string fileName = Path.GetFileNameWithoutExtension(dest);
+                    string extension = Path.GetExtension(dest);
+
+                    string item = $"{Path.Combine(directory, fileName)}__{sheets[0]}";
+
+                    if (counts.ContainsKey(item))
+                    {
+                        counts[item]++;
+                        result.Add($"{item}_{counts[item]}.{extension}");
+                    }
+                    else
+                    {
+                        counts[item] = 1;
+                        result.Add($"{item}.{extension}");
+                    }
                 }
-            }
-            else
-            {
-                throw new ArgumentException("The sheets parameter must be a string or a collection of strings.");
             }
         }
 
@@ -206,19 +232,17 @@ namespace SH.ExcelHelper.Treatments
                  * minRows = 1 or X.                
                  */
 
-
-            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
             ICollection<string?> destinationsCollection = ConvertToCollection(destinations);
+            ICollection<string?> sheetsCollection = ConvertToCollection(sheets);
             ICollection<string?> separatorsCollection = ConvertToCollection(separators);
             ICollection<string?> columnsCollection = ConvertToCollection(columns);
             ICollection<string?> rowsCollection = ConvertToCollection(rows);
 
             var collections = new List<ICollection<string?>> { (ICollection<string?>)destinations, (ICollection<string?>)sheets, (ICollection<string?>)separators, (ICollection<string?>)columns, (ICollection<string?>)rows };
-
             int countConversions = collections.Max(collection => collection.Count);
 
-
-            destinationsCollection = ExpandCollectionDestinations(destinationsCollection, sheetsCollection);
+            destinationsCollection = ExpandCollection(destinationsCollection, countConversions);
+            sheetsCollection = ExpandCollection(sheetsCollection, countConversions);
             separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
             columnsCollection = ExpandCollection(columnsCollection, countConversions);
             rowsCollection = ExpandCollection(rowsCollection, countConversions);
@@ -227,13 +251,11 @@ namespace SH.ExcelHelper.Treatments
             {
                 throw new ArgumentException("All parameters must have the same number of items or be single values.");
             }
-          
+
             destinations = destinationsCollection;
             separators = separatorsCollection;
             columns = columnsCollection;
             rows = rowsCollection;
-
-
 
             static ICollection<string?> ConvertToCollection(object? obj)
             {
@@ -262,38 +284,6 @@ namespace SH.ExcelHelper.Treatments
                     return collection;
                 }
             }
-
-            static ICollection<string?> ExpandCollectionDestinations(ICollection<string?> collectionDestinations, ICollection<string> sheetsCollection)
-            {
-                if (collectionDestinations.Count == 1 && sheetsCollection.Count > 1)
-                {
-                    string? destination = collectionDestinations.FirstOrDefault();
-                    
-                    if(Path.HasExtension(destination))
-                    {
-                        string directory = Path.GetDirectoryName(destination);
-                        string fileName = Path. GetFileNameWithoutExtension(destination);
-                        string extension = Path.GetExtension(destination);  
-                        
-                        return sheetsCollection.Select(sheet => $@"{Path.Combine(directory,fileName)}_{sheet}.{extension}").ToList();
-                    }
-                    else
-                    {
-                        return sheetsCollection.Select(sheet => $"{destination}{sheet}").ToList();
-                    }                      
-                }
-                else if (collectionDestinations.Count == 0)
-                {
-                    throw new ArgumentException("The destination parameter must have at least one item.");
-                }
-                else
-                {
-                    return collectionDestinations;
-                }
-            }
-
-            
-
 
         }
 

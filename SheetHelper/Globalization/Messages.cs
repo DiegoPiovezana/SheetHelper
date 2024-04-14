@@ -107,7 +107,7 @@ namespace SH.Globalization
             };
         }
 
-        internal static string SheetNo
+       
 
         #endregion
 

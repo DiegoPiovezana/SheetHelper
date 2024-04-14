@@ -336,7 +336,7 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public bool Converter(string? origin, string? destination, string sheet, string separator, string? columns, string? rows, int minRows = 1)
+        public bool Converter(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, int minRows = 1)
         {
             try
             {

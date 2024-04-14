@@ -21,6 +21,7 @@ namespace SH.ExcelHelper.Tools
         private readonly Validations _validations;
         private readonly Reading _reading;
         private readonly Writing _writing;
+        private readonly Definitions _definitions;
 
         public Features(SheetHelper sheetHelper)
         {
@@ -28,6 +29,7 @@ namespace SH.ExcelHelper.Tools
             _validations = new Validations(sheetHelper);
             _reading = new Reading();
             _writing = new Writing(sheetHelper);
+            _definitions = new Definitions(sheetHelper);
         }
 
 
@@ -540,28 +542,32 @@ namespace SH.ExcelHelper.Tools
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
 
-                destinations = destinations as ICollection<string?>;
-                separators = separators as ICollection<string?>;
-                columns = columns as ICollection<string?>;
-                rows = rows as ICollection<string?>;
+                var destinationsCollection = destinations as ICollection<string?>;
+                var sheetsCollection = sheets as ICollection<string?>;
+                var separatorsCollection = separators as ICollection<string?>;
+                var columnsCollection = columns as ICollection<string?>;
+                var rowsCollection = rows as ICollection<string?>;
 
                 Dictionary<string, DataTable>? sheetsDictionary = GetAllSheets(origin, minRows, true);
+                _validations.ValidateSheetsDictionary(sheetsDictionary);
 
+                //if (sheets == null || sheets.Count == 0) sheets = sheetsDictionary.Keys;
+                //if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
+                //if (rows == null || rows.Count == 0) rows = Enumerable.Repeat("", sheets.Count).ToList();
 
-                if (sheets == null || sheets.Count == 0) sheets = sheetsDictionary.Keys;
-                if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
-                if (rows == null || rows.Count == 0) rows = Enumerable.Repeat("", sheets.Count).ToList();
+                //if (sheets.Count != columns.Count || sheets.Count != rows.Count)
+                //{
+                //    throw new Exception("E-0000-SH: The number of sheets, columns and rows must be the same.");
+                //}
 
-                if (sheets.Count != columns.Count || sheets.Count != rows.Count)
-                {
-                    throw new Exception("E-0000-SH: The number of sheets, columns and rows must be the same.");
-                }
+                _definitions.DefineSheets(ref sheetsCollection, sheetsDictionary);
+                _definitions.DefineDestinations(ref destinationsCollection, sheetsCollection);
 
                 int saveSuccess = default;
 
-                for (int i = 0; i < sheets.Count; i++) // Name or index of the sheet              
+                for (int i = 0; i < sheetsCollection.Count; i++) // Name or index of the sheet              
                 {
-                    var sheetId = NormalizeText(sheets.Skip(i).FirstOrDefault());
+                    var sheetId = NormalizeText(sheetsCollection.Skip(i).FirstOrDefault());
 
                     DataTable? dtSheet = null;
 
@@ -584,11 +590,13 @@ namespace SH.ExcelHelper.Tools
                     //var columnSheet = columns.Skip(indexSheet).FirstOrDefault();
                     //var rowSheet = rows.Skip(indexSheet).FirstOrDefault();
 
-                    var columnSheet = columns.Skip(i).FirstOrDefault();
-                    var rowSheet = rows.Skip(i).FirstOrDefault();
+                    var columnSheet = columnsCollection.Skip(i).FirstOrDefault();
+                    var rowSheet = rowsCollection.Skip(i).FirstOrDefault();
+                    var destination = destinationsCollection.Skip(i).FirstOrDefault();
+                    var separator = separatorsCollection.Skip(i).FirstOrDefault();
 
-                    string dest = Path.Combine(Path.GetDirectoryName(destinations), $"{Path.GetFileNameWithoutExtension(destinations)}__{sheetId}{Path.GetExtension(destinations)}");
-                    saveSuccess += SaveDataTable(dtSheet, dest, separators, columnSheet, rowSheet) ? 1 : 0;
+                    string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheetId}{Path.GetExtension(destination)}");
+                    saveSuccess += SaveDataTable(dtSheet, dest, separator, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;
