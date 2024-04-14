@@ -174,10 +174,10 @@ namespace SH.ExcelHelper.Treatments
         {
             // "1" or "Fist_Sheet_Name"
 
-            if (string.IsNullOrEmpty(sheet))
-            {
-                throw new ArgumentNullOrEmptySHException(nameof(sheet), GetCallingMethodName(2));
-            }
+            //if (string.IsNullOrEmpty(sheet))
+            //{
+            //    throw new ArgumentNullOrEmptySHException(nameof(sheet), GetCallingMethodName(2));
+            //}
 
             if (int.TryParse(sheet, out int sheetNumber) && sheetNumber <= 0)
             {
