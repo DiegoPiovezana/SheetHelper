@@ -5,6 +5,7 @@ using SH.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 
 namespace SH
 {
@@ -116,6 +117,10 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(UnGZ), ex), ex);
             }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
         }
 
         /// <inheritdoc/> 
@@ -134,6 +139,10 @@ namespace SH
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(UnZIP), ex), ex);
+            }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
             }
         }
 
@@ -154,6 +163,10 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(UnzipAuto), ex), ex);
             }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
         }
 
         /// <inheritdoc/> 
@@ -172,6 +185,10 @@ namespace SH
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(ConvertToDataRow), ex), ex);
+            }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
             }
         }
 
@@ -335,6 +352,10 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
             }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
         }
 
         /// <inheritdoc/> 
@@ -352,6 +373,10 @@ namespace SH
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
+            }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
             }
         }
 
@@ -372,6 +397,10 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(Converter), ex), ex);
             }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
         }
 
         /// <inheritdoc/> 
@@ -391,6 +420,10 @@ namespace SH
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(ConvertAllSheets), ex), ex);
+            }
+            finally
+            {
+                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
             }
         }
 

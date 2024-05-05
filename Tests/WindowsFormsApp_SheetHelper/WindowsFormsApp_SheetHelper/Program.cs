@@ -26,7 +26,7 @@ namespace WindowsFormsApp_SheetHelper
             string linhas; // Ex.: extrai a partir da 2ª linha da planilha até a última (retira a 1ª linha)          
 
             //var abas = SheetHelper.GetSheets(
-            //    "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx",
+            //    "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx",
             //    1,
             //    true
             //    );
@@ -34,8 +34,8 @@ namespace WindowsFormsApp_SheetHelper
             //retorno = abas.Count > 0;
 
             //var retorno = SheetHelper.ConvertAllSheets(
-            //    "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx",
-            //    "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Conversao_XLSX_abas.csv"                
+            //    "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx",
+            //    "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Conversao_XLSX_abas.csv"                
             //    );
 
             //MessageBox.Show(retorno ? $"O arquivo foi convertido com sucesso!" : "Não foi possível converter o arquivo!");
@@ -50,22 +50,22 @@ namespace WindowsFormsApp_SheetHelper
             //aba = "3";
             //linhas = "";
             //colunas = "";
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Conversao_XLSX_abas.csv";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Conversao_XLSX_abas.csv";
             //retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
             //carregamento.Value = ref SheetHelper.Progress;
             //SheetHelper.OnProgressChanged += newValue => { carregamento.Value = newValue; };            
             //SheetHelper.Progress.ValueChanged += (sender, e) => { value = e.NewValue; };            
             //aba = "Sheet7";
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Conversao_QuebraLinha.csv";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Conversao_QuebraLinha.csv";
             //retorno = SheetHelper.Converter(origem, destino, aba, separador, null, null);
 
 
             //linhas = "1:"; // 502.383
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcelBig.xlsb";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ConversaoBig_XLSB.csv";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcelBig.xlsb";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ConversaoBig_XLSB.csv";
             //ref int progress = ref SheetHelper.Progress;
             //retorno = SheetHelper.ConverterAllSheet(origem, destino);
             //var retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
@@ -83,12 +83,12 @@ namespace WindowsFormsApp_SheetHelper
 
             //linhas = "1:10";
             ////carregamento.Value = 0;
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.csv";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel.txt";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel.txt";
             //retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\Teste.rpt";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\TesteRPT.csv";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Teste.rpt";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\TesteRPT.csv";
             //separador = ";";
             //linhas = "1:40";
             //colunas = "A:F";
@@ -97,8 +97,8 @@ namespace WindowsFormsApp_SheetHelper
 
             SH.SheetHelper sheetHelper = new SH.SheetHelper();
 
-            origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-            destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\TesteXLSX.csv";
+            origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\TesteXLSX.csv";
             separador = ";";
             linhas = "3:5,2,3";
             colunas = "A,C,B";            
@@ -108,14 +108,14 @@ namespace WindowsFormsApp_SheetHelper
 
             //linhas = "1:10";
             //carregamento.Value = 0;
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\Teste.txt";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Teste4.csv";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Teste.txt";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Teste4.csv";
             //retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
             //linhas = "1:10";
             //carregamento.Value = 0;
-            //origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\Teste.txt";
-            //destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\Teste5.txt";
+            //origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Teste.txt";
+            //destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Teste5.txt";
             //retorno = SheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
             // Inicie um loop para atualizar a barra de progresso

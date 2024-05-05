@@ -4,7 +4,7 @@ using System;
 namespace SH.Exceptions
 {
     #region Principal
-
+    
     [Serializable]
     public class SHException : Exception
     {
@@ -32,11 +32,11 @@ namespace SH.Exceptions
     [Serializable]
     public class ArgumentNullOrEmptySHException : SHException
     {
-        protected new int Number { get; } = 0;
+        internal new int Number { get; } = 0;
 
         internal ArgumentNullOrEmptySHException(string argumentName, string methodName) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName)) { }
 
-        public ArgumentNullOrEmptySHException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName), innerException) { }
+        internal ArgumentNullOrEmptySHException(string argumentName, string methodName, Exception innerException) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName), innerException) { }
     }
 
     [Serializable]

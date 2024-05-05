@@ -169,10 +169,10 @@ namespace SH.ExcelHelper.Tools
             {
                 throw;
             }
-            finally
-            {
-                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
-            }
+            //finally
+            //{
+            //    if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            //}
         }
 
         public DataRow ConvertToDataRow(string[] row, DataTable table)
@@ -520,7 +520,7 @@ namespace SH.ExcelHelper.Tools
                 {
                     _sheetHelper.Progress = 100;
                     File.Copy(origin, destination, true);
-                    if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
+                    //if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
                     return true;
                 }
 

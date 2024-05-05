@@ -90,8 +90,8 @@ namespace WindowsFormsApp_SheetHelper
         private bool Converter()
         {
 
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcelBig.xlsb";
-            string destino = "C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ConversaoBig_XLSB.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcelBig.xlsb";
+            string destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ConversaoBig_XLSB.csv";
             string aba = "2";
             string linhas = "1:"; // 502.383
             string colunas = "";

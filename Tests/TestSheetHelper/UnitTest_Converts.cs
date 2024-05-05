@@ -171,6 +171,25 @@ namespace TestSheetHelper
             Assert.That(retorno, Is.EqualTo(true));
         }
 
+        [Test]
+        public void TestConvertFromCSV()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SemCabecalho.csv";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SemCabecalho_csv.xls";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string linhas = "1:5";
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+            var success = sh.SaveDataTable(dt, destino, separador, colunas, linhas);
+                       
+            Assert.That(success, Is.EqualTo(true));
+        }
+
         [Test, Repeat(1)]
         public void TestConvertParticularXLSB()
         {
@@ -388,7 +407,7 @@ namespace TestSheetHelper
         public bool TestRows(string linhas, int id)
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
-            string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_row{id}.csv";
+            string destino = @$"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_row{id}.csv";
 
             string aba = "1";
             string separador = ";";
@@ -406,7 +425,7 @@ namespace TestSheetHelper
         public bool TestColuns(string colunas, int id)
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xls";
-            string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_column{id}.csv";
+            string destino = @$"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_column{id}.csv";
 
             string aba = "1";
             string separador = ";";
@@ -432,7 +451,7 @@ namespace TestSheetHelper
             {
                 get
                 {
-                    string path = "C:\\Users\\diego\\Desktop\\Lixo";
+                    string path = "C:\\Users\\diego\\Desktop\\Tests";
 
                     return new List<TestCaseData>()
                      {

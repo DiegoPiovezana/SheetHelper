@@ -9,8 +9,8 @@ namespace UnitTestSheetHelper
         [TestMethod]
         public void TestConvertParticular()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-            string destino = $"C:\\Users\\diego\\Desktop\\Lixo\\Convertidos\\ColunasExcel_0.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_0.csv";
 
             string aba = "1";
             string separador = ";";           
@@ -31,8 +31,8 @@ namespace UnitTestSheetHelper
         //[TestCase(new string[] { null }, 6, ExpectedResult = true, TestName = "Array com string nula...")]
         //public bool TestColuns(string[] colunas, int id)
         //{
-        //    string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xls";
-        //    string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_column{id}.csv";
+        //    string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xls";
+        //    string destino = @$"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_column{id}.csv";
 
         //    string aba = "1";
         //    string separador = ";";
@@ -53,8 +53,8 @@ namespace UnitTestSheetHelper
         //[TestCase("7", 7, ExpectedResult = true, TestName = "7")]
         //public bool TestRows(string linhas, int id)
         //{
-        //    string origem = "C:\\Users\\diego\\Desktop\\Lixo\\Converter\\ColunasExcel.xlsx";
-        //    string destino = @$"C:\Users\diego\Desktop\Lixo\Convertidos\ColunasExcel_row{id}.csv";
+        //    string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx";
+        //    string destino = @$"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_row{id}.csv";
 
         //    string aba = "1"; 
         //    string separador = ";";
@@ -81,7 +81,7 @@ namespace UnitTestSheetHelper
         //    {
         //        get
         //        {
-        //            string path = "C:\\Users\\diego\\Desktop\\Lixo";
+        //            string path = "C:\\Users\\diego\\Desktop\\Tests";
 
         //            return new List<TestCaseData>()
         //             {

@@ -180,7 +180,7 @@ namespace SH.ExcelHelper.Tools
             //File.WriteAllText(destination, output.ToString(), Encoding.UTF8);
             using (StreamWriter writer = new(destination, false, Encoding.UTF8)) { writer.Write(output.ToString()); }
 
-            if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
+            //if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
             _sheetHelper.Progress += 10; // 100
             return true;
