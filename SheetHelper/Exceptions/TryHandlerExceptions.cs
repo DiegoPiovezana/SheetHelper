@@ -48,9 +48,9 @@ namespace SH.Exceptions
         {
             //if (tryIgnoreExceptions == null || !tryIgnoreExceptions.Contains(exception.Code)) throw exception;
 
-            //#if !NETFRAMEWORK            
-            //            throw exception; // Handle exception only to NETFRAMEWORK
-            //#endif
+#if !NETFRAMEWORK
+            throw exception; // Handle exception only to NETFRAMEWORK
+#endif
 
             countOpen++;
 
