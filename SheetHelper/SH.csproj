@@ -9,7 +9,7 @@
 		<AssemblyTitle>SheetHelper</AssemblyTitle>
 		<AssemblyName>SheetHelper</AssemblyName>
 		<PackageId>SheetHelper</PackageId>
-		<Version>1.4.0</Version>
+		<Version>1.5.0-alpha-1</Version>
 		<Authors>Diêgo Piovezana</Authors>
 		<Company>DiegoPiov</Company>
 		<RepositoryUrl>https://github.com/DiegoPiovezana/SheetHelper</RepositoryUrl>
@@ -24,14 +24,8 @@
 		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>		
 		<Nullable>enable</Nullable>		
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
-<PackageReleaseNotes>
-- Ability to manipulate and save spreadsheets containing special characters (UTF-8)
-- The temporary directory "SheetHelper" is automatically deleted upon completion
-- Ability to select rows in reverse order (e.g., "3:1")
-- Columns can be selected in reverse order (e.g., "-1:-5")
-- Dictionary of forbidden cell terms that will be replaced
-- Semicolons (";") in cells are retained within the cell instead of creating a new column
-</PackageReleaseNotes>
+<PackageReleaseNotes>- Alpha Version
+- Possible bugs possibly present</PackageReleaseNotes>
 				
 	</PropertyGroup>
 
