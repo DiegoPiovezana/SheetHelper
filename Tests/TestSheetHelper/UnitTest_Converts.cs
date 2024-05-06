@@ -19,7 +19,7 @@ namespace TestSheetHelper
 
         // --------------------------------------------------------------------------------
         [Test, Repeat(1)]
-        public void TestManipulacaoDt()
+        public void TestManipulacaoDtGZ()
         {
             string origin = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsx.gz";
             string destination = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Especial_xlsx.csv";
@@ -44,7 +44,7 @@ namespace TestSheetHelper
             //string source = "C:\\Users\\Diego\\Files\\Report.xlsx.gz";
             //string destination = "C:\\Users\\Diego\\Files\\Report.csv";
 
-            string source = @"C:\Users\diego\Desktop\Tests\Converter\ColunasExcel.tar.gz";
+            string source = @"C:\Users\diego\Desktop\Tests\Converter\ColunasExcel.zip";
             string destination = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Report.csv";
 
             string sheet = "1"; // Use "1" for the first sheet (index or name)

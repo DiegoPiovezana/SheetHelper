@@ -105,6 +105,7 @@ namespace SH.ExcelHelper.Tools
                     fileConverted = pathDestination;
                 }
 
+                if(!Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
                 using FileStream outputFileStream = File.Create(fileConverted);
                 using var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
                 decompressor.CopyTo(outputFileStream);
@@ -122,6 +123,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 string directoryZIP = Path.Combine(pathDestination, "CnvrtdZIP");
+                if (!Directory.Exists(directoryZIP)) Directory.CreateDirectory(directoryZIP);
 
                 ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
