@@ -1,4 +1,5 @@
-﻿using SH.Exceptions;
+﻿using ExcelDataReader.Core;
+using SH.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -247,7 +248,7 @@ namespace SH.ExcelHelper.Treatments
             separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
             columnsCollection = ExpandCollection(columnsCollection, countConversions);
             rowsCollection = ExpandCollection(rowsCollection, countConversions);
-                        
+
             destinations = destinationsCollection;
             sheets = sheetsCollection;
             separators = separatorsCollection;
@@ -288,5 +289,35 @@ namespace SH.ExcelHelper.Treatments
 
         }
 
+        internal DataTable DefineFirstRowToHeader(DataTable dataTable, string extension, bool ignoreEmptyColumns)
+        {
+            static bool IsCsvTxtRptExtension(string extension)
+            {
+                string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
+                return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+            }
+
+            if (IsCsvTxtRptExtension(extension))
+            {
+                DataRow firstRow = dataTable.Rows[0];
+
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+                    {
+                        if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i+1}"; }
+                        else throw new Exception($"E-4041-SH: Column header '{i+1}' (column name) is not valid because it is blank!");
+                    }
+                    else
+                    {
+                        dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                    }                    
+                }
+
+                dataTable.Rows.RemoveAt(0);
+            }
+
+            return dataTable;
+        }
     }
 }

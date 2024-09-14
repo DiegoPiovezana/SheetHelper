@@ -28,7 +28,7 @@ namespace SH
         /// (Optional) Ignored exceptions will attempt to be handled internally. If it is not possible, it will just return false and the exception will not be thrown.
         /// <para>By default, it will ignore the exception when the source or destination file is in use. If .NET Framework will display a warning to close the file, otherwise it will return false.</para>
         /// </summary>
-        public List<string>? TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH" };
+        public List<string> TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH", "E-4041-SH" };
 
 
         private readonly Features _features;

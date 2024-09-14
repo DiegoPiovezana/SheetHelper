@@ -186,8 +186,84 @@ namespace TestSheetHelper
             var dt = sh.GetDataTable(origem, aba);
             var first = sh.GetRowArray(dt);
             var success = sh.SaveDataTable(dt, destino, separador, colunas, linhas);
-                       
+
             Assert.That(success, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestReadCSV1()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
+            string aba = "1";       
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[2].Equals("3"), Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestReadCSV2()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SemCabecalho.csv";
+            string aba = "1";
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[2].Equals("C2"), Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestReadCSV3()
+        {           
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
+            string aba = "1";
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[5].Equals("6") && first[6].Equals("EmptyColumn7"), Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestReadCSVPipeline()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline.csv";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string linhas = "1:5";
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[2].Equals("1"), Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestReadCSVCabecalhoIrregular()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
+            //string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline_CabecalhoIrregular.txt";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string linhas = "1:5";
+
+            var sh = new SheetHelper();
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[2].Equals("1"), Is.EqualTo(true));
         }
 
         [Test, Repeat(1)]
@@ -295,7 +371,7 @@ namespace TestSheetHelper
             List<string>? linhas = null;
             int minRows = 1;
 
-            Assert.Throws <SH.Exceptions.ParamMissingConverterSHException>(() =>
+            Assert.Throws<SH.Exceptions.ParamMissingConverterSHException>(() =>
                        sheetHelper.Converter(origem, destino, abas, separador, colunas, linhas, minRows)
                    );
         }
@@ -346,7 +422,7 @@ namespace TestSheetHelper
             //sh.ProhibitedItems = dic;
 
             // "{"key1": "value1", "key2": "value2", "key3": "value3"}";
-            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";     
+            string test1 = "{ \"key1\" : \"value1\", \"key2\" : \"value2\", \"key3\" : \"value3\" }";
             string test2 = "{\"\\n\": \" \", \"\\r\": \"\", \";\": \",\"}";
             string jsonDictionary1 = System.Text.Json.JsonSerializer.Serialize(dic);
             string jsonDictionary2 = sh.GetJsonDictionary(dic);

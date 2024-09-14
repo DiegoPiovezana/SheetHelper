@@ -318,5 +318,8 @@ namespace SH.ExcelHelper.Treatments
             if (table.Rows.Count < minRows - 1)
                 throw new RowsMinDtSHException(table.TableName);
         }
+
+
+
     }
 }

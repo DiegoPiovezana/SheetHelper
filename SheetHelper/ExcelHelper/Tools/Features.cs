@@ -368,8 +368,8 @@ namespace SH.ExcelHelper.Tools
                 DataTable table = _reading.GetTableByDataSet(sheet, result);
 
                 // Handling to allow header consideration (XLS case)
-                // TODO: Refactor
-                table = _reading.FirstRowToHeader(table, Path.GetExtension(origin));
+                // TODO: Refactor              
+                table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin), _sheetHelper.TryIgnoreExceptions.Contains("E-4041-SH"));
                 _sheetHelper.Progress += 5; // 40
 
                 return table;

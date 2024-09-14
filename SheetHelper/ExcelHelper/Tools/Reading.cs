@@ -100,29 +100,9 @@ namespace SH.ExcelHelper.Tools
             };
         }
 
-        internal bool IsCsvTxtRptExtension(string extension)
-        {
-            string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
-            return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
-        }
+       
 
-        internal DataTable FirstRowToHeader(DataTable dataTable, string extension)
-        {
-            if (IsCsvTxtRptExtension(extension))
-            {
-                DataRow firstRow = dataTable.Rows[0];
-
-                for (int i = 0; i < dataTable.Columns.Count; i++)
-                {
-                    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-                }
-
-                dataTable.Rows.RemoveAt(0);
-            }
-
-            return dataTable;
-        }
-
+     
 
 
 
