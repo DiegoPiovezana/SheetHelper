@@ -243,11 +243,11 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestReadCSVCabecalhoIrregular()
+        public void TestReadCSVCabecalhoIrregular() // Read
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
             //string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline_CabecalhoIrregular.txt";
-            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
+            //string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
 
             string aba = "1";
             string separador = ";";
@@ -255,6 +255,7 @@ namespace TestSheetHelper
             string linhas = "1:5";
 
             var sh = new SheetHelper();
+            sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
             var dt = sh.GetDataTable(origem, aba);
             var first = sh.GetRowArray(dt);
 
@@ -284,10 +285,13 @@ namespace TestSheetHelper
 
             string aba = "1";
             string separador = ";";
-            string? colunas = "1:12";
+            string? colunas = "1:12"; // Max column 10
             string? linhas = "1:10";
 
-            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
+            SheetHelper sheethelper = new ();
+            sheethelper.TryIgnoreExceptions.AddRange(new List<string>(){ "E-4041-SH", "E-4042-SH"});
+
+            bool retorno = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
         }
 

@@ -18,7 +18,7 @@ namespace SH.ExcelHelper.Treatments
 
         public Definitions(SheetHelper sheetHelper, Validations validations)
         {
-            _sheetHelper = sheetHelper;            
+            _sheetHelper = sheetHelper;
             _validations = validations;
         }
 
@@ -148,12 +148,12 @@ namespace SH.ExcelHelper.Treatments
             return indexColumns.ToArray();
 
 
-            int ConvertIndexColumn(string column)
+            int ConvertIndexColumn(string idColumn)
             {
                 int indexColumn;
 
-                if (column.All(c => char.IsLetter(c))) indexColumn = _sheetHelper.GetIndexColumn(column);
-                else indexColumn = Convert.ToInt32(column);
+                if (idColumn.All(c => char.IsLetter(c))) indexColumn = _sheetHelper.GetIndexColumn(idColumn);
+                else indexColumn = Convert.ToInt32(idColumn);
 
                 if (indexColumn >= 0)  // "75"
                 {
@@ -167,7 +167,7 @@ namespace SH.ExcelHelper.Treatments
                     //    }                        
                     //}
 
-                    _validations.ValidateColumnOutffRange(indexColumn, limitIndexColumn);
+                    _validations.ValidateColumnOutOfRange(idColumn, limitIndexColumn, indexColumn, table);
                     return indexColumn;
                 }
                 else // "-2"
@@ -178,7 +178,7 @@ namespace SH.ExcelHelper.Treatments
                     //    throw new Exception($"E-4042-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
                     //}                        
 
-                    _validations.ValidateColumnRefOutffRange(indexColumn, limitIndexColumn, column);
+                    _validations.ValidateColumnRefOutOfRange(idColumn, limitIndexColumn, indexColumn);
                     return limitIndexColumn + indexColumn + 1;
                 }
             }
@@ -302,7 +302,7 @@ namespace SH.ExcelHelper.Treatments
 
         }
 
-        internal DataTable DefineFirstRowToHeader(DataTable dataTable, string extension, bool ignoreEmptyColumns)
+        internal DataTable DefineFirstRowToHeader(DataTable dataTable, string extension)
         {
             static bool IsCsvTxtRptExtension(string extension)
             {
@@ -312,20 +312,21 @@ namespace SH.ExcelHelper.Treatments
 
             if (IsCsvTxtRptExtension(extension))
             {
-                DataRow firstRow = dataTable.Rows[0];
+                _validations.ValidateHeader(dataTable, true);
+                //DataRow firstRow = dataTable.Rows[0];
 
-                for (int i = 0; i < dataTable.Columns.Count; i++)
-                {
-                    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
-                    {
-                        if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i+1}"; }
-                        else throw new Exception($"E-4041-SH: Column header '{i+1}' (column name) is not valid because it is blank!");
-                    }
-                    else
-                    {
-                        dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-                    }                    
-                }
+                //for (int i = 0; i < dataTable.Columns.Count; i++)
+                //{
+                //    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+                //    {
+                //        if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
+                //        else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
+                //    }
+                //    else
+                //    {
+                //        dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                //    }
+                //}
 
                 dataTable.Rows.RemoveAt(0);
             }

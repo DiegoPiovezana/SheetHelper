@@ -1,8 +1,11 @@
-﻿using SH.Globalization;
+﻿using ExcelDataReader.Core;
+using SH.Globalization;
 using System;
 
 namespace SH.Exceptions
 {
+    // https://bit.ly/SheetHelper_Exceptions
+
     #region Principal
 
     [Serializable]
@@ -173,6 +176,40 @@ namespace SH.Exceptions
         internal RowRefOutRangeSHException(string row, int limitIndexRows, int indexRow) : base(Messages.RowRefOutRange(row, limitIndexRows, indexRow)) { }
 
         public RowRefOutRangeSHException(string row, int limitIndexRows, int indexRow, Exception innerException) : base(Messages.RowRefOutRange(row, limitIndexRows, indexRow), innerException) { }
+    }
+
+    #endregion
+
+    #region Columns
+
+    [Serializable]
+    public class ColumnNameHeaderInvalidSHException : SHException
+    {
+        protected new int Number { get; } = 4041;
+
+        internal ColumnNameHeaderInvalidSHException(int indexColumn) : base(Messages.ColumnNameHeaderInvalidRange(indexColumn)) { }
+
+        public ColumnNameHeaderInvalidSHException(int indexColumn, Exception innerException) : base(Messages.ColumnNameHeaderInvalidRange(indexColumn), innerException) { }
+    }
+
+    [Serializable]
+    public class ColumnOutRangeSHException : SHException
+    {
+        protected new int Number { get; } = 4042;
+
+        internal ColumnOutRangeSHException(int indexColumn, int limitIndexColumn) : base(Messages.ColumnOutRange(indexColumn, limitIndexColumn)) { }
+
+        public ColumnOutRangeSHException(int indexColumn, int limitIndexColumn, Exception innerException) : base(Messages.ColumnOutRange(indexColumn, limitIndexColumn), innerException) { }
+    }
+
+    [Serializable]
+    public class ColumnRefOutRangeSHException : SHException
+    {
+        protected new int Number { get; } = 4042;
+
+        internal ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn, string idColumn) : base(Messages.ColumnRefOutRange(idColumn, limitIndexColumn, indexColumn)) { }
+
+        public ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn, string idColumn, Exception innerException) : base(Messages.ColumnRefOutRange(idColumn, limitIndexColumn, indexColumn), innerException) { }
     }
 
     #endregion

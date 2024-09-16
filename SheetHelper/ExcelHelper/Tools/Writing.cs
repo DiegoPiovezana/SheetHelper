@@ -14,10 +14,10 @@ namespace SH.ExcelHelper.Tools
         private readonly SheetHelper _sheetHelper;
         private readonly Definitions _definitions;
 
-        public Writing(SheetHelper sheetHelper)
+        public Writing(SheetHelper sheetHelper, Validations validations)
         {
             _sheetHelper = sheetHelper;
-            _definitions = new Definitions(sheetHelper);
+            _definitions = new Definitions(sheetHelper, validations);
         }
 
 

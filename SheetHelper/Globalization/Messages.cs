@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SH.ExcelHelper.Tools;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -109,36 +110,47 @@ namespace SH.Globalization
                 "pt-BR" => $"Nome de aba '{sheetName}' é inválido.",
                 _ => $"Invalid sheet name '{sheetName}'.",
             };
-        } 
+        }
 
         #endregion
 
         #region Column
 
-        internal static string ColumnOutRange(string column, int limitIndexColumn, int indexColumn)
-        {
+        internal static string ColumnNameHeaderInvalidRange(int indexColumn)
+        {            
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"A coluna '{column}' está fora do intervalo porque se refere à coluna '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
-                _ => $"The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
+                "pt-BR" => $"O cabeçalho da coluna '{indexColumn}' do arquivo (CSV ou TXT por exemplo) que está sendo lido é inválida pois não pode estar em branco.",
+                _ => $"The column header '{indexColumn}' of the file (CSV or TXT for example) being read is invalid as it cannot be blank.",
             };
         }
 
-        internal static string ColumnOutRange(string column, int limitIndexColumn)
+        internal static string ColumnOutRange(int indexColumn, int limitIndexColumn)
+        {           
+            string nameLastColumn = new Features().GetNameColumn(limitIndexColumn);
+
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"A coluna '{indexColumn}' está fora do intervalo (min 1 ou A, max {limitIndexColumn} ou {nameLastColumn})!",
+                _ => $"The column '{indexColumn}' is out of range (min 1 or A, max {limitIndexColumn} or {nameLastColumn})!",
+            };
+        }
+
+        internal static string ColumnRefOutRange(string idColumn, int limitIndexColumn, int indexColumn)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"A coluna '{column}' está fora do intervalo (min 1, max {limitIndexColumn})!",
-                _ => $"The column '{column}' is out of range (min 1, max {limitIndexColumn})!",
+                "pt-BR" => $"A coluna '{idColumn}' está fora do intervalo porque se refere à coluna '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
+                _ => $"The column '{idColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
             };
-        }
+        }        
 
         internal static string ColumnNotPattern(string column)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
                 "pt-BR" => $"A coluna '{column}' informada não possui um padrão válido!",
-                _ => $"The column '{column}' entered does not have a valid pattern",
+                _ => $"The column '{column}' entered does not have a valid pattern!",
             };
         }
 

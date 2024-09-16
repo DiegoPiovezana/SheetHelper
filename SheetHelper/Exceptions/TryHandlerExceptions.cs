@@ -1,4 +1,5 @@
-﻿using ExcelDataReader.Log.Logger;
+﻿using ExcelDataReader.Core;
+using ExcelDataReader.Log.Logger;
 using SH.Globalization;
 using System;
 using System.Collections.Generic;
@@ -83,22 +84,65 @@ namespace SH.Exceptions
             else { return 0; } // If canceled
         }
 
-
-        internal int ColumnNotExist(SHException exception, string idColumn, DataTable dataTable)
+        /// <summary>
+        /// Incomplete headers will be filled.
+        /// </summary>
+        /// <param name="dataTable"></param>      
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        internal bool HeaderInvalid(DataTable dataTable)
         {
+            DataRow firstRow = dataTable.Rows[0];
+
             for (int i = 0; i < dataTable.Columns.Count; i++)
             {
                 if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
                 {
-                    if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
-                    else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
+                    var except = new ColumnNameHeaderInvalidSHException(i);
+                    bool ignoreEmptyColumns = _sheethelper.TryIgnoreExceptions != null && _sheethelper.TryIgnoreExceptions.Contains(except.Code);
+                    if (!ignoreEmptyColumns)
+                    {
+                        dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
+                        dataTable.Rows[0][i]= $"EmptyColumn{i + 1}";
+                    }
+                    else throw except;
                 }
-                else
-                {
-                    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-                }
+                //else
+                //{
+                //    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                //}
             }
+            return false;
         }
+
+        //internal int ColumnNotExist(string idColumn, int limitIndexColumn, DataTable dataTable)
+        //{
+        //    var except = new ColumnOutRangeSHException(idColumn);
+        //    if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
+
+        //    foreach (DataColumn column in dataTable.Columns)
+        //    {
+        //        if (column)
+
+
+        //    }
+
+
+
+        //    for (int i = 0; i < dataTable.Columns.Count; i++)
+        //    {
+        //        if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+        //        {
+        //            if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
+        //            else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
+        //        }
+        //        else
+        //        {
+        //            dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+        //        }
+        //    }
+        //}
+
 
 
     }

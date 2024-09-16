@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using SH.Exceptions;
+﻿using SH.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -168,7 +167,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSheetId(string? sheet)
+        internal void ValidateSheetIdInput(string? sheet)
         {
             // "1" or "Fist_Sheet_Name"
 
@@ -183,7 +182,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSheetsDictionary(Dictionary<string, DataTable>? sheetsDictionary)
+        internal void ValidateSheetsDictionaryInput(Dictionary<string, DataTable>? sheetsDictionary)
         {
             if (sheetsDictionary is null || sheetsDictionary.Count == 0)
             {
@@ -191,17 +190,17 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSeparator(string? separator)
+        internal void ValidateSeparatorInput(string? separatorInput)
         {
             // ";"
 
-            if (string.IsNullOrEmpty(separator))
+            if (string.IsNullOrEmpty(separatorInput))
             {
-                throw new ArgumentException("E-0000-SH: Invalid separator.", nameof(separator));
+                throw new ArgumentException("E-0000-SH: Invalid separator.", nameof(separatorInput));
             }
         }
 
-        internal void ValidateColumns(string? columns)
+        internal void ValidateColumnsInput(string? columnsInput)
         {
             // "A:H, 4:9, B, 75, -2"
             // Null Ok
@@ -209,7 +208,7 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for columns
         }
 
-        internal void ValidateRows(string? rows)
+        internal void ValidateRowsInput(string? rowsInput)
         {
             // "1:23, 34:56, 70, 75, -1"
 
@@ -220,7 +219,7 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal void ValidateConverter(string? origin, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
+        internal void ValidateConverter(string? originInput, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
         {
             try
             {
@@ -231,7 +230,7 @@ namespace SH.ExcelHelper.Treatments
                 ICollection<string?> rowsCollection = (ICollection<string?>)rowsInput;
 
                 // Remove duplicates  
-                HashSet<string?> destinations = new(destinationsCollection);          
+                HashSet<string?> destinations = new(destinationsCollection);
                 HashSet<string?> sheets = new(sheetsCollection);
                 HashSet<string?> separators = new(separatorsCollection);
                 HashSet<string?> columns = new(columnsCollection);
@@ -239,18 +238,18 @@ namespace SH.ExcelHelper.Treatments
 
                 List<Task> validates = new()
                 {
-                    Task.Run(() => ValidateOriginFile(origin, nameof(origin), methodName))
+                    Task.Run(() => ValidateOriginFile(originInput, nameof(originInput), methodName))
                 };
 
                 validates.AddRange(destinations.Select(destination => Task.Run(() => ValidateDestinationFile(destination, methodName))));
-                validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetId(sheet))));
-                validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparator(separator))));
-                validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumns(column))));
-                validates.AddRange(rows.Select(row => Task.Run(() => ValidateRows(row))));
+                validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetIdInput(sheet))));
+                validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparatorInput(separator))));
+                validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumnsInput(column))));
+                validates.AddRange(rows.Select(row => Task.Run(() => ValidateRowsInput(row))));
 
                 Task.WaitAll(validates.ToArray()); // TODO: Task.WhenAll
 
-                int countConversions = sheetsCollection.Count;               
+                int countConversions = sheetsCollection.Count;
                 if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
                 {
                     //throw new ArgumentException("All parameters must have the same number of items or be single values.");
@@ -272,10 +271,10 @@ namespace SH.ExcelHelper.Treatments
                 {
                     Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
                     Task.Run(() => ValidateDestinationFile(destination, methodName)),
-                    Task.Run(() => ValidateSheetId(sheet)),
-                    Task.Run(() => ValidateSeparator(separator)),
-                    Task.Run(() => ValidateColumns(columns)),
-                    Task.Run(() => ValidateRows(rows))
+                    Task.Run(() => ValidateSheetIdInput(sheet)),
+                    Task.Run(() => ValidateSeparatorInput(separator)),
+                    Task.Run(() => ValidateColumnsInput(columns)),
+                    Task.Run(() => ValidateRowsInput(rows))
                 };
 
                 //Task.WhenAll(validates).Wait();
@@ -292,9 +291,9 @@ namespace SH.ExcelHelper.Treatments
             List<Task> validates = new()
             {
                 Task.Run(() => ValidateDestinationFile(destination, methodName)),
-                Task.Run(() => ValidateSeparator(separator)),
-                Task.Run(() => ValidateColumns(columns)),
-                Task.Run(() => ValidateRows(rows))
+                Task.Run(() => ValidateSeparatorInput(separator)),
+                Task.Run(() => ValidateColumnsInput(columns)),
+                Task.Run(() => ValidateRowsInput(rows))
             };
             Task.WhenAll(validates).Wait();
         }
@@ -320,26 +319,33 @@ namespace SH.ExcelHelper.Treatments
                 throw new RowsMinDtSHException(table.TableName);
         }
 
-        internal void ValidateColumnOutffRange(int indexColumn, int limitIndexColumn)
+        internal void ValidateHeader(DataTable dataTable, bool headerMandatory, int numberColumnsExpected = -1)
+        {
+            DataRow firstRow = dataTable.Rows[0];
+            if (firstRow == null || (numberColumnsExpected > 0 && firstRow.Table.Columns.Count != numberColumnsExpected))
+                _tryHandlerExceptions.HeaderInvalid(dataTable);
+        }
+
+        internal void ValidateColumnOutOfRange(string idColumn, int limitIndexColumn, int indexColumn, DataTable table)
         {
             if (indexColumn == 0 || indexColumn > limitIndexColumn)
             {
-                switch (_tryHandlerExceptions.ColumnNotExist(ex, pathOrigin, countOpen, true))
-                {
-                    case 0: return;
-                    case 1: goto again;
-                    default: throw new RowOutRangeSHException(column, limitIndexColumn);
-                }
+                //switch (_tryHandlerExceptions.ColumnNotExist(idColumn, limitIndexColumn, table))
+                //{
+                //    case 0: return;
+                //    case 1: goto again;
+                //    default: throw new ColumnOutRangeSHException(indexColumn, limitIndexColumn);
+                //}
             }
         }
 
-        internal void ValidateColumnRefOutffRange(int indexColumn, int limitIndexColumn, string column)
+        internal void ValidateColumnRefOutOfRange(string idColumn, int limitIndexColumn, int indexColumn)
         {
-            if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
-            {
+            //if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
+            //{
 
-                throw new Exception($"E-4042-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
-            }
+            //    fthrow new Exception($"E-4042-SH: The column '{idColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
+            //}
         }
 
     }

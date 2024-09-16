@@ -23,12 +23,16 @@ namespace SH.ExcelHelper.Tools
         private readonly Writing _writing;
         private readonly Definitions _definitions;
 
+
+        internal Features() { }
+
         public Features(SheetHelper sheetHelper)
         {
             _sheetHelper = sheetHelper;
+            if (sheetHelper == null) return;
             _validations = new Validations(sheetHelper);
             _reading = new Reading();
-            _writing = new Writing(sheetHelper);
+            _writing = new Writing(sheetHelper, _validations);
             _definitions = new Definitions(sheetHelper, _validations);
         }
 
@@ -365,7 +369,7 @@ namespace SH.ExcelHelper.Tools
 
                 // Handling to allow header consideration (XLS case)
                 // TODO: Refactor              
-                table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin), _sheetHelper.TryIgnoreExceptions.Contains("E-4041-SH"));
+                table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin));
                 _sheetHelper.Progress += 5; // 40
 
                 return table;
@@ -547,7 +551,7 @@ namespace SH.ExcelHelper.Tools
                 var rowsCollection = rows as ICollection<string?>;
 
                 Dictionary<string, DataTable>? sheetsDictionary = GetAllSheets(origin, minRows, true);
-                _validations.ValidateSheetsDictionary(sheetsDictionary);
+                _validations.ValidateSheetsDictionaryInput(sheetsDictionary);
 
                 //if (sheets == null || sheets.Count == 0) sheets = sheetsDictionary.Keys;
                 //if (columns == null || columns.Count == 0) columns = Enumerable.Repeat("", sheets.Count).ToList();
