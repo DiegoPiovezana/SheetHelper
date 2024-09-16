@@ -146,7 +146,7 @@ namespace SH.Globalization
 
         #region Rows
 
-        internal static string RowOutRange(string row, int limitIndexRows, int indexRow)
+        internal static string RowRefOutRange(string row, int limitIndexRows, int indexRow)
         {
             return CultureInfo.CurrentCulture.Name switch
             {

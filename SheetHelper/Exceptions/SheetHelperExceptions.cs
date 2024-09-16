@@ -4,13 +4,14 @@ using System;
 namespace SH.Exceptions
 {
     #region Principal
-    
+
     [Serializable]
     public class SHException : Exception
     {
         protected int Number { get; } = 0;
         public string Code => $"E-{Number:D4}-SH"; // E-0000-SH
         public new string Message { get; } = string.Empty;
+        //public string LinkDoc { get; } = string.Empty; -- Not
 
         internal SHException() { }
 
@@ -152,6 +153,26 @@ namespace SH.Exceptions
         internal RowsMinDtSHException(string nameDt) : base(Messages.RowsMinDt(nameDt)) { }
 
         public RowsMinDtSHException(string nameDt, Exception innerException) : base(Messages.RowsMinDt(nameDt), innerException) { }
+    }
+
+    [Serializable]
+    public class RowOutRangeSHException : SHException
+    {
+        protected new int Number { get; } = 4042;
+
+        internal RowOutRangeSHException(string row, int limitIndexRows) : base(Messages.RowOutRange(row, limitIndexRows)) { }
+
+        public RowOutRangeSHException(string row, int limitIndexRows, Exception innerException) : base(Messages.RowOutRange(row, limitIndexRows), innerException) { }
+    }
+
+    [Serializable]
+    public class RowRefOutRangeSHException : SHException
+    {
+        protected new int Number { get; } = 4042;
+
+        internal RowRefOutRangeSHException(string row, int limitIndexRows, int indexRow) : base(Messages.RowRefOutRange(row, limitIndexRows, indexRow)) { }
+
+        public RowRefOutRangeSHException(string row, int limitIndexRows, int indexRow, Exception innerException) : base(Messages.RowRefOutRange(row, limitIndexRows, indexRow), innerException) { }
     }
 
     #endregion

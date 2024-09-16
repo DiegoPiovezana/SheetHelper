@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using SH.Exceptions;
+﻿using SH.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,10 +14,12 @@ namespace SH.ExcelHelper.Treatments
     internal class Definitions
     {
         readonly SheetHelper _sheetHelper;
+        readonly Validations _validations;
 
-        public Definitions(SheetHelper sheetHelper)
+        public Definitions(SheetHelper sheetHelper, Validations validations)
         {
-            _sheetHelper = sheetHelper;
+            _sheetHelper = sheetHelper;            
+            _validations = validations;
         }
 
 
@@ -156,16 +157,28 @@ namespace SH.ExcelHelper.Treatments
 
                 if (indexColumn >= 0)  // "75"
                 {
-                    if (indexColumn == 0 || indexColumn > limitIndexColumn)
-                        throw new Exception($"E-0000-SH: The column '{column}' is out of range (min 1, max {limitIndexColumn})!");
+                    //if (indexColumn == 0 || indexColumn > limitIndexColumn)
+                    //{
+                    //    switch (_tryHandlerExceptions.ColumnNotExist(ex, pathOrigin, countOpen, true))
+                    //    {
+                    //        case 0: return;
+                    //        case 1: goto again;
+                    //        default: throw new RowOutRangeSHException(column, limitIndexColumn); 
+                    //    }                        
+                    //}
 
+                    _validations.ValidateColumnOutffRange(indexColumn, limitIndexColumn);
                     return indexColumn;
                 }
                 else // "-2"
                 {
-                    if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
-                        throw new Exception($"E-0000-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
+                    //if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
+                    //{
 
+                    //    throw new Exception($"E-4042-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
+                    //}                        
+
+                    _validations.ValidateColumnRefOutffRange(indexColumn, limitIndexColumn, column);
                     return limitIndexColumn + indexColumn + 1;
                 }
             }

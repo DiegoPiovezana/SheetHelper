@@ -42,7 +42,7 @@ namespace SH
         {
             _features = new(this);
             _validations = new(this);
-            _definitions = new(this);
+            _definitions = new(this, _validations);
         }
 
 

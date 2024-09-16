@@ -230,21 +230,16 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestReadCSVPipeline()
+        public void TestReadCSVSeparator()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline.csv";
-            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
-
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline.csv";    
             string aba = "1";
-            string separador = ";";
-            string? colunas = null;
-            string linhas = "1:5";
 
             var sh = new SheetHelper();
             var dt = sh.GetDataTable(origem, aba);
             var first = sh.GetRowArray(dt);
 
-            Assert.That(first[2].Equals("1"), Is.EqualTo(true));
+            Assert.That(first[2].Equals("Last Name"), Is.EqualTo(true));
         }
 
         [Test]
@@ -276,6 +271,21 @@ namespace TestSheetHelper
             string separador = ";";
             string? colunas = null;
             string? linhas = null;
+
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
+            Assert.That(retorno, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvertTryIgnoreExpect()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_xlsb.csv";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = "1:12";
+            string? linhas = "1:10";
 
             bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -327,6 +337,23 @@ namespace TestSheetHelper
 
             bool retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvertMultiDestinations()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
+                        
+            var abas = new List<string>() { "2", "1", "sheet2" };
+            string separador = ";";  
+            string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };            
+            List<string>? linhas = new() { "1:3", "1:10", "1" };
+            int minRows = 1;
+
+            var retorno = new SheetHelper().Converter(origem, destino, abas, separador, colunas, linhas, minRows);
+
+            Assert.That(retorno == abas.Count, Is.EqualTo(true));
         }
 
         [Test]
@@ -592,6 +619,7 @@ namespace TestSheetHelper
             return new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
 
         }
+
 
 
 

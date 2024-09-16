@@ -29,7 +29,7 @@ namespace SH.ExcelHelper.Tools
             _validations = new Validations(sheetHelper);
             _reading = new Reading();
             _writing = new Writing(sheetHelper);
-            _definitions = new Definitions(sheetHelper);
+            _definitions = new Definitions(sheetHelper, _validations);
         }
 
 
@@ -49,22 +49,18 @@ namespace SH.ExcelHelper.Tools
 
         public int GetIndexColumn(string? columnName)
         {
-            try
-            {
-                int sum = 0;
-                foreach (var character in columnName)
-                {
-                    sum *= 26;
-                    sum += character - 'A' + 1;
-                }
+            if (string.IsNullOrWhiteSpace(columnName)) throw new ArgumentException("Column name cannot be null or empty.");
 
-                return sum; // E.g.: A = 1, Z = 26, AA = 27
-            }
-            catch (Exception)
+            int sum = 0;
+            foreach (var character in columnName)
             {
-                throw;
+                if (character < 'A' || character > 'Z') throw new ArgumentException("Invalid character in column name.");
+                sum = sum * 26 + (character - 'A' + 1);
             }
+
+            return sum;
         }
+
 
         public string GetNameColumn(int columnIndex)
         {

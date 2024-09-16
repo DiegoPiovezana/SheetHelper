@@ -1,4 +1,5 @@
-﻿using SH.Exceptions;
+﻿using ExcelDataReader.Core;
+using SH.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +22,7 @@ namespace SH.ExcelHelper.Treatments
         public Validations(SheetHelper sheetHelper)
         {
             _tryHandlerExceptions = new TryHandlerExceptions(sheetHelper);
-            _definitions = new Definitions(sheetHelper);
+            _definitions = new Definitions(sheetHelper, this);
         }
 
 
@@ -319,7 +320,27 @@ namespace SH.ExcelHelper.Treatments
                 throw new RowsMinDtSHException(table.TableName);
         }
 
+        internal void ValidateColumnOutffRange(int indexColumn, int limitIndexColumn)
+        {
+            if (indexColumn == 0 || indexColumn > limitIndexColumn)
+            {
+                switch (_tryHandlerExceptions.ColumnNotExist(ex, pathOrigin, countOpen, true))
+                {
+                    case 0: return;
+                    case 1: goto again;
+                    default: throw new RowOutRangeSHException(column, limitIndexColumn);
+                }
+            }
+        }
 
+        internal void ValidateColumnRefOutffRange(int indexColumn, int limitIndexColumn, string column)
+        {
+            if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
+            {
+
+                throw new Exception($"E-4042-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
+            }
+        }
 
     }
 }

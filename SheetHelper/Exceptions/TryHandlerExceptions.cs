@@ -48,7 +48,7 @@ namespace SH.Exceptions
         /// </summary>
         internal int FileExcelInUse(Exception exception, string pathFile, int countOpen, bool fileOrigin)
         {
-            //if (tryIgnoreExceptions == null || !tryIgnoreExceptions.Contains(exception.Code)) throw exception;
+            //if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(exception.Code)) throw exception;
 
 #if !NETFRAMEWORK
             throw exception; // Handle exception only to NETFRAMEWORK
@@ -84,7 +84,21 @@ namespace SH.Exceptions
         }
 
 
-      
+        internal int ColumnNotExist(SHException exception, string idColumn, DataTable dataTable)
+        {
+            for (int i = 0; i < dataTable.Columns.Count; i++)
+            {
+                if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+                {
+                    if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
+                    else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
+                }
+                else
+                {
+                    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                }
+            }
+        }
 
 
     }
