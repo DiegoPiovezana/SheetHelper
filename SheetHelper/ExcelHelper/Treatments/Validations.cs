@@ -319,12 +319,25 @@ namespace SH.ExcelHelper.Treatments
                 throw new RowsMinDtSHException(table.TableName);
         }
 
-        internal void ValidateHeader(DataTable dataTable, bool headerMandatory, int numberColumnsExpected = -1)
+        internal void ValidateHeader(DataTable dataTable, string extension, int numberColumnsExpected = -1)
         {
-            DataRow firstRow = dataTable.Rows[0];
-            if (firstRow == null || (numberColumnsExpected > 0 && firstRow.Table.Columns.Count != numberColumnsExpected))
-                _tryHandlerExceptions.HeaderInvalid(dataTable);
-        }
+            static bool IsCsvTxtRptExtension(string extension)
+            {
+                string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
+                return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+            }
+
+            if (IsCsvTxtRptExtension(extension))
+            {
+                //DataRow firstRow = dataTable.Rows[0];
+                //if (numberColumnsExpected > 0 && firstRow.Table.Columns.Count != numberColumnsExpected)
+                //{
+                //    _tryHandlerExceptions.HeaderInvalid(dataTable);
+                //}
+                _tryHandlerExceptions.HeaderValid(dataTable);
+                dataTable.Rows.RemoveAt(0);
+            }
+        }            
 
         internal void ValidateColumnOutOfRange(string idColumn, int limitIndexColumn, int indexColumn, DataTable table)
         {

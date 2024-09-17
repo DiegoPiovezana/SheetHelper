@@ -90,7 +90,7 @@ namespace SH.Exceptions
         /// <param name="dataTable"></param>      
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        internal bool HeaderInvalid(DataTable dataTable)
+        internal bool HeaderValid(DataTable dataTable)
         {
             DataRow firstRow = dataTable.Rows[0];
 
@@ -102,7 +102,7 @@ namespace SH.Exceptions
                     bool ignoreEmptyColumns = _sheethelper.TryIgnoreExceptions != null && _sheethelper.TryIgnoreExceptions.Contains(except.Code);
                     if (!ignoreEmptyColumns)
                     {
-                        dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
+                        //dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
                         dataTable.Rows[0][i]= $"EmptyColumn{i + 1}";
                     }
                     else throw except;
@@ -112,7 +112,7 @@ namespace SH.Exceptions
                 //    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
                 //}
             }
-            return false;
+            return true;
         }
 
         //internal int ColumnNotExist(string idColumn, int limitIndexColumn, DataTable dataTable)

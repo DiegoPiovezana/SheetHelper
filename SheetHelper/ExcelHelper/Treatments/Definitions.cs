@@ -304,32 +304,26 @@ namespace SH.ExcelHelper.Treatments
 
         internal DataTable DefineFirstRowToHeader(DataTable dataTable, string extension)
         {
-            static bool IsCsvTxtRptExtension(string extension)
-            {
-                string[] allowedExtensions = { ".csv", ".txt", ".rpt" };
-                return allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
-            }
+            //if (IsCsvTxtRptExtension(extension))
+            //{
+            _validations.ValidateHeader(dataTable, extension);
+            //DataRow firstRow = dataTable.Rows[0];
 
-            if (IsCsvTxtRptExtension(extension))
-            {
-                _validations.ValidateHeader(dataTable, true);
-                //DataRow firstRow = dataTable.Rows[0];
+            //for (int i = 0; i < dataTable.Columns.Count; i++)
+            //{
+            //    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+            //    {
+            //        if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
+            //        else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
+            //    }
+            //    else
+            //    {
+            //        dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+            //    }
+            //}
 
-                //for (int i = 0; i < dataTable.Columns.Count; i++)
-                //{
-                //    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
-                //    {
-                //        if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
-                //        else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
-                //    }
-                //    else
-                //    {
-                //        dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-                //    }
-                //}
-
-                dataTable.Rows.RemoveAt(0);
-            }
+            //    dataTable.Rows.RemoveAt(0);
+            //}
 
             return dataTable;
         }

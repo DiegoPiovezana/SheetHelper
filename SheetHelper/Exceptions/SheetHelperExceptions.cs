@@ -11,9 +11,9 @@ namespace SH.Exceptions
     [Serializable]
     public class SHException : Exception
     {
-        protected int Number { get; } = 0;
+        protected virtual int Number { get; } = 0;
         public string Code => $"E-{Number:D4}-SH"; // E-0000-SH
-        public new string Message { get; } = string.Empty;
+        public string Message { get; } = string.Empty;
         //public string LinkDoc { get; } = string.Empty; -- Not
 
         internal SHException() { }
@@ -184,8 +184,8 @@ namespace SH.Exceptions
 
     [Serializable]
     public class ColumnNameHeaderInvalidSHException : SHException
-    {
-        protected new int Number { get; } = 4041;
+    {       
+        protected override int Number => 4041;
 
         internal ColumnNameHeaderInvalidSHException(int indexColumn) : base(Messages.ColumnNameHeaderInvalidRange(indexColumn)) { }
 
