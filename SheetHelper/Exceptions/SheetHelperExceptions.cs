@@ -21,11 +21,13 @@ namespace SH.Exceptions
         internal SHException(string message) : base(message)
         {
             Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
+            HResult = Number;
         }
 
         internal SHException(string message, Exception innerException) : base(message, innerException)
         {
             Message = $"{Code}: {message} \n\n {Messages.VisitDocExceptions()}";
+            HResult = Number;
         }
     }
 
