@@ -48,7 +48,15 @@ namespace SH.ExcelHelper.Tools
         internal DataSet ReadCSV(FileStream stream)
         {
             using var reader = ExcelReaderFactory.CreateCsvReader(stream);
-            return reader.AsDataSet();
+            //return reader.AsDataSet();
+
+            DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
+            {
+                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+
+            });
+
+            return result;
         }
 
         /// <summary>

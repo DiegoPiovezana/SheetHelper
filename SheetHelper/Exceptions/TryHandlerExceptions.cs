@@ -102,7 +102,7 @@ namespace SH.Exceptions
                     bool ignoreEmptyColumns = _sheethelper.TryIgnoreExceptions != null && _sheethelper.TryIgnoreExceptions.Contains(except.Code);
                     if (ignoreEmptyColumns)
                     {
-                        //dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
+                        dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
                         dataTable.Rows[0][i]= $"EmptyColumn{i + 1}";
                     }
                     else throw except;

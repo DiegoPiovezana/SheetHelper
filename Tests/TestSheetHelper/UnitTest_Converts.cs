@@ -191,7 +191,7 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestReadCSV1()
+        public void TestReadCSV()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
             string aba = "1";       
@@ -201,10 +201,25 @@ namespace TestSheetHelper
             var first = sh.GetRowArray(dt);
 
             Assert.That(first[2].Equals("3"), Is.EqualTo(true));
+        }     
+
+        [Test]
+        public void TestReadCSVCabecalhoIrregular() // Read
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
+            //string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline_CabecalhoIrregular.txt";
+            string aba = "1";        
+
+            var sh = new SheetHelper();
+            sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
+            var dt = sh.GetDataTable(origem, aba);
+            var first = sh.GetRowArray(dt);
+
+            Assert.That(first[5].Equals("6") && first[6].Equals("Column6"), Is.EqualTo(true));
         }
 
         [Test]
-        public void TestReadCSV2()
+        public void TestReadCSVSemCabecalho() // Read
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SemCabecalho.csv";
             string aba = "1";
@@ -217,22 +232,23 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestReadCSV3()
-        {           
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
-            string aba = "1";
+        public void TestReadCSVCabecalhoVazio() // Read
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoVazio.csv";
+            string aba = "1";       
 
             var sh = new SheetHelper();
+            sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
             var dt = sh.GetDataTable(origem, aba);
             var first = sh.GetRowArray(dt);
 
-            Assert.That(first[5].Equals("6") && first[6].Equals("EmptyColumn7"), Is.EqualTo(true));
+            Assert.That(first[2].Equals("3"), Is.EqualTo(true));
         }
 
         [Test]
-        public void TestReadCSVSeparator()
+        public void TestReadCSVSeparatorPipeline()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline.csv";    
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline.csv";
             string aba = "1";
 
             var sh = new SheetHelper();
@@ -240,26 +256,6 @@ namespace TestSheetHelper
             var first = sh.GetRowArray(dt);
 
             Assert.That(first[2].Equals("Last Name"), Is.EqualTo(true));
-        }
-
-        [Test]
-        public void TestReadCSVCabecalhoIrregular() // Read
-        {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
-            //string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline_CabecalhoIrregular.txt";
-            //string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\SeparadorPipeline_csv.csv";
-
-            string aba = "1";
-            string separador = ";";
-            string? colunas = null;
-            string linhas = "1:5";
-
-            var sh = new SheetHelper();
-            sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
-            var dt = sh.GetDataTable(origem, aba);
-            var first = sh.GetRowArray(dt);
-
-            Assert.That(first[2].Equals("1"), Is.EqualTo(true));
         }
 
         [Test, Repeat(1)]

@@ -369,7 +369,7 @@ namespace SH.ExcelHelper.Tools
 
                 // Handling to allow header consideration (XLS case)
                 // TODO: Refactor              
-                table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin));
+                //table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin));
                 _sheetHelper.Progress += 5; // 40
 
                 return table;
