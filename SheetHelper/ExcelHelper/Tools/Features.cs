@@ -580,17 +580,21 @@ namespace SH.ExcelHelper.Tools
                     if (int.TryParse(sheetId, out int indexSheet)) // Index of the sheet
                     {
                         dtSheet = sheetsDictionary.ElementAtOrDefault(indexSheet - 1).Value;
-                        if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
+                        if (dtSheet == null) throw new Exception($"E-0000-SH: Failed to locate sheet number '{sheetId}'!");
                     }
                     else if (sheetsDictionary.ContainsKey(sheetId))// Name of the sheet
                     {
                         dtSheet = sheetsDictionary[sheetId];
-                        if (dtSheet == null) throw new Exception("E-0000-SH: Failed to locate sheet to be converted.");
+                        if (dtSheet == null) throw new Exception($"E-0000-SH: Failed to locate sheet '{sheetId}'!");
 
                         //indexSheet =
                         //    sheetsDictionary.FirstOrDefault(x => x.Value == sheetsDictionary[sheetId]).Key != null ?
                         //    Array.IndexOf(sheetsDictionary.Keys.ToArray(), sheetsDictionary.FirstOrDefault(x => x.Value == sheetsDictionary[sheetId]).Key) :
                         //    -1;
+                    }
+                    else
+                    {
+                        throw new Exception($"E-0000-SH: The tab '{sheetId}' was not found!");
                     }
 
                     //var columnSheet = columns.Skip(indexSheet).FirstOrDefault();

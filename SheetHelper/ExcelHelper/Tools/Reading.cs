@@ -20,7 +20,7 @@ namespace SH.ExcelHelper.Tools
 
             DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
             {
-                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true, EmptyColumnNamePrefix = "EmptyColumn" }
 
             });
 
@@ -52,7 +52,7 @@ namespace SH.ExcelHelper.Tools
 
             DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
             {
-                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
+                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true, EmptyColumnNamePrefix = "EmptyColumn" }
 
             });
 
