@@ -34,7 +34,7 @@ namespace TestSheetHelper
             var first = sh.GetRowArray(dt);
             bool success = sh.SaveDataTable(dt, destination, delimiter, columns, rows);
 
-            Assert.That(success, Is.EqualTo(true));
+            Assert.That(success && first[99] == "100", Is.EqualTo(true));
         }
 
 
@@ -261,8 +261,8 @@ namespace TestSheetHelper
         [Test, Repeat(1)]
         public void TestConvertParticularXLSB()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcelBig.xlsb";
-            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcelBig_xlsb.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.xlsb";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ColunasExcel_xlsb.csv";
 
             string aba = "1";
             string separador = ";";
@@ -285,7 +285,7 @@ namespace TestSheetHelper
             string? linhas = "1:10";
 
             SheetHelper sheethelper = new ();
-            sheethelper.TryIgnoreExceptions.AddRange(new List<string>(){ "E-4041-SH", "E-4042-SH"});
+            sheethelper.TryIgnoreExceptions.AddRange(new List<string>(){ "E-4042-SH" });
 
             bool retorno = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -294,8 +294,8 @@ namespace TestSheetHelper
         [Test]
         public void TestConvertOneSheetBig()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ExcelBig_OneSheetBig_AB1048576.xlsx";
-            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelBig_OneSheetBig_AB1048576_xlsx.csv";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ExcelBig_OneSheetBig_ABN204960.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelBig_OneSheetBig_ABN204960_xlsx.csv";
 
             string aba = "1";
             string separador = ";";
@@ -304,12 +304,12 @@ namespace TestSheetHelper
 
             var sh = new SheetHelper();
 
-            sh.ProhibitedItems = new Dictionary<string, string>
-            {
-                { "\n", " " },
-                { "\r", " " },
-                { ";", "," },
-            };
+            //sh.ProhibitedItems = new Dictionary<string, string>
+            //{
+            //    { "\n", " " },
+            //    { "\r", " " },
+            //    { ";", "," },
+            //};
 
             bool retorno = sh.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
@@ -363,7 +363,8 @@ namespace TestSheetHelper
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
 
             //string aba = "2";
-            var abas = new List<string>() { "aba 6", "1", "sheet3" };
+            //var abas = new List<string>() { "aba 3", "1", "sheet3" }; // Sheet1, Sheet2, aba 3
+            var abas = new List<string>() { "aba 3", "1", "aba 3" };
             string separador = ";";
             //string? colunas = null;
             string[]? colunas = null;
@@ -410,7 +411,7 @@ namespace TestSheetHelper
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
 
             //string aba = "2";
-            var abas = new List<string>() { "aba 6", "1", "sheet3" };
+            var abas = new List<string>() { "Sheet2", "1", "aba 3" };
             string separador = ";";
             //string? colunas = null;
             string[]? colunas = null;
