@@ -136,12 +136,15 @@ namespace SH.Globalization
             };
         }
 
-        internal static string ColumnRefOutRange(string idColumn, int limitIndexColumn, int indexColumn)
+        internal static string ColumnRefOutRange(int indexColumn, int limitIndexColumn)
         {
+            string nameLastColumn = new Features().GetNameColumn(limitIndexColumn);
+            string letterColumn = new Features().GetNameColumn(indexColumn);
+
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"A coluna '{idColumn}' está fora do intervalo porque se refere à coluna '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
-                _ => $"The column '{idColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!",
+                "pt-BR" => $"A coluna {indexColumn} '{letterColumn}' está fora do intervalo porque se refere à coluna '{limitIndexColumn + indexColumn + 1}' (min 1 ou A, max {limitIndexColumn} ou {nameLastColumn})!",
+                _ => $"The column {indexColumn} '{letterColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1 or A, max {limitIndexColumn} or {nameLastColumn})!",
             };
         }        
 

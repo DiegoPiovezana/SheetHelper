@@ -1,5 +1,4 @@
-﻿using ExcelDataReader.Core;
-using SH.Globalization;
+﻿using SH.Globalization;
 using System;
 
 namespace SH.Exceptions
@@ -186,7 +185,7 @@ namespace SH.Exceptions
 
     [Serializable]
     public class ColumnNameHeaderInvalidSHException : SHException
-    {       
+    {
         protected override int Number => 4041;
 
         internal ColumnNameHeaderInvalidSHException(int indexColumn) : base(Messages.ColumnNameHeaderInvalidRange(indexColumn)) { }
@@ -209,9 +208,9 @@ namespace SH.Exceptions
     {
         protected new int Number { get; } = 4042;
 
-        internal ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn, string idColumn) : base(Messages.ColumnRefOutRange(idColumn, limitIndexColumn, indexColumn)) { }
+        internal ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn) : base(Messages.ColumnRefOutRange(indexColumn, limitIndexColumn)) { }
 
-        public ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn, string idColumn, Exception innerException) : base(Messages.ColumnRefOutRange(idColumn, limitIndexColumn, indexColumn), innerException) { }
+        public ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn, Exception innerException) : base(Messages.ColumnRefOutRange(indexColumn, limitIndexColumn), innerException) { }
     }
 
     #endregion

@@ -115,35 +115,33 @@ namespace SH.Exceptions
             return true;
         }
 
-        //internal int ColumnNotExist(string idColumn, int limitIndexColumn, DataTable dataTable)
-        //{
-        //    var except = new ColumnOutRangeSHException(idColumn);
-        //    if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
+        internal int ColumnNotExist(int indexColumn, DataTable dataTable)
+        {
+            int limitIndexColumn = dataTable.Columns.Count;
+            var except = new ColumnOutRangeSHException(indexColumn, limitIndexColumn);
+            if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
 
-        //    foreach (DataColumn column in dataTable.Columns)
-        //    {
-        //        if (column)
+            while (dataTable.Columns.Count < indexColumn)
+            {               
+                dataTable.Columns.Add($"NewColumn{dataTable.Columns.Count + 1}");
+            }
 
+            return dataTable.Columns.Count - 1;           
+        }
 
-        //    }
+        internal int ColumnRefNotExist(int indexColumn, DataTable dataTable)
+        {
+            int limitIndexColumn = dataTable.Columns.Count;
+            var except = new ColumnRefOutRangeSHException(indexColumn, limitIndexColumn);
+            if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
 
+            while (dataTable.Columns.Count < indexColumn)
+            {
+                dataTable.Columns.Add($"NewColumn{dataTable.Columns.Count + 1}");
+            }
 
-
-        //    for (int i = 0; i < dataTable.Columns.Count; i++)
-        //    {
-        //        if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
-        //        {
-        //            if (ignoreEmptyColumns) { dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}"; }
-        //            else throw new Exception($"E-4041-SH: Column header '{i + 1}' (column name) is not valid because it is blank!");
-        //        }
-        //        else
-        //        {
-        //            dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-        //        }
-        //    }
-        //}
-
-
+            return dataTable.Columns.Count - 1;
+        }
 
     }
 }

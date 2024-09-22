@@ -166,8 +166,8 @@ namespace SH.ExcelHelper.Treatments
                     //        default: throw new RowOutRangeSHException(column, limitIndexColumn); 
                     //    }                        
                     //}
-
-                    _validations.ValidateColumnOutOfRange(idColumn, limitIndexColumn, indexColumn, table);
+ ,
+                    _validations.ValidateColumnOutOfRange(indexColumn, table);
                     return indexColumn;
                 }
                 else // "-2"
@@ -178,7 +178,7 @@ namespace SH.ExcelHelper.Treatments
                     //    throw new Exception($"E-4042-SH: The column '{column}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
                     //}                        
 
-                    _validations.ValidateColumnRefOutOfRange(idColumn, limitIndexColumn, indexColumn);
+                    _validations.ValidateColumnRefOutOfRange(indexColumn, table);
                     return limitIndexColumn + indexColumn + 1;
                 }
             }

@@ -335,30 +335,26 @@ namespace SH.ExcelHelper.Treatments
                 //    _tryHandlerExceptions.HeaderInvalid(dataTable);
                 //}
                 _tryHandlerExceptions.HeaderValid(dataTable);
-                dataTable.Rows.RemoveAt(0);
+                //dataTable.Rows.RemoveAt(0);
             }
         }            
 
-        internal void ValidateColumnOutOfRange(string idColumn, int limitIndexColumn, int indexColumn, DataTable table)
+        internal void ValidateColumnOutOfRange(int indexColumn, DataTable table)
         {
-            if (indexColumn == 0 || indexColumn > limitIndexColumn)
+            int limitIndexColumn = table.Columns.Count;
+            if (indexColumn > limitIndexColumn)
             {
-                //switch (_tryHandlerExceptions.ColumnNotExist(idColumn, limitIndexColumn, table))
-                //{
-                //    case 0: return;
-                //    case 1: goto again;
-                //    default: throw new ColumnOutRangeSHException(indexColumn, limitIndexColumn);
-                //}
+                _tryHandlerExceptions.ColumnNotExist(indexColumn, table);                
             }
         }
 
-        internal void ValidateColumnRefOutOfRange(string idColumn, int limitIndexColumn, int indexColumn)
+        internal void ValidateColumnRefOutOfRange(int indexRefColumn, DataTable table)
         {
-            //if (limitIndexColumn + indexColumn + 1 > limitIndexColumn)
-            //{
-
-            //    fthrow new Exception($"E-4042-SH: The column '{idColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1, max {limitIndexColumn})!");
-            //}
+            int limitIndexColumn = table.Columns.Count;
+            if (limitIndexColumn + indexRefColumn + 1 > limitIndexColumn)
+            {
+                _tryHandlerExceptions.ColumnRefNotExist(indexRefColumn, table);                
+            }
         }
 
     }
