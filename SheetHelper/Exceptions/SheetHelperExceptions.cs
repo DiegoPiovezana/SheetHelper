@@ -196,7 +196,7 @@ namespace SH.Exceptions
     [Serializable]
     public class ColumnOutRangeSHException : SHException
     {
-        protected new int Number { get; } = 4042;
+        protected override int Number => 4042;
 
         internal ColumnOutRangeSHException(int indexColumn, int limitIndexColumn) : base(Messages.ColumnOutRange(indexColumn, limitIndexColumn)) { }
 

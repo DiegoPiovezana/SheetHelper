@@ -1,5 +1,6 @@
 ﻿using ExcelDataReader.Core;
 using ExcelDataReader.Log.Logger;
+using SH.ExcelHelper.Tools;
 using SH.Globalization;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace SH.Exceptions
     /// </summary>
     internal class TryHandlerExceptions
     {
-        private readonly SheetHelper _sheethelper;
+        private readonly SheetHelper _sheetHelper;
 
         public TryHandlerExceptions(SheetHelper sheetHelper)
         {
-            _sheethelper = sheetHelper;
+            _sheetHelper = sheetHelper;
         }
 
 
@@ -67,7 +68,7 @@ namespace SH.Exceptions
 
                 if (result2 == DialogResult.Yes)
                 {
-                    _sheethelper.CloseExcel();
+                    _sheetHelper.CloseExcel();
                     System.Threading.Thread.Sleep(1500);
                     return 1;
 
@@ -87,61 +88,28 @@ namespace SH.Exceptions
         /// <summary>
         /// Incomplete headers will be filled.
         /// </summary>
-        /// <param name="dataTable"></param>      
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        internal bool HeaderValid(DataTable dataTable)
+        internal void HeaderIncomplete(DataTable dataTable, int i, ColumnNameHeaderInvalidSHException except)
         {
-            DataRow firstRow = dataTable.Rows[0];
-
-            for (int i = 0; i < dataTable.Columns.Count; i++)
+            bool ignoreEmptyColumns = _sheetHelper.TryIgnoreExceptions != null && _sheetHelper.TryIgnoreExceptions.Contains(except.Code);
+            if (ignoreEmptyColumns)
             {
-                if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
-                {
-                    var except = new ColumnNameHeaderInvalidSHException(i);
-                    bool ignoreEmptyColumns = _sheethelper.TryIgnoreExceptions != null && _sheethelper.TryIgnoreExceptions.Contains(except.Code);
-                    if (ignoreEmptyColumns)
-                    {
-                        dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
-                        dataTable.Rows[0][i]= $"EmptyColumn{i + 1}";
-                    }
-                    else throw except;
-                }
-                //else
-                //{
-                //    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
-                //}
+                dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
+                dataTable.Rows[0][i] = $"EmptyColumn{i + 1}";
             }
-            return true;
+            else throw except;
         }
 
-        internal int ColumnNotExist(int indexColumn, DataTable dataTable)
+        internal int ColumnNotExist(int indexColumn, DataTable dataTable, SHException except)
         {
-            int limitIndexColumn = dataTable.Columns.Count;
-            var except = new ColumnOutRangeSHException(indexColumn, limitIndexColumn);
-            if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
+            if (_sheetHelper.TryIgnoreExceptions == null || !_sheetHelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
 
             while (dataTable.Columns.Count < indexColumn)
             {               
                 dataTable.Columns.Add($"NewColumn{dataTable.Columns.Count + 1}");
             }
 
-            return dataTable.Columns.Count - 1;           
-        }
-
-        internal int ColumnRefNotExist(int indexColumn, DataTable dataTable)
-        {
-            int limitIndexColumn = dataTable.Columns.Count;
-            var except = new ColumnRefOutRangeSHException(indexColumn, limitIndexColumn);
-            if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
-
-            while (dataTable.Columns.Count < indexColumn)
-            {
-                dataTable.Columns.Add($"NewColumn{dataTable.Columns.Count + 1}");
-            }
-
-            return dataTable.Columns.Count - 1;
-        }
+            return dataTable.Columns.Count;           
+        }      
 
     }
 }

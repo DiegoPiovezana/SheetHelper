@@ -1,4 +1,5 @@
-﻿using SH.Exceptions;
+﻿using SH.ExcelHelper.Tools;
+using SH.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,11 +16,13 @@ namespace SH.ExcelHelper.Treatments
     /// </summary>
     internal class Validations
     {
+        SheetHelper _sheetHelper;
         readonly TryHandlerExceptions _tryHandlerExceptions;
         readonly Definitions _definitions;
 
         public Validations(SheetHelper sheetHelper)
         {
+            _sheetHelper = sheetHelper;
             _tryHandlerExceptions = new TryHandlerExceptions(sheetHelper);
             _definitions = new Definitions(sheetHelper, this);
         }
@@ -334,26 +337,49 @@ namespace SH.ExcelHelper.Treatments
                 //{
                 //    _tryHandlerExceptions.HeaderInvalid(dataTable);
                 //}
-                _tryHandlerExceptions.HeaderValid(dataTable);
+                //_tryHandlerExceptions.HeaderValid(dataTable);
                 //dataTable.Rows.RemoveAt(0);
+
+
+                DataRow firstRow = dataTable.Rows[0];
+
+                for (int i = 0; i < dataTable.Columns.Count; i++)
+                {
+                    if (string.IsNullOrEmpty(firstRow[i]?.ToString()))
+                    {
+                        var except = new ColumnNameHeaderInvalidSHException(i);
+                        _tryHandlerExceptions.HeaderIncomplete(dataTable, i, except);
+
+                    }
+                    //else
+                    //{
+                    //    dataTable.Columns[i].ColumnName = firstRow[i].ToString();
+                    //}
+                }
+                //return true;
             }
-        }            
+        }
+
+
 
         internal void ValidateColumnOutOfRange(int indexColumn, DataTable table)
         {
             int limitIndexColumn = table.Columns.Count;
+            var except = new ColumnOutRangeSHException(indexColumn, limitIndexColumn);
             if (indexColumn > limitIndexColumn)
             {
-                _tryHandlerExceptions.ColumnNotExist(indexColumn, table);                
+                _tryHandlerExceptions.ColumnNotExist(indexColumn, table, except);
             }
         }
 
         internal void ValidateColumnRefOutOfRange(int indexRefColumn, DataTable table)
         {
             int limitIndexColumn = table.Columns.Count;
-            if (limitIndexColumn + indexRefColumn + 1 > limitIndexColumn)
+            var except = new ColumnRefOutRangeSHException(indexRefColumn, limitIndexColumn);
+            int indexColumn = limitIndexColumn + indexRefColumn + 1;
+            if (indexColumn > limitIndexColumn)
             {
-                _tryHandlerExceptions.ColumnRefNotExist(indexRefColumn, table);                
+                _tryHandlerExceptions.ColumnNotExist(indexColumn, table, except);
             }
         }
 

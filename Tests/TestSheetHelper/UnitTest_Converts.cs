@@ -194,21 +194,21 @@ namespace TestSheetHelper
         public void TestReadCSV()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ColunasExcel.csv";
-            string aba = "1";       
+            string aba = "1";
 
             var sh = new SheetHelper();
             var dt = sh.GetDataTable(origem, aba);
             var first = sh.GetRowArray(dt);
 
             Assert.That(first[2].Equals("3"), Is.EqualTo(true));
-        }     
+        }
 
         [Test]
         public void TestReadCSVCabecalhoIrregular() // Read
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoIrregular.csv";
             //string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\SeparadorPipeline_CabecalhoIrregular.txt";
-            string aba = "1";        
+            string aba = "1";
 
             var sh = new SheetHelper();
             sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
@@ -235,7 +235,7 @@ namespace TestSheetHelper
         public void TestReadCSVCabecalhoVazio() // Read
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\CabecalhoVazio.csv";
-            string aba = "1";       
+            string aba = "1";
 
             var sh = new SheetHelper();
             sh.TryIgnoreExceptions.AddRange(new List<string>() { "E-4041-SH" });
@@ -274,7 +274,7 @@ namespace TestSheetHelper
         }
 
         [Test]
-        public void TestConvertTryIgnoreExpect()
+        public void TestConvertTryIgnoreExpect_ColumnOutOfRange()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_xlsb.csv";
@@ -284,11 +284,15 @@ namespace TestSheetHelper
             string? colunas = "1:12"; // Max column 10
             string? linhas = "1:10";
 
-            SheetHelper sheethelper = new ();
-            sheethelper.TryIgnoreExceptions.AddRange(new List<string>(){ "E-4042-SH" });
+            SheetHelper sheethelper = new();
+            sheethelper.TryIgnoreExceptions.AddRange(new List<string>() { "E-4042-SH" });
 
             bool retorno = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
             Assert.That(retorno, Is.EqualTo(true));
+
+            sheethelper.TryIgnoreExceptions.Clear();
+            Assert.Throws<SH.Exceptions.ColumnOutRangeSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
         }
 
         [Test]
@@ -344,10 +348,10 @@ namespace TestSheetHelper
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\AbasExcel.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
-                        
+
             var abas = new List<string>() { "2", "1", "sheet2" };
-            string separador = ";";  
-            string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };            
+            string separador = ";";
+            string[]? colunas = new string[] { "A, B:C", "1:10", "B,A" };
             List<string>? linhas = new() { "1:3", "1:10", "1" };
             int minRows = 1;
 

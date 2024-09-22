@@ -1,5 +1,4 @@
-﻿using SH.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -155,7 +154,7 @@ namespace SH.ExcelHelper.Treatments
                 if (idColumn.All(c => char.IsLetter(c))) indexColumn = _sheetHelper.GetIndexColumn(idColumn);
                 else indexColumn = Convert.ToInt32(idColumn);
 
-                if (indexColumn >= 0)  // "75"
+                if (indexColumn >= 0)
                 {
                     //if (indexColumn == 0 || indexColumn > limitIndexColumn)
                     //{
@@ -163,10 +162,10 @@ namespace SH.ExcelHelper.Treatments
                     //    {
                     //        case 0: return;
                     //        case 1: goto again;
-                    //        default: throw new RowOutRangeSHException(column, limitIndexColumn); 
-                    //    }                        
+                    //        default: throw new RowOutRangeSHException(column, limitIndexColumn);
+                    //    }
                     //}
- ,
+
                     _validations.ValidateColumnOutOfRange(indexColumn, table);
                     return indexColumn;
                 }
