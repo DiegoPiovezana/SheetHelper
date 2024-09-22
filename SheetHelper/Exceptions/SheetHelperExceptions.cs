@@ -37,7 +37,7 @@ namespace SH.Exceptions
     [Serializable]
     public class ArgumentNullOrEmptySHException : SHException
     {
-        internal new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal ArgumentNullOrEmptySHException(string argumentName, string methodName) : base(Messages.ArgumentNullOrEmptyException(argumentName, methodName)) { }
 
@@ -47,7 +47,7 @@ namespace SH.Exceptions
     [Serializable]
     public class ArgumentMinSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal ArgumentMinSHException(string argumentName, string methodName, int value, int min) : base(Messages.ArgumentMinException(argumentName, methodName, value, min)) { }
 
@@ -61,7 +61,7 @@ namespace SH.Exceptions
     [Serializable]
     public class FileNotFoundSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal FileNotFoundSHException(string pathFile) : base(Messages.FileNotFound(pathFile)) { }
 
@@ -71,7 +71,7 @@ namespace SH.Exceptions
     [Serializable]
     public class PathFileNullSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal PathFileNullSHException(string pathFile) : base(Messages.PathFileNull(pathFile)) { }
 
@@ -86,7 +86,7 @@ namespace SH.Exceptions
     [Serializable]
     public class FileOriginInUseSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal FileOriginInUseSHException(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
 
@@ -100,7 +100,7 @@ namespace SH.Exceptions
     [Serializable]
     public class FileDestinationInUseSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal FileDestinationInUseSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
 
@@ -114,7 +114,7 @@ namespace SH.Exceptions
     [Serializable]
     public class DirectoryNotFoundSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal DirectoryNotFoundSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
 
@@ -128,7 +128,7 @@ namespace SH.Exceptions
     [Serializable]
     public class UnableUnzipSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal UnableUnzipSHException(string pathFileZip) : base(Messages.UnableUnzip(pathFileZip)) { }
 
@@ -142,7 +142,7 @@ namespace SH.Exceptions
     [Serializable]
     public class RowArrayOverflowDteSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
 
@@ -152,7 +152,7 @@ namespace SH.Exceptions
     [Serializable]
     public class RowsMinDtSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal RowsMinDtSHException(string nameDt) : base(Messages.RowsMinDt(nameDt)) { }
 
@@ -162,7 +162,7 @@ namespace SH.Exceptions
     [Serializable]
     public class RowOutRangeSHException : SHException
     {
-        protected new int Number { get; } = 4042;
+        protected override int Number => 4042;
 
         internal RowOutRangeSHException(string row, int limitIndexRows) : base(Messages.RowOutRange(row, limitIndexRows)) { }
 
@@ -172,7 +172,7 @@ namespace SH.Exceptions
     [Serializable]
     public class RowRefOutRangeSHException : SHException
     {
-        protected new int Number { get; } = 4042;
+        protected override int Number => 4042;
 
         internal RowRefOutRangeSHException(string row, int limitIndexRows, int indexRow) : base(Messages.RowRefOutRange(row, limitIndexRows, indexRow)) { }
 
@@ -206,7 +206,7 @@ namespace SH.Exceptions
     [Serializable]
     public class ColumnRefOutRangeSHException : SHException
     {
-        protected new int Number { get; } = 4042;
+        protected override int Number => 4042;
 
         internal ColumnRefOutRangeSHException(int indexColumn, int limitIndexColumn) : base(Messages.ColumnRefOutRange(indexColumn, limitIndexColumn)) { }
 
@@ -220,7 +220,7 @@ namespace SH.Exceptions
     //[Serializable]
     //public class SheetNullSHException : SHException
     //{
-    //    protected new int Number { get; } = 0;
+    //    protected override int Number => 0;
 
     //    internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
 
@@ -230,7 +230,7 @@ namespace SH.Exceptions
     //[Serializable]
     //public class SheetNullSHException : SHException
     //{
-    //    protected new int Number { get; } = 0;
+    //    protected override int Number => 0;
 
     //    internal RowArrayOverflowDteSHException() : base(Messages.RowArrayOverflowDt()) { }
 
@@ -244,7 +244,7 @@ namespace SH.Exceptions
     [Serializable]
     public class ParamMissingConverterSHException : SHException
     {
-        protected new int Number { get; } = 0;
+        protected override int Number => 0;
 
         internal ParamMissingConverterSHException() : base(Messages.ParamMissingConverter()) { }
 

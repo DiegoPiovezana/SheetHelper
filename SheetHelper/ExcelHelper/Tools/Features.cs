@@ -40,15 +40,15 @@ namespace SH.ExcelHelper.Tools
 
         public void CloseExcel()
         {
-            try
-            {
+            //try
+            //{
                 var processes = from p in Process.GetProcessesByName("EXCEL") select p;
                 foreach (var process in processes) process.Kill();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public int GetIndexColumn(string? columnName)
@@ -68,8 +68,8 @@ namespace SH.ExcelHelper.Tools
 
         public string GetNameColumn(int columnIndex)
         {
-            try
-            {
+            //try
+            //{
                 string columnName = string.Empty;
                 while (columnIndex > 0)
                 {
@@ -79,17 +79,17 @@ namespace SH.ExcelHelper.Tools
                 }
 
                 return columnName;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string? UnGZ(string gzFile, string pathDestination)
         {
-            try
-            {
+            //try
+            //{
                 using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
                 string fileConverted;
 
@@ -111,17 +111,17 @@ namespace SH.ExcelHelper.Tools
                 decompressor.CopyTo(outputFileStream);
 
                 return File.Exists(fileConverted) ? fileConverted : null;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string? UnZIP(string? zipFile, string pathDestination)
         {
-            try
-            {
+            //try
+            //{
                 string directoryZIP = Path.Combine(pathDestination, "CnvrtdZIP");
                 if (!Directory.Exists(directoryZIP)) Directory.CreateDirectory(directoryZIP);
 
@@ -135,17 +135,17 @@ namespace SH.ExcelHelper.Tools
                 Directory.Delete(directoryZIP, true);
 
                 return fileDestination;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
         {
-            try
-            {
+            //try
+            //{
 
             restart:
 
@@ -166,11 +166,11 @@ namespace SH.ExcelHelper.Tools
                         if (mandatory) throw new UnableUnzipSHException(zipFile);
                         else return zipFile;
                 }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
             //finally
             //{
             //    if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
@@ -179,8 +179,8 @@ namespace SH.ExcelHelper.Tools
 
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
-            try
-            {
+            //try
+            //{
                 DataRow newRow = table.NewRow();
 
                 if (row.Length <= table.Columns.Count)
@@ -193,17 +193,17 @@ namespace SH.ExcelHelper.Tools
                 }
 
                 return newRow;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
-            try
-            {
+            //try
+            //{
                 if (header)
                 {
                     return table.Columns.Cast<DataColumn>()
@@ -223,17 +223,17 @@ namespace SH.ExcelHelper.Tools
                         return Array.Empty<string>();
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
-            try
-            {
+            //try
+            //{
                 var dataSet = GetDataSet(filePath);
 
                 if (dataSet.Tables.Count == 0)
@@ -258,17 +258,17 @@ namespace SH.ExcelHelper.Tools
                 }
 
                 return sheetDictionary;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
-            try
-            {
+            //try
+            //{
                 if (string.IsNullOrEmpty(text?.Trim())) return "";
 
                 string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
@@ -282,17 +282,17 @@ namespace SH.ExcelHelper.Tools
 
                 if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
                 return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string FixItems(string items)
         {
-            try
-            {
+            //try
+            //{
                 if (!string.IsNullOrEmpty(items))
                 {
                     items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
@@ -300,47 +300,47 @@ namespace SH.ExcelHelper.Tools
                     items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
                 }
                 return items; // "123123,13514,31234"
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
-            try
-            {
+            //try
+            //{
                 //if (string.IsNullOrEmpty(jsonTextItems))
                 //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
 
                 return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
-            try
-            {
+            //try
+            //{
                 if (dictionary == null || dictionary.Count == 0)
                     throw new ArgumentNullOrEmptySHException(nameof(dictionary), nameof(GetJsonDictionary));
 
                 return JsonSerializer.Serialize(dictionary);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public DataSet GetDataSet(string? origin)
         {
-            try
-            {
+            //try
+            //{
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
@@ -351,11 +351,11 @@ namespace SH.ExcelHelper.Tools
                 _sheetHelper.Progress += 25; // 35 (after reading the file)
 
                 return result;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public DataTable? GetDataTable(string origin, string sheet = "1")
@@ -440,6 +440,12 @@ namespace SH.ExcelHelper.Tools
             //#endif
 
 
+
+
+
+
+
+
             #region If file in unsupported format
             catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
             {
@@ -447,19 +453,25 @@ namespace SH.ExcelHelper.Tools
             }
             #endregion
 
-            catch (Exception)
-            {
-                throw;
-            }
+
+
+
+
+
+
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
 
         public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null)
         {
 
-            try
-            {
+            //try
+            //{
                 return _writing.SaveDataTable(dataTable, destination, separator, columns, rows);
-            }
+            //}
 
             //#if NETFRAMEWORK                        
 
@@ -503,10 +515,10 @@ namespace SH.ExcelHelper.Tools
 
             //            #endregion
             //#endif
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception(Messages.UnmappedException(nameof(SaveDataTable), ex), ex);
+            //}
         }
 
         public bool Converter(string origin, string destination, string sheet, string separator, string columns, string rows, int minRows = 1)
