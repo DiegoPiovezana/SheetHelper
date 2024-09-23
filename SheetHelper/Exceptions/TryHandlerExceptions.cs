@@ -5,6 +5,7 @@ using SH.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -54,9 +55,9 @@ namespace SH.Exceptions
         {
             if (_ignoreExceptions == null || !_ignoreExceptions.Contains(exception.Code)) throw exception;
 
-#if !NETFRAMEWORK       
+#if NETFRAMEWORK       
 
-            countOpen++;
+            //countOpen++;
 
             if (countOpen >= 2) // If it is necessary to force Excel closure (from the 2nd attempt onwards)                
             {
@@ -112,7 +113,15 @@ namespace SH.Exceptions
             }
 
             return 1;           
-        }      
+        }    
+        
+        internal int DirectoryNotExists(string pathFolder, SHException except)
+        {
+            if (_ignoreExceptions == null || !_ignoreExceptions.Contains(except.Code)) throw except;
+            Directory.CreateDirectory(pathFolder);
+            return 1;
+        }
+
 
     }
 }

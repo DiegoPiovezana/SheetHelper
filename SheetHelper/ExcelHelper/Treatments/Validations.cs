@@ -104,15 +104,16 @@ namespace SH.ExcelHelper.Treatments
         {
 
             int countOpen = 0;
+            ValidateFileExists(pathOrigin, paramName, methodName);
 
         again:
             try
-            {                
-                ValidateFileExists(pathOrigin, paramName, methodName);
+            {
                 File.OpenRead(pathOrigin).Dispose(); // To check if the file is accessible
             }
             catch (IOException ex)
             {
+                countOpen++;
                 var except = new FileDestinationInUseSHException(pathOrigin, ex);
 
                 switch (_tryHandlerExceptions.FileExcelInUse(except, pathOrigin, countOpen, true))
@@ -131,12 +132,12 @@ namespace SH.ExcelHelper.Treatments
         internal void ValidateDestinationFile(string? destination, string methodName)
         {
             int countOpen = 0;
+            ValidateStringNullOrEmpty(destination, nameof(destination), methodName);
+            ValidateDestinationFolder(destination, nameof(destination), methodName);
 
         again:
             try
             {
-                ValidateStringNullOrEmpty(destination,nameof(destination), methodName);
-
                 File.WriteAllText(destination, ""); // To check if the destination file is accessible
                 File.Delete(destination); // Delete to prevent the file from being opened during conversion
             }
@@ -151,29 +152,35 @@ namespace SH.ExcelHelper.Treatments
                     default: throw except;
                 }
             }
-            catch (Exception ex)
-            {
-                throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
+            //}
         }
 
-        internal void ValidateDestinationFolder(string destination, bool createIfNotExist, string paramName, string methodName)
+        internal void ValidateDestinationFolder(string destination, string paramName, string methodName)
         {
-            try
-            {
-                ValidateStringNullOrEmpty(destination, paramName, methodName);
+            //try
+            //{
+            ValidateStringNullOrEmpty(destination, paramName, methodName);
+            var exept = new DirectoryDestinationNotFoundSHException(destination);
+            destination = Path.GetDirectoryName(destination);
+            ValidateStringNullOrEmpty(destination, paramName, methodName);
+            if (!Directory.Exists(destination)) 
+            {            
+                _tryHandlerExceptions.DirectoryNotExists(destination, exept);            
+            }
 
-                if (createIfNotExist) { Directory.CreateDirectory(destination); }
-                if (!Directory.Exists(destination)) throw new DirectoryNotFoundSHException("E-0000-SH: Destination folder not found.");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                throw new InvalidOperationException("E-0000-SH: The destination file is in use by another process.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
-            }
+            //if (createIfNotExist) { Directory.CreateDirectory(destination); }
+            //}
+            //catch (UnauthorizedAccessException)
+            //{
+            //    throw new InvalidOperationException("E-0000-SH: The destination file is in use by another process.");
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("E-0000-SH: An error occurred while validating the destination file.", ex);
+            //}
         }
 
         internal void ValidateSheetIdInput(string? sheet)
@@ -230,8 +237,8 @@ namespace SH.ExcelHelper.Treatments
 
         internal void ValidateConverter(string? originInput, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
         {
-            try
-            {
+            //try
+            //{
                 ICollection<string?> destinationsCollection = (ICollection<string?>)destinationsInput;
                 ICollection<string?> sheetsCollection = (ICollection<string?>)sheetsInput;
                 ICollection<string?> separatorsCollection = (ICollection<string?>)separatorsInput;
@@ -245,10 +252,12 @@ namespace SH.ExcelHelper.Treatments
                 HashSet<string?> columns = new(columnsCollection);
                 HashSet<string?> rows = new(rowsCollection);
 
-                List<Task> validates = new()
-                {
-                    Task.Run(() => ValidateOriginFile(originInput, nameof(originInput), methodName))
-                };
+                List<Task> validates = new();
+                //{
+                //    Task.Run(() => ValidateOriginFile(originInput, nameof(originInput), methodName))
+                //};
+
+                ValidateOriginFile(originInput, nameof(originInput), methodName); // Required in main thread due to possibility of MessageBox
 
                 validates.AddRange(destinations.Select(destination => Task.Run(() => ValidateDestinationFile(destination, methodName))));
                 validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetIdInput(sheet))));
@@ -256,7 +265,7 @@ namespace SH.ExcelHelper.Treatments
                 validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumnsInput(column))));
                 validates.AddRange(rows.Select(row => Task.Run(() => ValidateRowsInput(row))));
 
-                Task.WaitAll(validates.ToArray()); // TODO: Task.WhenAll
+                Task.WhenAll(validates); 
 
                 int countConversions = sheetsCollection.Count;
                 if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
@@ -264,21 +273,23 @@ namespace SH.ExcelHelper.Treatments
                     //throw new ArgumentException("All parameters must have the same number of items or be single values.");
                     throw new ParamMissingConverterSHException();
                 }
-            }
-            catch (AggregateException ex)
-            {
-                throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
-            }
+            //}
+            //catch (AggregateException ex)
+            //{
+            //    throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
+            //}
         }
 
 
         internal async Task ValidateOneConverterAsync(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, string methodName)
         {
-            try
-            {
+            //try
+            //{
+                ValidateOriginFile(origin, nameof(origin), methodName); // Required in main thread due to possibility of MessageBox
+
                 List<Task> validates = new()
                 {
-                    Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
+                    //Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
                     Task.Run(() => ValidateDestinationFile(destination, methodName)),
                     Task.Run(() => ValidateSheetIdInput(sheet)),
                     Task.Run(() => ValidateSeparatorInput(separator)),
@@ -286,13 +297,15 @@ namespace SH.ExcelHelper.Treatments
                     Task.Run(() => ValidateRowsInput(rows))
                 };
 
-                //Task.WhenAll(validates).Wait();
-                await Task.WhenAll(validates.ToArray());
-            }
-            catch (AggregateException ex)
-            {
-                throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
-            }
+            //Task.WaitAll(validates).Wait();
+            await Task.WhenAll(validates);
+
+            //}
+            //catch (AggregateException ex)
+            //{
+            //    //throw new AggregateException("One or more validations failed.", ex.InnerExceptions);
+            //    throw;
+            //}
         }
 
         internal void ValidateSaveDataTable(string destination, string separator, string? columns, string? rows, string methodName)

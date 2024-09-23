@@ -61,7 +61,7 @@ namespace SH.Exceptions
     [Serializable]
     public class FileNotFoundSHException : SHException
     {
-        protected override int Number => 0;
+        protected override int Number => 4048;
 
         internal FileNotFoundSHException(string pathFile) : base(Messages.FileNotFound(pathFile)) { }
 
@@ -119,16 +119,16 @@ namespace SH.Exceptions
 
     #endregion
 
-    #region Directory
+    #region DirectoryDestination
 
     [Serializable]
-    public class DirectoryNotFoundSHException : SHException
+    public class DirectoryDestinationNotFoundSHException : SHException
     {
-        protected override int Number => 0;
+        protected override int Number => 4049;
 
-        internal DirectoryNotFoundSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
+        internal DirectoryDestinationNotFoundSHException(string pathFile) : base(Messages.FolderDestinationNotExists(pathFile)) { }
 
-        public DirectoryNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FileDestinationInUse(pathFile), innerException) { }
+        public DirectoryDestinationNotFoundSHException(string pathFile, Exception innerException) : base(Messages.FolderDestinationNotExists(pathFile), innerException) { }
     }
 
     #endregion

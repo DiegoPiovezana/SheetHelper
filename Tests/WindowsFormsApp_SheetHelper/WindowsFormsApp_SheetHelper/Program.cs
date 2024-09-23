@@ -101,7 +101,10 @@ namespace WindowsFormsApp_SheetHelper
             destino = "C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\TesteXLSX.csv";
             separador = ";";
             linhas = "3:5,2,3";
-            colunas = "A,C,B";            
+            colunas = "A,C,B";
+
+            sheetHelper.TryIgnoreExceptions.Add("E-0541-SH");
+
             var retorno = sheetHelper.Converter(origem, destino, aba, separador, colunas, linhas);
 
            

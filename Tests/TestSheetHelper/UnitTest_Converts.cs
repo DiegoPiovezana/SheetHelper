@@ -327,7 +327,23 @@ namespace TestSheetHelper
         [Test]
         public void TestConvert_FileNotExists()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\FileNotExists.xlsx";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string? linhas = "";
+
+            SheetHelper sheethelper = new();
+            Assert.Throws<SH.Exceptions.FileNotFoundSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
+        }
+
+        [Test]
+        public void TestConvert_FileNotExistsFolder()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\DirectoryNotExists\\FileNotExists.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
 
             string aba = "1";
@@ -353,6 +369,29 @@ namespace TestSheetHelper
 
             SheetHelper sheethelper = new();
             Assert.Throws<SH.Exceptions.FileOriginNotReadSupportSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
+        }
+
+        [Test]
+        public void TestConvert_FolderDestinationNotExists()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\FolderNotExists\\Small_csv.txt";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string? linhas = "";
+
+            SheetHelper sheethelper = new();
+
+            bool retorno1 = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            Assert.That(retorno1, Is.EqualTo(true));
+
+            Directory.Delete(Path.GetDirectoryName(destino), true);
+            sheethelper.TryIgnoreExceptions.Clear();
+
+            Assert.Throws<SH.Exceptions.DirectoryDestinationNotFoundSHException>(
                 () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
         }
 

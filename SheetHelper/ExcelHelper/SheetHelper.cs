@@ -28,7 +28,7 @@ namespace SH
         /// (Optional) Ignored exceptions will attempt to be handled internally. If it is not possible, it will just return false and the exception will not be thrown.
         /// <para>By default, it will ignore the exception when the source or destination file is in use. If .NET Framework will display a warning to close the file, otherwise it will return false.</para>
         /// </summary>
-        public List<string> TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH", "E-4041-SH" };
+        public List<string> TryIgnoreExceptions { get; set; } = new List<string>() { "E-0001-SH", "E-4041-SH", "E-4049-SH" };
 
 
         private readonly Features _features;
@@ -106,7 +106,7 @@ namespace SH
             try
             {
                 _validations.ValidateFileExists(gzFile, nameof(gzFile), nameof(UnGZ));
-                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnGZ));
+                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnGZ));
                 return _features.UnGZ(gzFile, pathDestination);
             }
             catch (SHException)
@@ -129,7 +129,7 @@ namespace SH
             try
             {
                 _validations.ValidateFileExists(zipFile, nameof(zipFile), nameof(UnZIP));
-                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnZIP));
+                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnZIP));
                 return _features.UnZIP(zipFile, pathDestination);
             }
             catch (SHException)
@@ -152,7 +152,7 @@ namespace SH
             try
             {
                 _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
-                _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnzipAuto));
+                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnzipAuto));
                 return _features.UnzipAuto(zipFile, pathDestination, mandatory);
             }
             catch (SHException)
@@ -363,7 +363,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateOneConverterAsync(origin, destination, sheet, separator, columns, rows, nameof(Converter));
+                _validations.ValidateOneConverterAsync(origin, destination, sheet, separator, columns, rows, nameof(Converter)).GetAwaiter().GetResult(); 
                 return _features.Converter(origin, destination, sheet, separator, columns, rows, minRows);
             }
             catch (SHException)

@@ -268,8 +268,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O arquivo de origem '{Path.GetFileName(pathFile)}' não pode ser lido pois está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente.",
-                _ => $"The origin file '{Path.GetFileName(pathFile)}' cannot be read because it is being used by another process. Please finish its use and then try again.",
+                "pt-BR" => $"O arquivo de origem '{Path.GetFileName(pathFile)}' não pode ser lido pois está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente clicando em OK.",
+                _ => $"The origin file '{Path.GetFileName(pathFile)}' cannot be read because it is being used by another process. Please finish its use and then try again by clicking OK.",
             };
         }
 
@@ -344,8 +344,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O caminho de destino para o arquivo ('destination') é nulo ou vazio.",
-                _ => $"The destination path for the file ('destination') is null or empty.",
+                "pt-BR" => $"O caminho de destino para o arquivo 'destination' é nulo ou vazio.",
+                _ => $"The destination path for the file 'destination' is null or empty.",
             };
         }
 
@@ -355,6 +355,19 @@ namespace SH.Globalization
             {
                 "pt-BR" => $"Não é possível extrair este arquivo, pois '{extension}' ainda não é suportada.",
                 _ => $"Can't extract this file, because '{extension}' is not supported yet.",
+            };
+        }
+
+        #endregion
+
+        #region FolderDestination
+
+        internal static string FolderDestinationNotExists(string pathFile)
+        {
+            return CultureInfo.CurrentCulture.Name switch
+            {
+                "pt-BR" => $"O diretório de destino '{Path.GetDirectoryName(pathFile)}' para o arquivo '{Path.GetFileName(pathFile)}' não existe!",
+                _ => $"The destination directory '{Path.GetDirectoryName(pathFile)}' for the file '{Path.GetFileName(pathFile)}' does not exist!",
             };
         }
 
