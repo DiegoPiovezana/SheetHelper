@@ -26,10 +26,10 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Por favor, visite https://bit.ly/SheetHelper_Exceptions para saber mais.",
-                _ => $"Please visit https://bit.ly/SheetHelper_Exceptions to learn more.",
+                "pt-BR" => $"Por favor, visite https://bit.ly/SheetHelper_Exceptions para saber mais. Tente pesquisar pelo código do erro.",
+                _ => $"Please visit https://bit.ly/SheetHelper_Exceptions to learn more. Try searching for the exception code.",
             };
-        }       
+        }
 
         internal static string ArgumentNullOrEmptyException(string argumentName, string methodName)
         {
@@ -53,8 +53,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{methodName}'. Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
-                _ => $"An error occurred when using the '{methodName}' method. Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions. \n\n{ex.Message}",
+                "pt-BR" => $"Um erro ocorreu ao utilizar o método '{methodName}'. Por favor, verifique se os parâmetros utilizados estão corretos. Se desejar, reporte seu erro no card 'Unmapped Error' disponível em  https://bit.ly/SheetHelper_Exceptions ou consulte a documentação disponível em https://bit.ly/SheetHelper. \n\n{ex.Message} \n\n{ex.InnerException?.Message}",
+                _ => $"An error occurred when using the '{methodName}' method. Please check that the parameters entered are correct. If you wish, report your error in the 'Unmapped Error' card available at https://bit.ly/SheetHelper_Exceptions or consult the documentation available at https://bit.ly/SheetHelper. \n\n{ex.Message} \n\n{ex.InnerException?.Message}",
             };
         }
 
@@ -117,7 +117,7 @@ namespace SH.Globalization
         #region Column
 
         internal static string ColumnNameHeaderInvalidRange(int indexColumn)
-        {            
+        {
             return CultureInfo.CurrentCulture.Name switch
             {
                 "pt-BR" => $"O cabeçalho da coluna '{indexColumn}' do arquivo (CSV ou TXT por exemplo) que está sendo lido é inválida pois não pode estar em branco.",
@@ -126,7 +126,7 @@ namespace SH.Globalization
         }
 
         internal static string ColumnOutRange(int indexColumn, int limitIndexColumn)
-        {           
+        {
             string nameLastColumn = new Features().GetNameColumn(limitIndexColumn);
 
             return CultureInfo.CurrentCulture.Name switch
@@ -146,7 +146,7 @@ namespace SH.Globalization
                 "pt-BR" => $"A coluna {indexColumn} '{letterColumn}' está fora do intervalo porque se refere à coluna '{limitIndexColumn + indexColumn + 1}' (min 1 ou A, max {limitIndexColumn} ou {nameLastColumn})!",
                 _ => $"The column {indexColumn} '{letterColumn}' is out of range, because it refers to column '{limitIndexColumn + indexColumn + 1}' (min 1 or A, max {limitIndexColumn} or {nameLastColumn})!",
             };
-        }        
+        }
 
         internal static string ColumnNotPattern(string column)
         {
@@ -255,8 +255,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O caminho '{pathFile}' não é válido!",
-                _ => $"The path '{pathFile}' is not valid!",
+                "pt-BR" => $"O caminho informado não é válido!",
+                _ => $"The path is not valid!",
             };
         }
 
@@ -289,7 +289,7 @@ namespace SH.Globalization
                 "pt-BR" => $"Ocorreu um erro ao validar o arquivo de origem!",
                 _ => $"An error occurred while validating the origin file!",
             };
-        }        
+        }
 
         internal static string FileOriginNameNull()
         {
@@ -300,12 +300,12 @@ namespace SH.Globalization
             };
         }
 
-        internal static string FileOriginNotReadSupport(string pathOrigin)
+        internal static string FileOriginNotReadSupport(string pathOrigin, ExcelDataReader.Exceptions.HeaderException innerEx)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Sem suporte para realizar a leitura do arquivo com formato '{Path.GetExtension(pathOrigin)}'.",
-                _ => $"No support for reading the file in '{Path.GetExtension(pathOrigin)}' format.",
+                "pt-BR" => $"Sem suporte para realizar a leitura do arquivo '{Path.GetFileName(pathOrigin)}' com formato '{Path.GetExtension(pathOrigin)}'. \n\n{innerEx.Message}",
+                _ => $"No support for reading the file '{Path.GetFileName(pathOrigin)}' in '{Path.GetExtension(pathOrigin)}' format. \n\n{innerEx.Message}",
             };
         }
 
@@ -411,7 +411,7 @@ namespace SH.Globalization
             };
         }
 
-       
+
 
         #endregion
 

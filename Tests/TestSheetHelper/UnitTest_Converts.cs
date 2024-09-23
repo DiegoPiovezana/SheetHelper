@@ -277,7 +277,7 @@ namespace TestSheetHelper
         public void TestConvertTryIgnoreExpect_ColumnOutOfRange()
         {
             string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
-            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_xlsb.csv";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_xlsx.csv";
 
             string aba = "1";
             string separador = ";";
@@ -292,6 +292,67 @@ namespace TestSheetHelper
 
             sheethelper.TryIgnoreExceptions.Clear();
             Assert.Throws<SH.Exceptions.ColumnOutRangeSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
+        }
+
+        [Test]
+        public void TestConvertTryIgnoreExpect_FileOriginOpened()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.csv";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null; 
+            string? linhas = "";
+
+            SheetHelper sheethelper = new();
+            
+            //bool retorno1 = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            //Assert.That(retorno1, Is.EqualTo(true));
+
+            //File.OpenRead(origem); // Ok
+            File.OpenWrite(origem); // Exception
+
+            sheethelper.TryIgnoreExceptions.Clear();
+            Assert.Throws<SH.Exceptions.FileOriginInUseSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
+
+            sheethelper.TryIgnoreExceptions.AddRange(new List<string>() { "E-0541-SH" });
+
+            bool retorno3 = sheethelper.Converter(origem, destino, aba, separador, colunas, linhas);
+            Assert.That(retorno3, Is.EqualTo(true));
+        }
+
+        [Test]
+        public void TestConvert_FileNotExists()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\FileNotExists.xlsx";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string? linhas = "";
+
+            SheetHelper sheethelper = new();
+            Assert.Throws<SH.Exceptions.FileNotFoundSHException>(
+                () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
+        }
+
+        [Test]
+        public void TestConvert_FileNotSupport()
+        {
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\FileNotSupport.xps";
+            string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
+
+            string aba = "1";
+            string separador = ";";
+            string? colunas = null;
+            string? linhas = "";
+
+            SheetHelper sheethelper = new();
+            Assert.Throws<SH.Exceptions.FileOriginNotReadSupportSHException>(
                 () => sheethelper.Converter(origem, destino, aba, separador, colunas, linhas));
         }
 

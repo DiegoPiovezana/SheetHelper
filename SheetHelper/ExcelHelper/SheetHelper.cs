@@ -105,7 +105,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateFile(gzFile, nameof(gzFile), nameof(UnGZ));
+                _validations.ValidateFileExists(gzFile, nameof(gzFile), nameof(UnGZ));
                 _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnGZ));
                 return _features.UnGZ(gzFile, pathDestination);
             }
@@ -128,7 +128,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateFile(zipFile, nameof(zipFile), nameof(UnZIP));
+                _validations.ValidateFileExists(zipFile, nameof(zipFile), nameof(UnZIP));
                 _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnZIP));
                 return _features.UnZIP(zipFile, pathDestination);
             }
@@ -151,7 +151,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateFile(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
+                _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
                 _validations.ValidateDestinationFolder(pathDestination, true, nameof(pathDestination), nameof(UnzipAuto));
                 return _features.UnzipAuto(zipFile, pathDestination, mandatory);
             }
@@ -216,7 +216,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateFile(filePath, nameof(filePath), nameof(GetAllSheets));
+                _validations.ValidateFileExists(filePath, nameof(filePath), nameof(GetAllSheets));
                 _validations.ValidateIntMin(minQtdRows, nameof(minQtdRows), nameof(GetAllSheets));
                 return _features.GetAllSheets(filePath, minQtdRows, formatName);
             }
@@ -408,7 +408,7 @@ namespace SH
         {
             try
             {
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
                 _validations.ValidateDestinationFile(destination, nameof(Converter));
                 _validations.ValidateStringNullOrEmpty(separator, nameof(separator), nameof(Converter));
                 return _features.ConvertAllSheets(origin, destination, minRows, separator);

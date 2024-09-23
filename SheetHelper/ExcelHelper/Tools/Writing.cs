@@ -183,7 +183,7 @@ namespace SH.ExcelHelper.Tools
             //if (Directory.Exists(@".\SheetHelper\")) Directory.Delete(@".\SheetHelper\", true);
 
             _sheetHelper.Progress += 10; // 100
-            return true;
+            return File.Exists(destination);
         }
 
         //internal static T[] TreatCell<T>(T[] cells, string separator = ";")
@@ -236,19 +236,22 @@ namespace SH.ExcelHelper.Tools
             //    return (T)Convert.ChangeType(cellValue, typeof(T));
             //}).ToArray();
 
-            if (cellValue.Contains("\n") || cellValue.Contains("\r")
-                || cellValue.Contains(separator) || cellValue.Contains("\""))
+            if (cellValue.Contains("\n") 
+                || cellValue.Contains("\r")                
+                || cellValue.Contains(separator) 
+                || cellValue.Contains("\""))
             {
                 cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""
+            }
 
-                if (_sheetHelper.ProhibitedItems != null && _sheetHelper.ProhibitedItems.Count > 0)
+            if (_sheetHelper.ProhibitedItems != null && _sheetHelper.ProhibitedItems.Count > 0)
+            {
+                foreach (var item in _sheetHelper.ProhibitedItems)
                 {
-                    foreach (var item in _sheetHelper.ProhibitedItems)
-                    {
-                        cellValue = cellValue.Replace(item.Key, item.Value);
-                    }
+                    cellValue = cellValue.Replace(item.Key, item.Value);
                 }
             }
+
             return cellValue;
         }
 

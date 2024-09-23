@@ -149,7 +149,7 @@ namespace SH.ExcelHelper.Tools
 
             restart:
 
-                _validations.ValidateFile(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
+                _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
 
                 switch (Path.GetExtension(zipFile).ToLower())
                 {
@@ -360,8 +360,8 @@ namespace SH.ExcelHelper.Tools
 
         public DataTable? GetDataTable(string origin, string sheet = "1")
         {
-            try
-            {
+            //try
+            //{
                 var result = GetDataSet(origin); // 35 (after reading the file)
 
                 // Get the sheet to be converted
@@ -373,7 +373,7 @@ namespace SH.ExcelHelper.Tools
                 _sheetHelper.Progress += 5; // 40
 
                 return table;
-            }
+            //}
 
             //#if NETFRAMEWORK
 
@@ -446,12 +446,12 @@ namespace SH.ExcelHelper.Tools
 
 
 
-            #region If file in unsupported format
-            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
-            {
-                throw new Exception($"Erro E-99101-SH: Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
-            }
-            #endregion
+            //#region If file in unsupported format
+            //catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894))
+            //{
+            //    throw new Exception($"Erro E-99101-SH: Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
+            //}
+            //#endregion
 
 
 
@@ -528,7 +528,7 @@ namespace SH.ExcelHelper.Tools
                 _sheetHelper.Progress = 5;
 
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 if (!_validations.CheckConvertNecessary(origin, destination, sheet, separator, columns, rows))
                 {
@@ -554,7 +554,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 var destinationsCollection = destinations as ICollection<string?>;
                 var sheetsCollection = sheets as ICollection<string?>;
@@ -634,7 +634,7 @@ namespace SH.ExcelHelper.Tools
             try
             {
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateFile(origin, nameof(origin), nameof(Converter));
+                _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 foreach (var sheet in GetAllSheets(origin, minRows, true))
                 {

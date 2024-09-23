@@ -1,4 +1,5 @@
 ﻿using ExcelDataReader;
+using SH.Exceptions;
 using System;
 using System.Data;
 using System.IO;
@@ -100,17 +101,25 @@ namespace SH.ExcelHelper.Tools
         /// </summary>       
         internal DataSet GetDataSet(string origin)
         {
-            using var stream = File.Open(origin, FileMode.Open, FileAccess.Read);
-            return Path.GetExtension(origin).ToLower() switch
+            try
             {
-                ".rpt" or ".txt" or ".csv" => ReadCSV(stream),
-                _ => ReadXLS(stream), // .xlsx, .xls, .xlsb, .xlsm
-            };
+                using var stream = File.Open(origin, FileMode.Open, FileAccess.Read);
+                return Path.GetExtension(origin).ToLower() switch
+                {
+                    ".rpt" or ".txt" or ".csv" => ReadCSV(stream),
+                    _ => ReadXLS(stream), // .xlsx, .xls, .xlsb, .xlsm
+                };
+            }
+            catch (ExcelDataReader.Exceptions.HeaderException heEx) when (heEx.HResult.Equals(-2147024894) || heEx.HResult.Equals(-2146233088))
+            {
+                //throw new Exception($"Erro E-99101-SH: Sem suporte para converter o arquivo '{Path.GetExtension(origin)}'.");
+                throw new FileOriginNotReadSupportSHException(origin, heEx);
+            }
         }
 
-       
 
-     
+
+
 
 
 

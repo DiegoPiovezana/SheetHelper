@@ -17,11 +17,13 @@ namespace SH.Exceptions
     /// </summary>
     internal class TryHandlerExceptions
     {
-        private readonly SheetHelper _sheetHelper;
+        //private readonly SheetHelper _sheetHelper;
+        private readonly List<string> _ignoreExceptions;
 
         public TryHandlerExceptions(SheetHelper sheetHelper)
         {
-            _sheetHelper = sheetHelper;
+            //_sheetHelper = sheetHelper;
+            _ignoreExceptions = sheetHelper.TryIgnoreExceptions;
         }
 
 
@@ -48,13 +50,11 @@ namespace SH.Exceptions
         /// <para>1: Try again.</para>
         /// <para>Or throw exception</para>
         /// </summary>
-        internal int FileExcelInUse(Exception exception, string pathFile, int countOpen, bool fileOrigin)
+        internal int FileExcelInUse(SHException exception, string pathFile, int countOpen, bool fileOrigin)
         {
-            //if (_sheethelper.TryIgnoreExceptions == null || !_sheethelper.TryIgnoreExceptions.Contains(exception.Code)) throw exception;
+            if (_ignoreExceptions == null || !_ignoreExceptions.Contains(exception.Code)) throw exception;
 
-#if !NETFRAMEWORK
-            throw exception; // Handle exception only to NETFRAMEWORK
-#endif
+#if !NETFRAMEWORK       
 
             countOpen++;
 
@@ -68,7 +68,7 @@ namespace SH.Exceptions
 
                 if (result2 == DialogResult.Yes)
                 {
-                    _sheetHelper.CloseExcel();
+                    new Features().CloseExcel();
                     System.Threading.Thread.Sleep(1500);
                     return 1;
 
@@ -83,6 +83,9 @@ namespace SH.Exceptions
 
             if (result1 == DialogResult.OK) { return 1; }
             else { return 0; } // If canceled
+#else
+            throw exception;
+#endif
         }
 
         /// <summary>
@@ -90,25 +93,25 @@ namespace SH.Exceptions
         /// </summary>
         internal void HeaderIncomplete(DataTable dataTable, int i, ColumnNameHeaderInvalidSHException except)
         {
-            bool ignoreEmptyColumns = _sheetHelper.TryIgnoreExceptions != null && _sheetHelper.TryIgnoreExceptions.Contains(except.Code);
+            bool ignoreEmptyColumns = _ignoreExceptions != null && _ignoreExceptions.Contains(except.Code);
             if (ignoreEmptyColumns)
             {
                 dataTable.Columns[i].ColumnName = $"EmptyColumn{i + 1}";
-                dataTable.Rows[0][i] = $"EmptyColumn{i + 1}";
+                //dataTable.Rows[0][i] = $"EmptyColumn{i + 1}";
             }
             else throw except;
         }
 
         internal int ColumnNotExist(int indexColumn, DataTable dataTable, SHException except)
         {
-            if (_sheetHelper.TryIgnoreExceptions == null || !_sheetHelper.TryIgnoreExceptions.Contains(except.Code)) throw except;
+            if (_ignoreExceptions == null || !_ignoreExceptions.Contains(except.Code)) throw except;
 
             while (dataTable.Columns.Count < indexColumn)
             {               
                 dataTable.Columns.Add($"NewColumn{dataTable.Columns.Count + 1}");
             }
 
-            return dataTable.Columns.Count;           
+            return 1;           
         }      
 
     }

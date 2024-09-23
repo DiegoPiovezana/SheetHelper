@@ -86,12 +86,22 @@ namespace SH.Exceptions
     [Serializable]
     public class FileOriginInUseSHException : SHException
     {
-        protected override int Number => 0;
+        protected override int Number => 541;
 
         internal FileOriginInUseSHException(string pathFile) : base(Messages.FileOriginInUse(pathFile)) { }
 
         public FileOriginInUseSHException(string pathFile, Exception innerException) : base(Messages.FileOriginInUse(pathFile), innerException) { }
     }
+
+    [Serializable]
+    public class FileOriginNotReadSupportSHException : SHException
+    {
+        protected override int Number => 541;
+
+        public FileOriginNotReadSupportSHException(string pathFile, ExcelDataReader.Exceptions.HeaderException innerException) : base(Messages.FileOriginNotReadSupport(pathFile, innerException), innerException) { }
+    }
+
+
 
     #endregion
 
@@ -100,7 +110,7 @@ namespace SH.Exceptions
     [Serializable]
     public class FileDestinationInUseSHException : SHException
     {
-        protected override int Number => 0;
+        protected override int Number => 541;
 
         internal FileDestinationInUseSHException(string pathFile) : base(Messages.FileDestinationInUse(pathFile)) { }
 

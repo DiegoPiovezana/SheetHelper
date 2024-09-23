@@ -90,7 +90,7 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateFile(string? pathFile, string paramName, string methodName)
+        internal void ValidateFileExists(string? pathFile, string paramName, string methodName)
         {
             ValidateStringNullOrEmpty(pathFile, paramName, methodName);
 
@@ -107,23 +107,25 @@ namespace SH.ExcelHelper.Treatments
 
         again:
             try
-            {
-                ValidateFile(pathOrigin, paramName, methodName);
+            {                
+                ValidateFileExists(pathOrigin, paramName, methodName);
                 File.OpenRead(pathOrigin).Dispose(); // To check if the file is accessible
             }
-            catch (UnauthorizedAccessException ex)
+            catch (IOException ex)
             {
-                switch (_tryHandlerExceptions.FileExcelInUse(ex, pathOrigin, countOpen, true))
+                var except = new FileDestinationInUseSHException(pathOrigin, ex);
+
+                switch (_tryHandlerExceptions.FileExcelInUse(except, pathOrigin, countOpen, true))
                 {
                     case 0: return;
                     case 1: goto again;
-                    default: throw new FileDestinationInUseSHException(pathOrigin);
+                    default: throw except;
                 }
             }
-            catch (Exception ex)
-            {
-                throw new Exception("E-0000-SH: An error occurred while validating the origin file.", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    throw new Exception("E-0000-SH: An error occurred while validating the origin file.", ex);
+            //}
         }
 
         internal void ValidateDestinationFile(string? destination, string methodName)
@@ -133,16 +135,20 @@ namespace SH.ExcelHelper.Treatments
         again:
             try
             {
+                ValidateStringNullOrEmpty(destination,nameof(destination), methodName);
+
                 File.WriteAllText(destination, ""); // To check if the destination file is accessible
                 File.Delete(destination); // Delete to prevent the file from being opened during conversion
             }
             catch (UnauthorizedAccessException ex)
             {
-                switch (_tryHandlerExceptions.FileExcelInUse(ex, destination, countOpen, false))
+                var except = new FileDestinationInUseSHException(destination, ex);
+
+                switch (_tryHandlerExceptions.FileExcelInUse(except, destination, countOpen, false))
                 {
                     case 0: return;
                     case 1: goto again;
-                    default: throw new FileDestinationInUseSHException(destination);
+                    default: throw except;
                 }
             }
             catch (Exception ex)
