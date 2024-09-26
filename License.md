@@ -1,4 +1,4 @@
-﻿<img src="https://raw.githubusercontent.com/DiegoPiovezana/DiegoPiovezana/main/Images/br.png" width=2.0% height=2.0%> Veja o resumo em português [clicando aqui](SheetHelper/Globalization/License_br).<br/>
+﻿<img src="https://raw.githubusercontent.com/DiegoPiovezana/DiegoPiovezana/main/Images/br.png" width=2.0% height=2.0%> Veja em português [clicando aqui](SheetHelper/Globalization/License_br).<br/>
 
 # Apache License
 Version 2.0, January 2004
