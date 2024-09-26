@@ -141,8 +141,9 @@ namespace SH.ExcelHelper.Treatments
                 File.WriteAllText(destination, ""); // To check if the destination file is accessible
                 File.Delete(destination); // Delete to prevent the file from being opened during conversion
             }
-            catch (UnauthorizedAccessException ex)
+            catch (IOException ex)
             {
+                countOpen++;
                 var except = new FileDestinationInUseSHException(destination, ex);
 
                 switch (_tryHandlerExceptions.FileExcelInUse(except, destination, countOpen, false))

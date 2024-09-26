@@ -317,8 +317,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"O arquivo de destino '{Path.GetFileName(pathFile)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente",
-                _ => $"The destination file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again",
+                "pt-BR" => $"O arquivo de destino '{Path.GetFileName(pathFile)}' está sendo utilizado em outro processo. Por favor, finalize seu uso e em seguida tente novamente clicando em OK.",
+                _ => $"The destination file '{Path.GetFileName(pathFile)}' is being used by another process. Please finish its use and then try again by clicking OK.",
             };
         }
 
