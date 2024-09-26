@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/DiegoPiovezana/DiegoPiovezana/main/Images/br.png" width=2.0% height=2.0%> Veja em português [clicando aqui](SheetHelper/Globalization/Changelog_br.md).<br/>
+
 ## [Version 1.4.0] - 2023-12-01
 
 - Ability to manipulate and save spreadsheets containing special characters (UTF-8)

@@ -326,8 +326,8 @@ namespace SH.Globalization
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Parece que o arquivo '{Path.GetFileName(pathFile)}' ainda continua em uso. Deseja forçar o encerramento de todos os Excel e tentar novamente? \n\nATENÇÃO: Todos os Excel abertos serão fechados e as alterações da(s) planilha(s) não serão salvas!",
-                _ => $"It appears that the file '{Path.GetFileName(pathFile)}' is still in use. Do you want to force quit all Excel and try again? \n\nATTENTION: All open Excel will be closed and changes to the worksheet(s) will not be saved!",
+                "pt-BR" => $"Parece que o arquivo '{Path.GetFileName(pathFile)}' ainda continua em uso. Deseja forçar o encerramento desse Excel e tentar novamente? \n\nATENÇÃO: O Excel aberto será fechado e as possiveis alterações não salvas podem ser perdidas.",
+                _ => $"It appears that the file '{Path.GetFileName(pathFile)}' is still in use. Do you want to force close this Excel and try again? \n\nATTENTION: The opened Excel will be closed and any unsaved changes may be lost.",
             };
         }
 

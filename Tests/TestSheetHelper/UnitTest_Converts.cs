@@ -52,8 +52,9 @@ namespace TestSheetHelper
             string columns = "A, 3, b, -5:-1"; // or null to convert all columns or "A:BC" for a column range
             string rows = "1:2,:4, -2"; // Eg: Extracts from the 1nd to the 4nd row and also the penultimate row      
 
-            var sh = new SheetHelper();
-            bool success = sh.Converter(source, destination, sheet, delimiter, columns, rows);
+            var sheetHelper = new SheetHelper();
+            bool success = sheetHelper.Converter(source, destination, sheet, delimiter, columns, rows);
+
             Assert.That(success, Is.EqualTo(true));
         }
 
@@ -327,7 +328,7 @@ namespace TestSheetHelper
         [Test]
         public void TestConvert_FileNotExists()
         {
-            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\Small.xlsx";
+            string origem = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\FileNotExists.xlsx";
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\Small_csv.txt";
 
             string aba = "1";
