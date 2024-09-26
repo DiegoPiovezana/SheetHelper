@@ -69,7 +69,7 @@ namespace SH.Exceptions
 
                 if (result2 == DialogResult.Yes)
                 {
-                    new Features().CloseExcel();
+                    new Features().CloseExcel(Path.GetFileName(pathFile));
                     System.Threading.Thread.Sleep(1500);
                     return 1;
 
@@ -80,7 +80,7 @@ namespace SH.Exceptions
                 fileOrigin ? Messages.FileOriginInUse(pathFile) : Messages.FileDestinationInUse(pathFile),
                 Messages.Warning(),
                 MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Error);
+                MessageBoxIcon.Exclamation);
 
             if (result1 == DialogResult.OK) { return 1; }
             else { return 0; } // If canceled

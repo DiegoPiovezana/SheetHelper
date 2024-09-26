@@ -48,11 +48,11 @@ namespace SH
 
 
         /// <inheritdoc/>     
-        public void CloseExcel()
+        public void CloseExcel(string? filterTitle = null)
         {
             try
             {
-                _features.CloseExcel();
+                _features.CloseExcel(filterTitle);
             }
             catch (SHException)
             {

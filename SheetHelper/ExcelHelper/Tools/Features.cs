@@ -38,17 +38,24 @@ namespace SH.ExcelHelper.Tools
 
 
 
-        public void CloseExcel()
+        public void CloseExcel(string? filterTitle = null)
         {
-            //try
-            //{
-                var processes = from p in Process.GetProcessesByName("EXCEL") select p;
-                foreach (var process in processes) process.Kill();
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            //var excelProcesses = from p in Process.GetProcessesByName("EXCEL") select p;
+            var excelProcesses = Process.GetProcessesByName("EXCEL");
+
+            foreach (var process in excelProcesses)
+            {
+                if (string.IsNullOrEmpty(filterTitle))
+                {
+                    process.Kill();
+                    continue;
+                }
+
+                if (process.MainWindowTitle.IndexOf(filterTitle, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    process.Kill();
+                }
+            }
         }
 
         public int GetIndexColumn(string? columnName)
@@ -70,15 +77,15 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                string columnName = string.Empty;
-                while (columnIndex > 0)
-                {
-                    int remainder = (columnIndex - 1) % 26;
-                    columnName = Convert.ToChar('A' + remainder) + columnName;
-                    columnIndex = (columnIndex - remainder) / 26;
-                }
+            string columnName = string.Empty;
+            while (columnIndex > 0)
+            {
+                int remainder = (columnIndex - 1) % 26;
+                columnName = Convert.ToChar('A' + remainder) + columnName;
+                columnIndex = (columnIndex - remainder) / 26;
+            }
 
-                return columnName;
+            return columnName;
             //}
             //catch (Exception)
             //{
@@ -90,27 +97,27 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
-                string fileConverted;
+            using var compressedFileStream = File.Open(gzFile, FileMode.Open, FileAccess.Read);
+            string fileConverted;
 
-                // If the format to be converted is not specified, try to get it from the file name
-                if (string.IsNullOrEmpty(Path.GetExtension(pathDestination)))
-                {
-                    string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
-                    string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
-                    fileConverted = $"{pathDestination}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
-                }
-                else
-                {
-                    fileConverted = pathDestination;
-                }
+            // If the format to be converted is not specified, try to get it from the file name
+            if (string.IsNullOrEmpty(Path.GetExtension(pathDestination)))
+            {
+                string originalFileName = Path.GetFileName(compressedFileStream.Name).Replace(".gz", "").Replace(".GZ", "");
+                string formatOriginal = Regex.Match(Path.GetExtension(originalFileName), @"\.[A-Za-z]*").Value;
+                fileConverted = $"{pathDestination}{Path.GetFileNameWithoutExtension(originalFileName)}{formatOriginal}";
+            }
+            else
+            {
+                fileConverted = pathDestination;
+            }
 
-                if(!Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
-                using FileStream outputFileStream = File.Create(fileConverted);
-                using var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
-                decompressor.CopyTo(outputFileStream);
+            if (!Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
+            using FileStream outputFileStream = File.Create(fileConverted);
+            using var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
+            decompressor.CopyTo(outputFileStream);
 
-                return File.Exists(fileConverted) ? fileConverted : null;
+            return File.Exists(fileConverted) ? fileConverted : null;
             //}
             //catch (Exception)
             //{
@@ -122,19 +129,19 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                string directoryZIP = Path.Combine(pathDestination, "CnvrtdZIP");
-                if (!Directory.Exists(directoryZIP)) Directory.CreateDirectory(directoryZIP);
+            string directoryZIP = Path.Combine(pathDestination, "CnvrtdZIP");
+            if (!Directory.Exists(directoryZIP)) Directory.CreateDirectory(directoryZIP);
 
-                ZipFile.ExtractToDirectory(zipFile, directoryZIP);
+            ZipFile.ExtractToDirectory(zipFile, directoryZIP);
 
-                string fileLocation = Directory.EnumerateFiles(directoryZIP).First();
-                string fileDestination = Path.Combine(pathDestination, Path.GetFileName(fileLocation));
+            string fileLocation = Directory.EnumerateFiles(directoryZIP).First();
+            string fileDestination = Path.Combine(pathDestination, Path.GetFileName(fileLocation));
 
-                if (File.Exists(fileDestination)) File.Delete(fileDestination);
-                File.Move(fileLocation, fileDestination);
-                Directory.Delete(directoryZIP, true);
+            if (File.Exists(fileDestination)) File.Delete(fileDestination);
+            File.Move(fileLocation, fileDestination);
+            Directory.Delete(directoryZIP, true);
 
-                return fileDestination;
+            return fileDestination;
             //}
             //catch (Exception)
             //{
@@ -144,28 +151,28 @@ namespace SH.ExcelHelper.Tools
 
         public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
         {
-            //try
-            //{
+        //try
+        //{
 
-            restart:
+        restart:
 
-                _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
+            _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
 
-                switch (Path.GetExtension(zipFile).ToLower())
-                {
-                    case ".gz":
-                        zipFile = UnGZ(zipFile, pathDestination);
-                        goto restart;
+            switch (Path.GetExtension(zipFile).ToLower())
+            {
+                case ".gz":
+                    zipFile = UnGZ(zipFile, pathDestination);
+                    goto restart;
 
-                    case ".zip":
-                        //stream.Close();
-                        zipFile = UnZIP(zipFile, pathDestination);
-                        goto restart;
+                case ".zip":
+                    //stream.Close();
+                    zipFile = UnZIP(zipFile, pathDestination);
+                    goto restart;
 
-                    default:
-                        if (mandatory) throw new UnableUnzipSHException(zipFile);
-                        else return zipFile;
-                }
+                default:
+                    if (mandatory) throw new UnableUnzipSHException(zipFile);
+                    else return zipFile;
+            }
             //}
             //catch (Exception)
             //{
@@ -181,18 +188,18 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                DataRow newRow = table.NewRow();
+            DataRow newRow = table.NewRow();
 
-                if (row.Length <= table.Columns.Count)
-                {
-                    for (int i = 0; i < row.Length; i++) { newRow[i] = row[i]; }
-                }
-                else
-                {
-                    throw new RowArrayOverflowDteSHException();
-                }
+            if (row.Length <= table.Columns.Count)
+            {
+                for (int i = 0; i < row.Length; i++) { newRow[i] = row[i]; }
+            }
+            else
+            {
+                throw new RowArrayOverflowDteSHException();
+            }
 
-                return newRow;
+            return newRow;
             //}
             //catch (Exception)
             //{
@@ -204,25 +211,25 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                if (header)
+            if (header)
+            {
+                return table.Columns.Cast<DataColumn>()
+                    .Select(column => column.ColumnName)
+                    .ToArray();
+            }
+            else
+            {
+                if (table.Rows.Count > 0 && indexRow >= 0)
                 {
-                    return table.Columns.Cast<DataColumn>()
-                        .Select(column => column.ColumnName)
+                    return table.Rows[indexRow].ItemArray
+                        .Select(cell => cell.ToString())
                         .ToArray();
                 }
                 else
                 {
-                    if (table.Rows.Count > 0 && indexRow >= 0)
-                    {
-                        return table.Rows[indexRow].ItemArray
-                            .Select(cell => cell.ToString())
-                            .ToArray();
-                    }
-                    else
-                    {
-                        return Array.Empty<string>();
-                    }
+                    return Array.Empty<string>();
                 }
+            }
             //}
             //catch (Exception)
             //{
@@ -234,30 +241,30 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                var dataSet = GetDataSet(filePath);
+            var dataSet = GetDataSet(filePath);
 
-                if (dataSet.Tables.Count == 0)
+            if (dataSet.Tables.Count == 0)
+            {
+                throw new Exception("E-0000-SH: No sheets found in the file.");
+            }
+
+            if (minQtdRows == 0 && formatName == false)
+            {
+                return dataSet.Tables.Cast<DataTable>().ToDictionary(table => table.TableName);
+            }
+
+            Dictionary<string, DataTable> sheetDictionary = new();
+
+            foreach (var sheet in dataSet.Tables.Cast<DataTable>())
+            {
+                if (sheet.Rows.Count + (sheet.Columns.Count > 0 ? 1 : 0) >= minQtdRows)
                 {
-                    throw new Exception("E-0000-SH: No sheets found in the file.");
+                    if (!formatName) { sheetDictionary.Add(sheet.TableName, sheet); }
+                    else { sheetDictionary.Add(NormalizeText(sheet.TableName), sheet); }
                 }
+            }
 
-                if (minQtdRows == 0 && formatName == false)
-                {
-                    return dataSet.Tables.Cast<DataTable>().ToDictionary(table => table.TableName);
-                }
-
-                Dictionary<string, DataTable> sheetDictionary = new();
-
-                foreach (var sheet in dataSet.Tables.Cast<DataTable>())
-                {
-                    if (sheet.Rows.Count + (sheet.Columns.Count > 0 ? 1 : 0) >= minQtdRows)
-                    {
-                        if (!formatName) { sheetDictionary.Add(sheet.TableName, sheet); }
-                        else { sheetDictionary.Add(NormalizeText(sheet.TableName), sheet); }
-                    }
-                }
-
-                return sheetDictionary;
+            return sheetDictionary;
             //}
             //catch (Exception)
             //{
@@ -269,19 +276,19 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                if (string.IsNullOrEmpty(text?.Trim())) return "";
+            if (string.IsNullOrEmpty(text?.Trim())) return "";
 
-                string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
-                StringBuilder stringBuilder = new();
+            string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
+            StringBuilder stringBuilder = new();
 
-                foreach (char c in normalizedString)
-                {
-                    UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                    if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
-                }
+            foreach (char c in normalizedString)
+            {
+                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
+            }
 
-                if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
-                return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
+            if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
             //}
             //catch (Exception)
             //{
@@ -293,13 +300,13 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                if (!string.IsNullOrEmpty(items))
-                {
-                    items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
-                    items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
-                    items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
-                }
-                return items; // "123123,13514,31234"
+            if (!string.IsNullOrEmpty(items))
+            {
+                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+            }
+            return items; // "123123,13514,31234"
             //}
             //catch (Exception)
             //{
@@ -311,10 +318,10 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                //if (string.IsNullOrEmpty(jsonTextItems))
-                //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
+            //if (string.IsNullOrEmpty(jsonTextItems))
+            //    throw new ParamExceptionSHException(nameof(jsonTextItems), nameof(GetDictionaryJson));
 
-                return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonTextItems);
             //}
             //catch (Exception)
             //{
@@ -326,10 +333,10 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                if (dictionary == null || dictionary.Count == 0)
-                    throw new ArgumentNullOrEmptySHException(nameof(dictionary), nameof(GetJsonDictionary));
+            if (dictionary == null || dictionary.Count == 0)
+                throw new ArgumentNullOrEmptySHException(nameof(dictionary), nameof(GetJsonDictionary));
 
-                return JsonSerializer.Serialize(dictionary);
+            return JsonSerializer.Serialize(dictionary);
             //}
             //catch (Exception)
             //{
@@ -341,16 +348,16 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
-                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
+            origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+            _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                _sheetHelper.Progress += 5; // 5 
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            _sheetHelper.Progress += 5; // 5 
 
-                DataSet result = _reading.GetDataSet(origin);
-                _sheetHelper.Progress += 25; // 35 (after reading the file)
+            DataSet result = _reading.GetDataSet(origin);
+            _sheetHelper.Progress += 25; // 35 (after reading the file)
 
-                return result;
+            return result;
             //}
             //catch (Exception)
             //{
@@ -362,17 +369,17 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-                var result = GetDataSet(origin); // 35 (after reading the file)
+            var result = GetDataSet(origin); // 35 (after reading the file)
 
-                // Get the sheet to be converted
-                DataTable table = _reading.GetTableByDataSet(sheet, result);
+            // Get the sheet to be converted
+            DataTable table = _reading.GetTableByDataSet(sheet, result);
 
-                // Handling to allow header consideration (XLS case)
-                // TODO: Refactor              
-                //table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin));
-                _sheetHelper.Progress += 5; // 40
+            // Handling to allow header consideration (XLS case)
+            // TODO: Refactor              
+            //table = _definitions.DefineFirstRowToHeader(table, Path.GetExtension(origin));
+            _sheetHelper.Progress += 5; // 40
 
-                return table;
+            return table;
             //}
 
             //#if NETFRAMEWORK
@@ -470,7 +477,7 @@ namespace SH.ExcelHelper.Tools
 
             //try
             //{
-                return _writing.SaveDataTable(dataTable, destination, separator, columns, rows);
+            return _writing.SaveDataTable(dataTable, destination, separator, columns, rows);
             //}
 
             //#if NETFRAMEWORK                        

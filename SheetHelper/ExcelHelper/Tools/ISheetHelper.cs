@@ -7,9 +7,10 @@ namespace SH.ExcelHelper.Tools
     interface ISheetHelper
     {
         /// <summary>
-        /// Terminates all Excel processes
+        /// Terminates Excel processes. If a title keyword is provided, only Excel processes with window titles containing the specified keyword will be terminated.
         /// </summary>
-        void CloseExcel();
+        /// <param name="filterTitle">Optional keyword to filter Excel windows by title. If null or empty, all Excel processes will be terminated.</param>
+        void CloseExcel(string? filterTitle = null);
 
 
         /// <summary>
