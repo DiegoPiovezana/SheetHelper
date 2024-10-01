@@ -234,13 +234,13 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal int DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object separators, ref object columns, ref object rows)
+        internal int DefineMultiplesInputsConverter(ref object destinations, ref object sheets, ref object delimiters, ref object columns, ref object rows)
         {
             /* POSSIBILITIES:
                  * origin = 1;
                  * destinations = 1 or X;
                  * sheets = 1 or X;
-                 * separators = 1 or X;
+                 * delimiters = 1 or X;
                  * columns = 1/null or X;
                  * rows = 1/null or X;
                  * minRows = 1 or X.                
@@ -248,22 +248,22 @@ namespace SH.ExcelHelper.Treatments
 
             ICollection<string?> destinationsCollection = TryConvertToCollection(destinations);
             ICollection<string?> sheetsCollection = TryConvertToCollection(sheets);
-            ICollection<string?> separatorsCollection = TryConvertToCollection(separators);
+            ICollection<string?> delimitersCollection = TryConvertToCollection(delimiters);
             ICollection<string?> columnsCollection = TryConvertToCollection(columns);
             ICollection<string?> rowsCollection = TryConvertToCollection(rows);
 
-            var collections = new List<ICollection<string?>> { destinationsCollection, sheetsCollection, separatorsCollection, columnsCollection, rowsCollection };
+            var collections = new List<ICollection<string?>> { destinationsCollection, sheetsCollection, delimitersCollection, columnsCollection, rowsCollection };
             int countConversions = collections.Max(collection => collection.Count);
 
             destinationsCollection = ExpandCollection(destinationsCollection, countConversions);
             sheetsCollection = ExpandCollection(sheetsCollection, countConversions);
-            separatorsCollection = ExpandCollection(separatorsCollection, countConversions);
+            delimitersCollection = ExpandCollection(delimitersCollection, countConversions);
             columnsCollection = ExpandCollection(columnsCollection, countConversions);
             rowsCollection = ExpandCollection(rowsCollection, countConversions);
 
             destinations = destinationsCollection;
             sheets = sheetsCollection;
-            separators = separatorsCollection;
+            delimiters = delimitersCollection;
             columns = columnsCollection;
             rows = rowsCollection;
 

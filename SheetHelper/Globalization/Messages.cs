@@ -227,14 +227,14 @@ namespace SH.Globalization
 
         #endregion
 
-        #region Separator
+        #region Delimiter
 
-        internal static string SeparatorInvalid(string separator)
+        internal static string DelimiterInvalid(string delimiter)
         {
             return CultureInfo.CurrentCulture.Name switch
             {
-                "pt-BR" => $"Invalid separator '{separator}'!",
-                _ => $"Separador '{separator}' é inválido!",
+                "pt-BR" => $"Invalid delimiter '{delimiter}'!",
+                _ => $"Separador '{delimiter}' é inválido!",
             };
         }
 

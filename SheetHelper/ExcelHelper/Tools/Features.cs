@@ -472,12 +472,12 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
-        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null)
+        public bool SaveDataTable(DataTable dataTable, string destination, string delimiter = ";", string? columns = null, string? rows = null)
         {
 
             //try
             //{
-            return _writing.SaveDataTable(dataTable, destination, separator, columns, rows);
+            return _writing.SaveDataTable(dataTable, destination, delimiter, columns, rows);
             //}
 
             //#if NETFRAMEWORK                        
@@ -528,7 +528,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
-        public bool Converter(string origin, string destination, string sheet, string separator, string columns, string rows, int minRows = 1)
+        public bool Converter(string origin, string destination, string sheet, string delimiter, string columns, string rows, int minRows = 1)
         {
             try
             {
@@ -537,7 +537,7 @@ namespace SH.ExcelHelper.Tools
                 origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
-                if (!_validations.CheckConvertNecessary(origin, destination, sheet, separator, columns, rows))
+                if (!_validations.CheckConvertNecessary(origin, destination, sheet, delimiter, columns, rows))
                 {
                     _sheetHelper.Progress = 100;
                     File.Copy(origin, destination, true);
@@ -548,7 +548,7 @@ namespace SH.ExcelHelper.Tools
                 DataTable? table = GetDataTable(origin, sheet);
                 _validations.ValidateRowsMinDt(table, minRows, nameof(Converter));
 
-                return SaveDataTable(table, destination, separator, columns, rows);
+                return SaveDataTable(table, destination, delimiter, columns, rows);
             }
             catch (Exception)
             {
@@ -556,7 +556,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int Converter(string origin, object destinations, object sheets, object separators, object columns, object rows, int minRows)
+        public int Converter(string origin, object destinations, object sheets, object delimiters, object columns, object rows, int minRows)
         {
             try
             {
@@ -565,7 +565,7 @@ namespace SH.ExcelHelper.Tools
 
                 var destinationsCollection = destinations as ICollection<string?>;
                 var sheetsCollection = sheets as ICollection<string?>;
-                var separatorsCollection = separators as ICollection<string?>;
+                var delimitersCollection = delimiters as ICollection<string?>;
                 var columnsCollection = columns as ICollection<string?>;
                 var rowsCollection = rows as ICollection<string?>;
 
@@ -581,12 +581,12 @@ namespace SH.ExcelHelper.Tools
                 _definitions.DefineDestinations(ref destinationsCollection, sheetsCollection);
 
                 //int count = sheetsCollection.Count;
-                //if (count == destinationsCollection.Count && count == separatorsCollection.Count && count == columnsCollection.Count && count == rowsCollection.Count)
+                //if (count == destinationsCollection.Count && count == delimitersCollection.Count && count == columnsCollection.Count && count == rowsCollection.Count)
                 //{
                 //    throw new Exception("E-0000-SH: The number of sheets, columns and rows must be the same.");
                 //}
 
-                _validations.ValidateConverter(origin, destinationsCollection, sheetsCollection, separatorsCollection, columnsCollection, rowsCollection, nameof(Converter));
+                _validations.ValidateConverter(origin, destinationsCollection, sheetsCollection, delimitersCollection, columnsCollection, rowsCollection, nameof(Converter));
 
                 int saveSuccess = default;
 
@@ -622,10 +622,10 @@ namespace SH.ExcelHelper.Tools
                     var columnSheet = columnsCollection.Skip(i).FirstOrDefault();
                     var rowSheet = rowsCollection.Skip(i).FirstOrDefault();
                     var destination = destinationsCollection.Skip(i).FirstOrDefault();
-                    var separator = separatorsCollection.Skip(i).FirstOrDefault();
+                    var delimiter = delimitersCollection.Skip(i).FirstOrDefault();
 
                     //string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheetId}{Path.GetExtension(destination)}");
-                    saveSuccess += SaveDataTable(dtSheet, destination, separator, columnSheet, rowSheet) ? 1 : 0;
+                    saveSuccess += SaveDataTable(dtSheet, destination, delimiter, columnSheet, rowSheet) ? 1 : 0;
                 }
 
                 return saveSuccess;
@@ -636,7 +636,7 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string delimiter = ";")
         {
             try
             {
@@ -646,7 +646,7 @@ namespace SH.ExcelHelper.Tools
                 foreach (var sheet in GetAllSheets(origin, minRows, true))
                 {
                     string dest = Path.Combine(Path.GetDirectoryName(destination), $"{Path.GetFileNameWithoutExtension(destination)}__{sheet.Key}{Path.GetExtension(destination)}");
-                    SaveDataTable(sheet.Value, dest, separator, "", "");
+                    SaveDataTable(sheet.Value, dest, delimiter, "", "");
                 }
 
                 return true;

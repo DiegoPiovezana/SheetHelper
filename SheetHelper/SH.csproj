@@ -9,7 +9,7 @@
 		<AssemblyTitle>SheetHelper</AssemblyTitle>
 		<AssemblyName>SheetHelper</AssemblyName>
 		<PackageId>SheetHelper</PackageId>
-		<Version>1.5.0-alpha-1</Version>
+		<Version>1.5.0-alpha-2</Version>
 		<Authors>Diêgo Piovezana</Authors>
 		<Company>DiegoPiov</Company>
 		<RepositoryUrl>https://github.com/DiegoPiovezana/SheetHelper</RepositoryUrl>
@@ -19,13 +19,15 @@
 		<PackageProjectUrl>https://github.com/DiegoPiovezana/SheetHelper</PackageProjectUrl>
 		<PackageIcon>SheetHelper_icon.png</PackageIcon>
 		<PackageTags>Excel;Convert;CSV;XSLX;XSLB;XLSM;XSL;TXT;RPT;ZIP;GZ;GZIP;UNZIP;Sheet;Spreadsheet</PackageTags>		
-		<PackageLicenseFile>License.txt</PackageLicenseFile>		
+		<PackageLicenseFile>License.md</PackageLicenseFile>		
 		<ApplicationIcon>Images\sheethelper_icon.ico</ApplicationIcon>		
 		<AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>		
 		<Nullable>enable</Nullable>		
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>		
 <PackageReleaseNotes>- Alpha Version
-- Possible bugs possibly present</PackageReleaseNotes>
+- Possible bugs possibly present</PackageReleaseNotes>		
+<Copyright>Copyright 2024 Diêgo Piovezana</Copyright>		
+<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 				
 	</PropertyGroup>
 
@@ -41,7 +43,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\License.txt">
+		<None Include="..\License.md">
 		  <Pack>True</Pack>
 		  <PackagePath>\</PackagePath>
 		</None>

@@ -35,7 +35,7 @@ namespace SH.ExcelHelper.Treatments
         /// Checks if it is necessary to convert the file.
         /// </summary>
         /// <returns>True if conversion is required.</returns>
-        internal bool CheckConvertNecessary(string origin, string destination, string sheet, string separator, string? columns, string? rows)
+        internal bool CheckConvertNecessary(string origin, string destination, string sheet, string delimiter, string? columns, string? rows)
         {
             bool checkFormat = Path.GetExtension(origin).Equals(Path.GetExtension(destination), StringComparison.OrdinalIgnoreCase); // The formats is the same?
             bool isOriginTextFormat = Path.GetExtension(origin).Equals(".csv", StringComparison.OrdinalIgnoreCase) || Path.GetExtension(origin).Equals(".txt", StringComparison.OrdinalIgnoreCase);                                                                             // 
@@ -114,7 +114,7 @@ namespace SH.ExcelHelper.Treatments
             catch (IOException ex)
             {
                 countOpen++;
-                var except = new FileDestinationInUseSHException(pathOrigin, ex);
+                var except = new FileOriginInUseSHException(pathOrigin, ex);
 
                 switch (_tryHandlerExceptions.FileExcelInUse(except, pathOrigin, countOpen, true))
                 {
@@ -207,13 +207,13 @@ namespace SH.ExcelHelper.Treatments
             }
         }
 
-        internal void ValidateSeparatorInput(string? separatorInput)
+        internal void ValidateDelimiterInput(string? delimiterInput)
         {
             // ";"
 
-            if (string.IsNullOrEmpty(separatorInput))
+            if (string.IsNullOrEmpty(delimiterInput))
             {
-                throw new ArgumentException("E-0000-SH: Invalid separator.", nameof(separatorInput));
+                throw new ArgumentException("E-0000-SH: Invalid delimiter.", nameof(delimiterInput));
             }
         }
 
@@ -236,20 +236,20 @@ namespace SH.ExcelHelper.Treatments
             // TODO: Add specific validation logic for rows
         }
 
-        internal void ValidateConverter(string? originInput, object? destinationsInput, object? sheetsInput, object? separatorsInput, object? columnsInput, object? rowsInput, string methodName)
+        internal void ValidateConverter(string? originInput, object? destinationsInput, object? sheetsInput, object? delimitersInput, object? columnsInput, object? rowsInput, string methodName)
         {
             //try
             //{
                 ICollection<string?> destinationsCollection = (ICollection<string?>)destinationsInput;
                 ICollection<string?> sheetsCollection = (ICollection<string?>)sheetsInput;
-                ICollection<string?> separatorsCollection = (ICollection<string?>)separatorsInput;
+                ICollection<string?> delimitersCollection = (ICollection<string?>)delimitersInput;
                 ICollection<string?> columnsCollection = (ICollection<string?>)columnsInput;
                 ICollection<string?> rowsCollection = (ICollection<string?>)rowsInput;
 
                 // Remove duplicates  
                 HashSet<string?> destinations = new(destinationsCollection);
                 HashSet<string?> sheets = new(sheetsCollection);
-                HashSet<string?> separators = new(separatorsCollection);
+                HashSet<string?> delimiters = new(delimitersCollection);
                 HashSet<string?> columns = new(columnsCollection);
                 HashSet<string?> rows = new(rowsCollection);
 
@@ -262,14 +262,14 @@ namespace SH.ExcelHelper.Treatments
 
                 validates.AddRange(destinations.Select(destination => Task.Run(() => ValidateDestinationFile(destination, methodName))));
                 validates.AddRange(sheets.Select(sheet => Task.Run(() => ValidateSheetIdInput(sheet))));
-                validates.AddRange(separators.Select(separator => Task.Run(() => ValidateSeparatorInput(separator))));
+                validates.AddRange(delimiters.Select(delimiter => Task.Run(() => ValidateDelimiterInput(delimiter))));
                 validates.AddRange(columns.Select(column => Task.Run(() => ValidateColumnsInput(column))));
                 validates.AddRange(rows.Select(row => Task.Run(() => ValidateRowsInput(row))));
 
                 Task.WhenAll(validates); 
 
                 int countConversions = sheetsCollection.Count;
-                if (destinationsCollection.Count != countConversions || separatorsCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
+                if (destinationsCollection.Count != countConversions || delimitersCollection.Count != countConversions || columnsCollection.Count != countConversions || rowsCollection.Count != countConversions)
                 {
                     //throw new ArgumentException("All parameters must have the same number of items or be single values.");
                     throw new ParamMissingConverterSHException();
@@ -282,7 +282,7 @@ namespace SH.ExcelHelper.Treatments
         }
 
 
-        internal async Task ValidateOneConverterAsync(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, string methodName)
+        internal async Task ValidateOneConverterAsync(string? origin, string? destination, string? sheet, string? delimiter, string? columns, string? rows, string methodName)
         {
             //try
             //{
@@ -293,7 +293,7 @@ namespace SH.ExcelHelper.Treatments
                     //Task.Run(() => ValidateOriginFile(origin,nameof(origin), methodName)),
                     Task.Run(() => ValidateDestinationFile(destination, methodName)),
                     Task.Run(() => ValidateSheetIdInput(sheet)),
-                    Task.Run(() => ValidateSeparatorInput(separator)),
+                    Task.Run(() => ValidateDelimiterInput(delimiter)),
                     Task.Run(() => ValidateColumnsInput(columns)),
                     Task.Run(() => ValidateRowsInput(rows))
                 };
@@ -309,12 +309,12 @@ namespace SH.ExcelHelper.Treatments
             //}
         }
 
-        internal void ValidateSaveDataTable(string destination, string separator, string? columns, string? rows, string methodName)
+        internal void ValidateSaveDataTable(string destination, string delimiter, string? columns, string? rows, string methodName)
         {
             List<Task> validates = new()
             {
                 Task.Run(() => ValidateDestinationFile(destination, methodName)),
-                Task.Run(() => ValidateSeparatorInput(separator)),
+                Task.Run(() => ValidateDelimiterInput(delimiter)),
                 Task.Run(() => ValidateColumnsInput(columns)),
                 Task.Run(() => ValidateRowsInput(rows))
             };

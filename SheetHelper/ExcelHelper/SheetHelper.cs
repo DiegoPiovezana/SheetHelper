@@ -282,7 +282,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
         public string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             try
@@ -299,7 +299,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
         public DataSet GetDataSet(string? origin)
         {
             try
@@ -317,7 +317,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
         public DataTable? GetDataTable(string origin, string sheet = "1")
         {
             try
@@ -336,13 +336,13 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
-        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null)
+        /// <inheritdoc/>
+        public bool SaveDataTable(DataTable dataTable, string destination, string delimiter = ";", string? columns = null, string? rows = null)
         {
             try
             {
-                _validations.ValidateSaveDataTable(destination, separator, columns, rows, nameof(SaveDataTable));
-                return _features.SaveDataTable(dataTable, destination, separator, columns, rows);
+                _validations.ValidateSaveDataTable(destination, delimiter, columns, rows, nameof(SaveDataTable));
+                return _features.SaveDataTable(dataTable, destination, delimiter, columns, rows);
             }
             catch (SHException)
             {
@@ -358,13 +358,13 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
-        public bool Converter(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, int minRows = 1)
+        /// <inheritdoc/>
+        public bool Converter(string? origin, string? destination, string? sheet, string? delimiter, string? columns, string? rows, int minRows = 1)
         {
             try
             {
-                _validations.ValidateOneConverterAsync(origin, destination, sheet, separator, columns, rows, nameof(Converter)).GetAwaiter().GetResult(); 
-                return _features.Converter(origin, destination, sheet, separator, columns, rows, minRows);
+                _validations.ValidateOneConverterAsync(origin, destination, sheet, delimiter, columns, rows, nameof(Converter)).GetAwaiter().GetResult();
+                return _features.Converter(origin, destination, sheet, delimiter, columns, rows, minRows);
             }
             catch (SHException)
             {
@@ -381,13 +381,13 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public int Converter(string? origin, object? destinations, object? sheets, object? separators, object? columns, object? rows, int minRows = 1)
+        public int Converter(string? origin, object? destinations, object? sheets, object? delimiters, object? columns, object? rows, int minRows = 1)
         {
             try
             {
-                _definitions.DefineMultiplesInputsConverter(ref destinations, ref sheets, ref separators, ref columns, ref rows);
-                _validations.ValidateConverter(origin, destinations, sheets, separators, columns, rows, nameof(Converter));
-                return _features.Converter(origin, destinations, sheets, separators, columns, rows, minRows);
+                _definitions.DefineMultiplesInputsConverter(ref destinations, ref sheets, ref delimiters, ref columns, ref rows);
+                _validations.ValidateConverter(origin, destinations, sheets, delimiters, columns, rows, nameof(Converter));
+                return _features.Converter(origin, destinations, sheets, delimiters, columns, rows, minRows);
             }
             catch (SHException)
             {
@@ -404,14 +404,14 @@ namespace SH
         }
 
         /// <inheritdoc/> 
-        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";")
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string delimiter = ";")
         {
             try
             {
                 _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
                 _validations.ValidateDestinationFile(destination, nameof(Converter));
-                _validations.ValidateStringNullOrEmpty(separator, nameof(separator), nameof(Converter));
-                return _features.ConvertAllSheets(origin, destination, minRows, separator);
+                _validations.ValidateStringNullOrEmpty(delimiter, nameof(delimiter), nameof(Converter));
+                return _features.ConvertAllSheets(origin, destination, minRows, delimiter);
             }
             catch (SHException)
             {

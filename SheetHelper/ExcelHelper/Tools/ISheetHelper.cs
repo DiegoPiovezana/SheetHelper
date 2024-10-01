@@ -151,11 +151,11 @@ namespace SH.ExcelHelper.Tools
         /// </summary>
         /// <param name="dataTable">DataTable to be converted.</param>
         /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv".</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="delimiter">Delimiter to be used to write the file. E.g.: ";".</param>
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public bool SaveDataTable(DataTable dataTable, string destination, string separator = ";", string? columns = null, string? rows = null);
+        public bool SaveDataTable(DataTable dataTable, string destination, string delimiter = ";", string? columns = null, string? rows = null);
 
 
         /// <summary>
@@ -164,27 +164,27 @@ namespace SH.ExcelHelper.Tools
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
         /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
         /// <param name="sheet">Tab of the worksheet to be converted. E.g.: "1" (first sheet) or "TabName".</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="delimiter">Delimiter to be used to write the file. E.g.: ";".</param>
         /// <param name="columns">"Enter the columns or their range. E.g.: "A:H, 4:9, 4:-9, B, 75, -2".</param>
         /// <param name="rows">"Enter the rows or their range. E.g.: "1:23, -34:56, 70, 75, -1".</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>"true" if converted successfully. "false" if not converted.</returns>
-        public bool Converter(string? origin, string? destination, string? sheet, string? separator, string? columns, string? rows, int minRows = 1);
+        public bool Converter(string? origin, string? destination, string? sheet, string? delimiter, string? columns, string? rows, int minRows = 1);
 
 
         /// <summary>
-        /// Converts the desired spreadsheet tabs, considering the destination in the desired format, using the desired separator, columns and rows for each conversion.
+        /// Converts the desired spreadsheet tabs, considering the destination in the desired format, using the desired delimiter, columns and rows for each conversion.
         /// <para>NOTE.: Use the Convert or SaveDataTable method for further customizations.</para>
         /// </summary>
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
         /// <param name="destinations">Enter the group of directory + destinations files names + format."</param>
         /// <param name="sheets">Enter the names or indexes of the sheets to be converted.</param>
-        /// <param name="separators">The group of separators to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="delimiters">The group of delimiters to be used to write to files. E.g.: ";".</param>
         /// <param name="columns">"Enter the group of columns or their range for each sheet.</param>
         /// <param name="rows">"Enter the group of rows or their range for each sheet.</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
         /// <returns>Number of successful conversions.</returns>
-        public int Converter(string? origin, object? destinations, object? sheets, object? separators, object? columns, object? rows, int minRows = 1);
+        public int Converter(string? origin, object? destinations, object? sheets, object? delimiters, object? columns, object? rows, int minRows = 1);
 
 
         /// <summary>
@@ -194,9 +194,9 @@ namespace SH.ExcelHelper.Tools
         /// <param name="origin">Directory + source file name + format. E.g.: "C:\\Users\\FileExcel.xlsx."</param>
         /// <param name="destination">Directory + destination file name + format. E.g.: "C:\\Users\\FileExcel.csv."</param>
         /// <param name="minRows">(Optional) The minimum number of lines a tab needs to have, otherwise it will be ignored.</param>
-        /// <param name="separator">Separator to be used to perform the conversion. E.g.: ";".</param>
+        /// <param name="delimiter">Delimiter to be used to write the file. E.g.: ";".</param>
         /// <returns>True, if success.</returns>
-        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string separator = ";");
+        public bool ConvertAllSheets(string? origin, string? destination, int minRows = 1, string delimiter = ";");
 
     }
 }

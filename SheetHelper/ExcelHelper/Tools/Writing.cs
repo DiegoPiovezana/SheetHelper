@@ -23,17 +23,17 @@ namespace SH.ExcelHelper.Tools
 
 
 
-        //internal static bool Converter(string origin, string destination, string sheet, string separator, string? columns, string? rows)
+        //internal static bool Converter(string origin, string destination, string sheet, string delimiter, string? columns, string? rows)
         //{
         //    SheetHelper.Progress = 0;
 
-        //    Validations.Validate(origin, destination, sheet, separator, columns, rows);
+        //    Validations.Validate(origin, destination, sheet, delimiter, columns, rows);
         //    SheetHelper.Progress += 5; // 5 
 
         //    origin = SheetHelper.UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
         //    if (origin == null) return false;
 
-        //    if (!Validations.CheckConvertNecessary(origin, destination, sheet, separator, columns, rows))
+        //    if (!Validations.CheckConvertNecessary(origin, destination, sheet, delimiter, columns, rows))
         //    {
         //        // If no conversion is needed
         //        SheetHelper.Progress = 100;
@@ -43,10 +43,10 @@ namespace SH.ExcelHelper.Tools
 
         //    DataTable table = SheetHelper.GetDataTable(origin, sheet);
 
-        //    return ConverterDataTable(table, destination, separator, columns, rows);
+        //    return ConverterDataTable(table, destination, delimiter, columns, rows);
         //}
 
-        internal bool SaveDataTable(DataTable table, string destination, string separator, string? columns, string? rows)
+        internal bool SaveDataTable(DataTable table, string destination, string delimiter, string? columns, string? rows)
         {
 
             StringBuilder output = new();
@@ -82,7 +82,7 @@ namespace SH.ExcelHelper.Tools
                     //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
                     //}
                     //return cellValue;
-                    return TreatCell(column.ColumnName, separator);
+                    return TreatCell(column.ColumnName, delimiter);
                 }).ToArray();
             }
             else
@@ -92,14 +92,14 @@ namespace SH.ExcelHelper.Tools
                 rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
                 {
                     //string cellValue = cell.ToString();
-                    //if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
+                    //if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(delimiter)) // Check if the cell contains a line break
                     //{
                     //    // Apply double quotes to surround the value and escape the inner double quotes
                     //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
                     //}
                     //return cellValue;
 
-                    return TreatCell(cell.ToString(), separator);
+                    return TreatCell(cell.ToString(), delimiter);
                 }).ToArray();
             }
 
@@ -108,8 +108,8 @@ namespace SH.ExcelHelper.Tools
             {
                 if (columnsASCII[0].Equals(0)) // If columns not specified - All
                 {
-                    output.AppendLine(string.Join(separator, rowFull)); // Add all row columns
-                                                                        //writer.Write(String.Join(separator, rowFull));                       
+                    output.AppendLine(string.Join(delimiter, rowFull)); // Add all row columns
+                                                                        //writer.Write(String.Join(delimiter, rowFull));                       
                 }
                 else // If specified columns - Selected
                 {
@@ -118,10 +118,10 @@ namespace SH.ExcelHelper.Tools
                     foreach (int column in columnsASCII) // For each column of rows
                     {
                         // Select column considering ASCII table and add separately                            
-                        rowSelected.Append(rowFull[column - 1]).Append(separator);
+                        rowSelected.Append(rowFull[column - 1]).Append(delimiter);
                     }
-                    output.AppendLine(string.Join(separator, rowSelected)); // Add the row with the selected columns                           
-                                                                            //writer.Write(String.Join(separator, rowSelected));                    
+                    output.AppendLine(string.Join(delimiter, rowSelected)); // Add the row with the selected columns                           
+                                                                            //writer.Write(String.Join(delimiter, rowSelected));                    
                 }
 
                 if (countPercPrg >= 1) // If applicable, load the progress
@@ -149,7 +149,7 @@ namespace SH.ExcelHelper.Tools
                     //rowFull = TreatCell(table.Rows[rowIndex - 2].ItemArray.Select(cell => cell.ToString()).ToArray());
                     //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
                     //{
-                    //    return TreatCell(cell.ToString(), separator);
+                    //    return TreatCell(cell.ToString(), delimiter);
 
                     //}).ToArray();
 
@@ -158,7 +158,7 @@ namespace SH.ExcelHelper.Tools
                         // Get the header (coluns name)                       
                         rowFull = table.Columns.Cast<DataColumn>().Select(column =>
                         {
-                            return TreatCell(column.ColumnName, separator);
+                            return TreatCell(column.ColumnName, delimiter);
                         }).ToArray();
                     }
                     else
@@ -166,7 +166,7 @@ namespace SH.ExcelHelper.Tools
                         // Get the first row selected (after header - index-2) 
                         rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
                         {
-                            return TreatCell(cell.ToString(), separator);
+                            return TreatCell(cell.ToString(), delimiter);
                         }).ToArray();
                     }
                 }
@@ -186,8 +186,8 @@ namespace SH.ExcelHelper.Tools
             return File.Exists(destination);
         }
 
-        //internal static T[] TreatCell<T>(T[] cells, string separator = ";")
-        internal string TreatCell(string cellValue, string separator)
+        //internal static T[] TreatCell<T>(T[] cells, string delimiter = ";")
+        internal string TreatCell(string cellValue, string delimiter)
         {
             //// Header
             //rowFull = table.Columns.Cast<DataColumn>().Select(column =>
@@ -205,7 +205,7 @@ namespace SH.ExcelHelper.Tools
             //rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
             //{
             //    string cellValue = cell.ToString();
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator)) // Check if the cell contains a line break
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(delimiter)) // Check if the cell contains a line break
             //    {
             //        // Apply double quotes to surround the value and escape the inner double quotes
             //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
@@ -229,7 +229,7 @@ namespace SH.ExcelHelper.Tools
             //return cells.Select(cell =>
             //{
             //    string cellValue = cell.ToString();
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(separator))
+            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(delimiter))
             //    {
             //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
             //    }
@@ -238,7 +238,7 @@ namespace SH.ExcelHelper.Tools
 
             if (cellValue.Contains("\n") 
                 || cellValue.Contains("\r")                
-                || cellValue.Contains(separator) 
+                || cellValue.Contains(delimiter) 
                 || cellValue.Contains("\""))
             {
                 cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""

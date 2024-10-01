@@ -5,7 +5,7 @@ namespace UnitTestSheetHelper
 {
     [TestClass]
     public class UnitTest_viaNuget
-    {     
+    {
         [TestMethod]
         public void TestConvertParticular()
         {

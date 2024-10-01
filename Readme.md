@@ -1,6 +1,6 @@
 ﻿[![NuGet](https://img.shields.io/nuget/v/SheetHelper.svg)](https://www.nuget.org/packages/SheetHelper/)
 [![Changelog](https://img.shields.io/badge/Changelog-View%20Here-green.svg)](Changelog.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](License.txt)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](License.md)
 
 <img src="https://raw.githubusercontent.com/DiegoPiovezana/DiegoPiovezana/main/Images/br.png" width=2.0% height=2.0%> Veja a documentação em português [clicando aqui](SheetHelper/Globalization/Readme_br.md).<br/>
 
