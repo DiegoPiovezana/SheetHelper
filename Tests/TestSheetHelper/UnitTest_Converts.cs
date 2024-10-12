@@ -1142,6 +1142,37 @@ namespace TestSheetHelper
             Assert.That(csvLines[0].Split(separator)[^2], Is.EqualTo("99"));
         }
 
+        [Test]
+        public void TestAllFeaturesAccess()
+        {
+            var sh = new SheetHelper();
+
+            var progress = sh.Progress;
+            sh.ProhibitedItems = null;
+            sh.TryIgnoreExceptions = null;
+
+            Assert.Pass();
+
+            sh.CloseExcel(null);
+            sh.GetIndexColumn(null);
+            sh.GetNameColumn(1);
+            sh.UnGZ(null, null);
+            sh.UnZIP(null, null);
+            sh.UnzipAuto(null, null, false);
+            sh.ConvertToDataRow(null, null);
+            sh.GetRowArray(null);
+            sh.GetAllSheets(null);
+            sh.NormalizeText(" Hot Café");
+            sh.FixItems(null);
+            sh.GetDictionaryJson(null);
+            sh.GetJsonDictionary(null);
+            sh.GetDataSet(null);
+            sh.GetDataTable(null, null);
+            sh.SaveDataTable(null, null, null, null, null);
+            sh.Converter(null, null, null, null, null, null);
+            sh.ConvertAllSheets(null, null, 0, null);  
+        }
+
 
         // --------------------------------------------------------------------------------
 

@@ -103,7 +103,7 @@ namespace SH.ExcelHelper.Tools
         /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
         /// </summary>
         /// <param name="items">The string containing items to be fixed.</param>
-        /// <returns>The fixed string with proper item separation.</returns>
+        /// <returns>The fixed string with proper item separation. Example: "123123,13514,31234"</returns>
         public string FixItems(string items);
 
 
