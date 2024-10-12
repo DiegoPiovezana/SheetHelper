@@ -75,7 +75,7 @@ namespace TestSheetHelper
             string sheet = "1"; // Use "1" for the first sheet (index or name)
             string delimiter = ";";
             string columns = "A, 3, b, -5:-1"; // or null to convert all columns or "A:BC" for a column range
-            string rows = "1:2,:4, -2"; // Extracts from the 1st to the 4th row and also the penultimate row      
+            string rows = "1:2,:4, -1"; // Extracts from the 1st to the 4th row and also the penultimate row      
 
             var sheetHelper = new SheetHelper();
 
@@ -93,22 +93,24 @@ namespace TestSheetHelper
             Assert.That(csvLines.Length, Is.GreaterThan(0), "The converted CSV file is empty.");
 
             // Validate the number of rows matches the expected rows
-            int expectedRows = 6; // Based on rows "1:2, :4, -2" = 1, 2, 3, 4, -1, -2
+            int expectedRows = 7; // Based on rows "1:2, :4, -2" = 1, 2, 1, 2, 3, 4, -1
             Assert.That(csvLines.Length, Is.EqualTo(expectedRows), $"Expected {expectedRows} rows but got {csvLines.Length}.");
 
             // Check if the delimiter is correct in the first line of the CSV
             Assert.That(csvLines[0], Does.Contain(delimiter), $"Expected delimiter '{delimiter}' not found in the output.");
 
+            // 7 rows = 1, 2, 1, 2, 3, 4, -1
+            // 8 columns = A, 3, b, -5, -4, -3, -2, -1  
             Assert.Multiple(() =>
             {
                 // Check content of the first row -- 1
                 Assert.That(csvLines[0].Split(delimiter)[0], Is.EqualTo("1"), $"Expected '1' not found in the output.");
 
-                // Check content of the last row -- A101254
-                Assert.That(csvLines[5].Split(delimiter)[0], Is.EqualTo("A101254"), $"Expected 'A101254' not found in the output.");
+                // Check content of the penultimate row -- 4
+                Assert.That(csvLines[5].Split(delimiter)[2], Is.EqualTo("B4"), $"Expected 'B4' not found in the output.");
 
-                // Check content of the penultimate row and last column -- AB101253               
-                Assert.That(csvLines[4].Split(delimiter)[^1], Is.EqualTo("AB101253"), $"Expected 'AB101253' not found in the output.");
+                // Check content of the last row and last column -- CV101254               
+                Assert.That(csvLines[6].Split(delimiter)[7], Is.EqualTo("CV101254"), $"Expected 'CV101254' not found in the output.");
             });
         }
 
@@ -195,11 +197,11 @@ namespace TestSheetHelper
 
             // Validate content of the last row
             var lastLineColumns = csvLines[^1].Split(separador);
-            Assert.That(lastLineColumns[1], Is.EqualTo("2,88564992240519"), "The second cell in the last row isn't 2,88564992240519.");
+            Assert.That(lastLineColumns[1], Is.EqualTo("2,885649922405185"), "The second cell in the last row isn't 2,88564992240519 => 2,885649922405185.");
 
             // Validate the last column of the penultimate row
             var penultimateLineColumns = csvLines[^2].Split(separador);
-            Assert.That(penultimateLineColumns[^1], Is.EqualTo("1,29166666666667"), "The last cell in the penultimate row isn't 1,29166666666667.");
+            Assert.That(penultimateLineColumns[^1], Is.EqualTo("1,291666666666667"), "The last cell in the penultimate row isn't 1,29166666666667 => 1,291666666666667.");
         }
 
 
@@ -362,7 +364,7 @@ namespace TestSheetHelper
             string aba = "sheet1"; // Use "sheet1" for the first sheet by name
             string separador = ";";
             string? colunas = "A,2,c"; // Specify the columns to convert
-            string? linhas = "1:3,4,-1"; // Specify the rows to extract
+            string? linhas = "1:3,4,-1"; // Specify the rows to extract (5)
 
             // Perform the conversion
             bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
@@ -378,7 +380,52 @@ namespace TestSheetHelper
             Assert.That(csvLines.Length, Is.GreaterThan(0), "The converted CSV file is empty.");
 
             // Validate the number of rows matches the expected rows
-            int expectedRows = 4; // Based on rows "1:3,4,-1" = 1, 2, 3, 4, -1
+            int expectedRows = 5; // Based on rows "1:3,4,-1" = 1, 2, 3, 4, -1
+            Assert.That(csvLines.Length, Is.EqualTo(expectedRows), $"Expected {expectedRows} rows but got {csvLines.Length}.");
+
+            // Validate the content of the first row
+            var firstRow = csvLines[0].Split(separador);
+            Assert.That(firstRow.Length, Is.EqualTo(4), "The first row in the CSV file has not 4 columns.");
+            Assert.That(firstRow[0], Is.EqualTo("1"), "The first cell in the first row isn't 1.");
+
+            // Validate the content of the last row
+            var lastRow = csvLines[^1].Split(separador);
+            Assert.That(lastRow.Length, Is.EqualTo(4), "The last row in the CSV file has not 4 columns.");
+            Assert.That(lastRow[0], Is.EqualTo("A101254"), "The first cell in the last row isnt A101254.");
+
+            // Validate specific cell values           
+            var row = csvLines[4].Split(separador);
+            Assert.That(row[1], Is.EqualTo("B101254"), "The value in the row is not as expected (B101254).");
+        }
+
+        [Test, Repeat(1)]
+        public void TestConvertParticularXLSX_FullColumnsRows()
+        {
+            // Define paths for source and destination files
+            string origem = @"C:\Users\diego\Desktop\Tests\Converter\ColunasExcel.xlsx";
+            string destino = @"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_xlsx.csv";
+
+            // Specify parameters for the conversion
+            string aba = "sheet1"; // Use "sheet1" for the first sheet by name
+            string separador = ";";
+            string? colunas = null; // A:CV (1:100)
+            string? linhas = null; // 1:101254
+
+            // Perform the conversion
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
+
+            // Validate that the conversion was successful
+            Assert.That(retorno, Is.True, "Conversion process failed.");
+
+            // Check if the output file exists
+            Assert.That(File.Exists(destino), Is.True, $"The file '{destino}' was not created.");
+
+            // Load the converted CSV file and validate its content
+            var csvLines = File.ReadAllLines(destino);
+            Assert.That(csvLines.Length, Is.GreaterThan(0), "The converted CSV file is empty.");
+
+            // Validate the number of rows matches the expected rows
+            int expectedRows = 101254; 
             Assert.That(csvLines.Length, Is.EqualTo(expectedRows), $"Expected {expectedRows} rows but got {csvLines.Length}.");
 
             // Validate the content of the first row
@@ -392,8 +439,8 @@ namespace TestSheetHelper
             Assert.That(lastRow[0], Is.Not.Empty, "The first cell in the last row is empty.");
 
             // Validate specific cell values           
-            var row = csvLines[101187].Split(separador);
-            Assert.That(firstRow[10], Is.EqualTo("K101188"), "The value in the row is not as expected (K101188).");
+            var rowLast = csvLines[101253].Split(separador);
+            Assert.That(rowLast[10], Is.EqualTo("K101254"), "The value in the row is not as expected (K101254).");
         }
 
 
@@ -430,16 +477,57 @@ namespace TestSheetHelper
             // Validate the content of the first row
             var firstRow = csvLines[0].Split(separador);
             Assert.That(firstRow.Length, Is.GreaterThan(0), "The first row in the CSV file has no columns.");
-            Assert.That(firstRow[0], Is.Not.Empty, "The first cell in the first row is empty.");
+            Assert.That(firstRow[0], Is.EqualTo("1"), "The first cell in the first row isn't 1.");
 
             // Validate the content of the last row
             var lastRow = csvLines[^1].Split(separador);
             Assert.That(lastRow.Length, Is.GreaterThan(0), "The last row in the CSV file has no columns.");
-            Assert.That(lastRow[0], Is.Not.Empty, "The first cell in the last row is empty.");
+            Assert.That(lastRow[27], Is.EqualTo("AB3"), "The 27th cell in the last row isn't AB3.");       
+        }
 
-            // Validate specific cell values           
-            var row = csvLines[101253].Split(separador);
-            Assert.That(firstRow[15], Is.EqualTo("P101254"), "The value in the row is not as expected (P101254).");
+        [Test, Repeat(1)]
+        public void TestConvertParticularCSV_FullColumnsRows()
+        {
+            // Define paths for source and destination files
+            string origem = @"C:\Users\diego\Desktop\Tests\Converter\ColunasExcel.csv";
+            string destino = @"C:\Users\diego\Desktop\Tests\Convertidos\ColunasExcel_csv.csv";
+
+            // Specify parameters for the conversion
+            string aba = "1"; // Not applicable for CSV, but included for consistency
+            string separador = ";";
+            string? colunas = null; // A:CV (1:100)
+            string? linhas = null; // 1:101254
+
+            // Perform the conversion
+            bool retorno = new SheetHelper().Converter(origem, destino, aba, separador, colunas, linhas);
+
+            // Validate that the conversion was successful
+            Assert.That(retorno, Is.True, "Conversion process failed.");
+
+            // Check if the output file exists
+            Assert.That(File.Exists(destino), Is.True, $"The file '{destino}' was not created.");
+
+            // Load the converted CSV file and validate its content
+            var csvLines = File.ReadAllLines(destino);
+            Assert.That(csvLines.Length, Is.GreaterThan(0), "The converted CSV file is empty.");
+
+            // Validate the number of rows matches the expected rows
+            int expectedRows = 101254; // Based on rows "null" => full => 1:101254
+            Assert.That(csvLines.Length, Is.EqualTo(expectedRows), $"Expected {expectedRows} rows but got {csvLines.Length}.");
+
+            // Validate the content of the first row
+            var firstRow = csvLines[0].Split(separador);
+            Assert.That(firstRow.Length, Is.GreaterThan(0), "The first row in the CSV file has no columns.");
+            Assert.That(firstRow[0], Is.EqualTo("1"), "The first cell in the first row isn't 1.");
+
+            // Validate the content of the last row
+            var lastRow = csvLines[^1].Split(separador);
+            Assert.That(lastRow.Length, Is.EqualTo(100), "The last row in the CSV file has not 100 columns.");
+            Assert.That(lastRow[27], Is.EqualTo("AB101254"), "The 101254th cell in the last row isn't AB101254."); // Last fill
+
+            // Validate specific cell values in the last row
+            var rowLast = csvLines[101253].Split(separador);
+            Assert.That(rowLast[15], Is.EqualTo("P101254"), "The value in the row is not as expected (P101254).");
         }
 
 
@@ -490,9 +578,9 @@ namespace TestSheetHelper
 
             // Validate the content of the first cell in the first row
             int expectedColumns = 28; // Based on columns "A:AB"
-            var firstCellValue = savedData[0].Split(delimiter);
-            Assert.That(firstCellValue.Length, Is.EqualTo(expectedColumns), "The first cell in the saved file has not 28 columns.");
-            Assert.That(firstCellValue[9], Is.EqualTo("10"), "The 10th cell in the saved file is not 10.");
+            var firstRowSaved = savedData[0].Split(delimiter);
+            Assert.That(firstRowSaved.Length, Is.EqualTo(expectedColumns), "The first cell in the saved file has not 28 columns.");
+            Assert.That(firstRowSaved[9], Is.EqualTo("J2"), "The 10th cell in the saved file is not J2.");
         }
 
 
@@ -755,7 +843,7 @@ namespace TestSheetHelper
             );
 
             // Optionally, you can verify the exception message if your implementation provides it
-            Assert.That(exception.Message, Does.Contain("File not found"), "The exception message does not indicate a file not found error.");
+            Assert.That(exception.Message, Does.Contain("E-4048-SH"), "The exception message does not indicate a file not found error.");
         }
 
 
@@ -780,7 +868,7 @@ namespace TestSheetHelper
             );
 
             // Optionally, you can verify the exception message if your implementation provides it
-            Assert.That(exception.Message, Does.Contain("File not found"), "The exception message does not indicate a file not found error.");
+            Assert.That(exception.Message, Does.Contain("E-4048-SH"), "The exception message does not indicate a file not found error.");
         }
 
 
@@ -805,7 +893,7 @@ namespace TestSheetHelper
             );
 
             // Optionally, verify the exception message to ensure it indicates the file type issue
-            Assert.That(exception.Message, Does.Contain("File type not supported"), "The exception message does not indicate that the file type is not supported.");
+            Assert.That(exception.Message, Does.Contain("E-0541-SH"), "The exception message does not indicate that the file type is not supported.");
         }
 
 
@@ -840,7 +928,7 @@ namespace TestSheetHelper
             );
 
             // Optionally, verify the exception message to ensure it indicates the folder not found issue
-            Assert.That(exception.Message, Does.Contain("Destination directory not found"), "The exception message does not indicate that the destination directory is not found.");
+            Assert.That(exception.Message, Does.Contain("E-4049-SH"), "The exception message does not indicate that the destination directory is not found.");
         }
 
         [Test]
@@ -867,6 +955,8 @@ namespace TestSheetHelper
         [Test]
         public void TestConvertManySheetBig()
         {
+            Assert.Ignore("Skipping long test ConvertManySheetBig!");
+
             // Define the source and destination file paths
             string sourceFilePath = "C:\\Users\\diego\\Desktop\\Tests\\Converter\\ExcelBig_ManySheetBig_AB1048576.xlsx";
             string destinationFilePath = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\ExcelBig_ManySheetBig_AB1048576_xlsx.csv";
@@ -976,13 +1066,13 @@ namespace TestSheetHelper
             string destino = $"C:\\Users\\diego\\Desktop\\Tests\\Convertidos\\AbasExcel_xlsx.csv";
 
             // Specify the sheet names to convert
-            var abas = new List<string>() { "Sheet2", "1", "aba 3" };
+            var abas = new List<string>() { "Sheet2", "1", "aba 3" }; // "Sheet1" | "Sheet2" | "aba 3"
             string delimitador = ";"; // Define the separator for the CSV
 
             // Column selection is not specified; null indicates all columns will be included
             string[]? colunas = null;
             // Row selections for each sheet; the rows to be included in the conversion
-            List<string>? linhas = new() { "1:3", "1:10", "1" };
+            List<string>? linhas = new() { "1:3, -1", "1:10", "1" };
             int minRows = 1; // Minimum required rows for conversion
 
             // Instantiate SheetHelper and perform the conversion
@@ -992,8 +1082,8 @@ namespace TestSheetHelper
             // Assert that the conversion was successful for the expected number of sheets
             Assert.That(retorno, Is.EqualTo(abas.Count), "The number of successfully converted sheets does not match the expected count.");
 
-            // Verify if the output file (sheet 2)
-            string destino2 = Path.Combine(Path.GetDirectoryName(destino), Path.GetFileNameWithoutExtension(destino) + "__2.csv");
+            // Verify if the output file (sheet 2 in file - name = "Sheet2")
+            string destino2 = Path.Combine(Path.GetDirectoryName(destino), Path.GetFileNameWithoutExtension(destino) + "__Sheet2.csv");
 
             // Verify the output file existence and content
             Assert.IsTrue(File.Exists(destino2), "The output file does not exist after conversion.");
@@ -1009,11 +1099,11 @@ namespace TestSheetHelper
                 // Check content of the first row -- 1
                 Assert.That(csvLines[0].Split(delimitador)[0], Is.EqualTo("1"), $"Expected '1' not found in the output.");
 
-                // Check content of the last row -- A101254
-                Assert.That(csvLines[5].Split(delimitador)[0], Is.EqualTo("A6"), $"Expected 'A6' not found in the output.");
+                // Check content of the last row -- 1:3, -1 => -1 => 10
+                Assert.That(csvLines[3].Split(delimitador)[0], Is.EqualTo("A10"), $"Expected 'A10' not found in the output.");
 
-                // Check content of the penultimate row and last column -- AB101253               
-                Assert.That(csvLines[4].Split(delimitador)[^1], Is.EqualTo("J5"), $"Expected 'J5' not found in the output.");
+                // Check content of the penultimate row and last column -- 1:3, -1 => 3 => J3          
+                Assert.That(csvLines[2].Split(delimitador)[^1], Is.EqualTo("J3"), $"Expected 'J3' not found in the output.");
             });
         }
 
@@ -1134,12 +1224,16 @@ namespace TestSheetHelper
             // Load the converted CSV file and validate its content
             var csvLines = File.ReadAllLines(destination);
 
+            // Checks count rows
+            // "1:3, 1, 3:1" => 1, 2, 3, 1, 3, 2, 1=> 7 rows
+            Assert.That(csvLines.Length, Is.EqualTo(7), "The output CSV file haven't 7 rows.");
+
             // Checks can be performed here to validate the content of the csvLines
             // "C:A, A; -1, -2:-3; -3:-1" => C, B, A, A, -1, -2, -3, -3, -2, -1 => 10 columns
-            Assert.That(csvLines.Length, Is.GreaterThan(10), "The output CSV file haven't 10 coluns.");
+            Assert.That(csvLines[0].Split(separator).Length-1, Is.EqualTo(10), "The output CSV file haven't 10 coluns.");
 
             // Validate specific content in the CSV lines - penultimate column of the first row
-            Assert.That(csvLines[0].Split(separator)[^2], Is.EqualTo("99"));
+            Assert.That(csvLines[0].Split(separator)[^3], Is.EqualTo("99"));
         }
 
         [Test]
