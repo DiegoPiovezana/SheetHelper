@@ -9,6 +9,39 @@ namespace SH.ExcelHelper.Tools
 {
     internal class Reading
     {
+        internal IDataReader ReadSheet(string filePath, string sheet)
+        {
+            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
+            using var reader = ExcelReaderFactory.CreateReader(stream);
+
+            int sheetIndex = -1; // To track the index of the current sheet
+            do
+            {
+                sheetIndex++;
+
+                // Check if the sheet is specified by index or name
+                if (string.Equals(sheet, (sheetIndex + 1).ToString(), StringComparison.OrdinalIgnoreCase) || // Compare with index as string
+                    string.Equals(reader.Name, sheet, StringComparison.OrdinalIgnoreCase)) // Compare with sheet name
+                {
+                    Console.WriteLine($"Reading sheet: {reader.Name}");
+                    //while (reader.Read())
+                    //{
+                    //    for (int i = 0; i < reader.FieldCount; i++)
+                    //    {
+                    //        Console.Write($"{reader.GetValue(i)} ");
+                    //    }
+                    //    Console.WriteLine();
+                    //}
+                    //break;
+
+                    return reader;
+                }
+            } while (reader.NextResult());
+
+            throw new ArgumentException($"Sheet '{sheet}' not found.");
+        }
+
+
         /// <summary>
         /// Reads .xls, .xlsx and .xlsb files
         /// </summary>
@@ -18,42 +51,37 @@ namespace SH.ExcelHelper.Tools
             // - Binary Excel files (2.0-2003 format; *.xls)
             // - Excel OpenXml files (2007 format; *.xlsx, *.xlsb)
             using var reader = ExcelReaderFactory.CreateReader(stream);
+            IDataReader dataReader = reader;
 
             DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
             {
-                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true, EmptyColumnNamePrefix = "EmptyColumn" }
+                ConfigureDataTable = (_) =>
+                new ExcelDataTableConfiguration()
+                {
+                    UseHeaderRow = true,
+                    EmptyColumnNamePrefix = "EmptyColumn"
+                }
 
             });
 
             return result;
-
-            //do
-            //{
-
-            //    reader.NextResult();
-
-
-            //    while (reader.Read())
-            //    {
-            //        // reader.GetDouble(0);
-            //    }
-            //} while (reader.NextResult());
-
-            //return null;
-
         }
 
         /// <summary>
-        /// Reads .csv files
+        /// Reads .csv files.
         /// </summary>
         internal DataSet ReadCSV(FileStream stream)
         {
             using var reader = ExcelReaderFactory.CreateCsvReader(stream);
-            //return reader.AsDataSet();
 
             DataSet result = reader.AsDataSet(new ExcelDataSetConfiguration()
             {
-                ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true, EmptyColumnNamePrefix = "EmptyColumn" }
+                ConfigureDataTable = (_) =>
+                new ExcelDataTableConfiguration()
+                {
+                    UseHeaderRow = true,
+                    EmptyColumnNamePrefix = "EmptyColumn"
+                }
 
             });
 

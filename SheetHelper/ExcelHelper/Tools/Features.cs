@@ -16,11 +16,11 @@ namespace SH.ExcelHelper.Tools
 {
     internal class Features : ISheetHelper
     {
-        private readonly SheetHelper? _sheetHelper;
-        private readonly Validations? _validations;
-        private readonly Reading? _reading;
-        private readonly Writing? _writing;
-        private readonly Definitions? _definitions;
+        private readonly SheetHelper _sheetHelper;
+        private readonly Validations _validations;
+        private readonly Reading _reading;
+        private readonly Writing _writing;
+        private readonly Definitions _definitions;
 
 
         internal Features() { }
@@ -252,7 +252,7 @@ namespace SH.ExcelHelper.Tools
                 throw new Exception("E-0000-SH: No sheets found in the file.");
             }
 
-            if (minQtdRows == 0 && formatName == false)
+            if (minQtdRows == 0 && !formatName)
             {
                 return dataSet.Tables.Cast<DataTable>().ToDictionary(table => table.TableName);
             }
@@ -367,6 +367,11 @@ namespace SH.ExcelHelper.Tools
             //{
             //    throw;
             //}
+        }
+
+        public IDataReader? GetIDataReader(string origin, string sheet = "1")
+        {
+            return _reading.ReadSheet(origin, sheet);
         }
 
         public DataTable? GetDataTable(string origin, string sheet = "1")
