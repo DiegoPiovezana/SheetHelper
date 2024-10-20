@@ -1,4 +1,5 @@
 using SH;
+using SH.Exceptions;
 
 namespace TestSheetHelper
 {
@@ -6,9 +7,14 @@ namespace TestSheetHelper
 
     public class Tests
     {
+        private SheetHelper _sheetHelper;
+
+        readonly string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
         [SetUp]
         public void Setup()
         {
+            _sheetHelper = new SheetHelper();
         }
 
         [Test]
@@ -425,7 +431,7 @@ namespace TestSheetHelper
             Assert.That(csvLines.Length, Is.GreaterThan(0), "The converted CSV file is empty.");
 
             // Validate the number of rows matches the expected rows
-            int expectedRows = 101254; 
+            int expectedRows = 101254;
             Assert.That(csvLines.Length, Is.EqualTo(expectedRows), $"Expected {expectedRows} rows but got {csvLines.Length}.");
 
             // Validate the content of the first row
@@ -482,7 +488,7 @@ namespace TestSheetHelper
             // Validate the content of the last row
             var lastRow = csvLines[^1].Split(separador);
             Assert.That(lastRow.Length, Is.GreaterThan(0), "The last row in the CSV file has no columns.");
-            Assert.That(lastRow[27], Is.EqualTo("AB3"), "The 27th cell in the last row isn't AB3.");       
+            Assert.That(lastRow[27], Is.EqualTo("AB3"), "The 27th cell in the last row isn't AB3.");
         }
 
         [Test, Repeat(1)]
@@ -1230,7 +1236,7 @@ namespace TestSheetHelper
 
             // Checks can be performed here to validate the content of the csvLines
             // "C:A, A; -1, -2:-3; -3:-1" => C, B, A, A, -1, -2, -3, -3, -2, -1 => 10 columns
-            Assert.That(csvLines[0].Split(separator).Length-1, Is.EqualTo(10), "The output CSV file haven't 10 coluns.");
+            Assert.That(csvLines[0].Split(separator).Length - 1, Is.EqualTo(10), "The output CSV file haven't 10 coluns.");
 
             // Validate specific content in the CSV lines - penultimate column of the first row
             Assert.That(csvLines[0].Split(separator)[^3], Is.EqualTo("99"));
@@ -1264,7 +1270,7 @@ namespace TestSheetHelper
             sh.GetDataTable(null, null);
             sh.SaveDataTable(null, null, null, null, null);
             sh.Converter(null, null, null, null, null, null);
-            sh.ConvertAllSheets(null, null, 0, null);  
+            sh.ConvertAllSheets(null, null, 0, null);
         }
 
 
@@ -1413,7 +1419,90 @@ namespace TestSheetHelper
             }
         }
 
+        [Test]
+        public void GenerateCsv_ValidInput_FileIsCreated()
+        {
+            // Arrange            
+            int numRows = 100;
+            int numColumns = 10;
+            string delimiter = ";";
+            string fileName = Path.Combine(desktopPath, $@"Tests\Converter\CsvGerado_{numRows}x{numColumns}.csv");
 
+            // Act
+            string resultFilePath = _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter);
+
+            // Assert
+            Assert.IsTrue(File.Exists(resultFilePath), "CSV file should have been created.");
+
+            var lines = File.ReadAllLines(resultFilePath);
+            Assert.AreEqual(numRows, lines.Length, "The CSV file should contain the correct number of rows.");
+            Assert.AreEqual(numColumns, lines[0].Split(delimiter).Length, "The CSV file should contain the correct number of columns.");
+
+            // Clean up
+            File.Delete(resultFilePath);
+        }
+
+        [Test]
+        public void GenerateCsv_ValidInput_FileIsCreated_Big()
+        {
+            // Arrange
+            int numRows = 5_000_000;
+            int numColumns = 20;
+            string delimiter = ";";
+            string fileName = Path.Combine(desktopPath, $@"Tests\Converter\CsvGerado_{numRows}x{numColumns}.csv");
+
+            // Act
+            string resultFilePath = _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter);
+
+            // Assert
+            Assert.IsTrue(File.Exists(resultFilePath), "CSV file should have been created.");
+
+            var lines = File.ReadAllLines(resultFilePath);
+            Assert.AreEqual(numRows, lines.Length, "The CSV file should contain the correct number of rows.");
+            Assert.AreEqual(numColumns, lines[0].Split(delimiter).Length, "The CSV file should contain the correct number of columns.");
+
+            // Clean up
+            File.Delete(resultFilePath);
+        }
+
+        [Test]
+        public void GenerateCsv_InvalidFileName_ThrowsArgumentException()
+        {
+            // Arrange
+            string fileName = "";
+            int numRows = 100;
+            int numColumns = 10;
+            string delimiter = ",";
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullOrEmptySHException>(() => _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter));
+        }
+
+        [Test]
+        public void GenerateCsv_InvalidNumRows_ThrowsArgumentException()
+        {
+            // Arrange
+            string fileName = "validFile.csv";
+            int numRows = -1;
+            int numColumns = 10;
+            string delimiter = ",";
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullOrEmptySHException>(() => _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter));
+        }
+
+        [Test]
+        public void GenerateCsv_InvalidDelimiter_ThrowsArgumentException()
+        {
+            // Arrange
+            string fileName = "validFile.csv";
+            int numRows = 100;
+            int numColumns = 10;
+            string delimiter = "";
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter));
+        }
 
 
     }

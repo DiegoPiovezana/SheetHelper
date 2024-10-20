@@ -16,11 +16,11 @@ namespace SH.ExcelHelper.Tools
 {
     internal class Features : ISheetHelper
     {
-        private readonly SheetHelper _sheetHelper;
-        private readonly Validations _validations;
-        private readonly Reading _reading;
-        private readonly Writing _writing;
-        private readonly Definitions _definitions;
+        private readonly SheetHelper? _sheetHelper;
+        private readonly Validations? _validations;
+        private readonly Reading? _reading;
+        private readonly Writing? _writing;
+        private readonly Definitions? _definitions;
 
 
         internal Features() { }
@@ -31,7 +31,7 @@ namespace SH.ExcelHelper.Tools
             if (sheetHelper == null) return;
             _validations = new Validations(sheetHelper);
             _reading = new Reading();
-            _writing = new Writing(sheetHelper, _validations);
+            _writing = new Writing(sheetHelper, _validations, this);
             _definitions = new Definitions(sheetHelper, _validations);
         }
 
@@ -71,7 +71,6 @@ namespace SH.ExcelHelper.Tools
             return sum;
         }
 
-
         public string GetNameColumn(int columnIndex)
         {
             //try
@@ -90,6 +89,12 @@ namespace SH.ExcelHelper.Tools
             //{
             //    throw;
             //}
+        }
+
+        /// <inheritdoc/>
+        public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter)
+        {
+            return _writing.GenerateCsv(fileName, numRows, numColumns, delimiter);
         }
 
         public string? UnGZ(string gzFile, string pathDestination)
@@ -112,7 +117,7 @@ namespace SH.ExcelHelper.Tools
             }
 
             if (!Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
-            using FileStream outputFileStream = File.Create(fileConverted);
+            using FileStream? outputFileStream = File.Create(fileConverted);
             using var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
             decompressor.CopyTo(outputFileStream);
 
@@ -187,7 +192,7 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-            DataRow newRow = table.NewRow();
+            DataRow? newRow = table.NewRow();
 
             if (row.Length <= table.Columns.Count)
             {

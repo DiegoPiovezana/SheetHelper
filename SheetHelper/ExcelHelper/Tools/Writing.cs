@@ -1,5 +1,7 @@
 ﻿using SH.ExcelHelper.Treatments;
+using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,11 +15,15 @@ namespace SH.ExcelHelper.Tools
     {
         private readonly SheetHelper _sheetHelper;
         private readonly Definitions _definitions;
+        private readonly Adjustments _adjustments;
+        private readonly Features _features;
 
-        public Writing(SheetHelper sheetHelper, Validations validations)
+        public Writing(SheetHelper sheetHelper, Validations validations, Features features)
         {
             _sheetHelper = sheetHelper;
             _definitions = new Definitions(sheetHelper, validations);
+            _adjustments = new Adjustments(sheetHelper);
+            _features = features;
         }
 
 
@@ -82,7 +88,7 @@ namespace SH.ExcelHelper.Tools
                     //    cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
                     //}
                     //return cellValue;
-                    return TreatCell(column.ColumnName, delimiter);
+                    return _adjustments.TreatCell(column.ColumnName, delimiter);
                 }).ToArray();
             }
             else
@@ -99,7 +105,7 @@ namespace SH.ExcelHelper.Tools
                     //}
                     //return cellValue;
 
-                    return TreatCell(cell.ToString(), delimiter);
+                    return _adjustments.TreatCell(cell.ToString(), delimiter);
                 }).ToArray();
             }
 
@@ -158,7 +164,7 @@ namespace SH.ExcelHelper.Tools
                         // Get the header (coluns name)                       
                         rowFull = table.Columns.Cast<DataColumn>().Select(column =>
                         {
-                            return TreatCell(column.ColumnName, delimiter);
+                            return _adjustments.TreatCell(column.ColumnName, delimiter);
                         }).ToArray();
                     }
                     else
@@ -166,7 +172,7 @@ namespace SH.ExcelHelper.Tools
                         // Get the first row selected (after header - index-2) 
                         rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
                         {
-                            return TreatCell(cell.ToString(), delimiter);
+                            return _adjustments.TreatCell(cell.ToString(), delimiter);
                         }).ToArray();
                     }
                 }
@@ -187,75 +193,63 @@ namespace SH.ExcelHelper.Tools
         }
 
         //internal static T[] TreatCell<T>(T[] cells, string delimiter = ";")
-        internal string TreatCell(string cellValue, string delimiter)
+        internal string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter)
         {
-            //// Header
-            //rowFull = table.Columns.Cast<DataColumn>().Select(column =>
-            //{
-            //    string cellValue = column.ColumnName;
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-            //    {
-            //        // Apply double quotes to surround the value and escape the inner double quotes
-            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-            //    }
-            //    return cellValue;
-            //}).ToArray();
-
-            //// Row 1
-            //rowFull = table.Rows[rowsNumber[0] - 2].ItemArray.Select(cell =>
-            //{
-            //    string cellValue = cell.ToString();
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(delimiter)) // Check if the cell contains a line break
-            //    {
-            //        // Apply double quotes to surround the value and escape the inner double quotes
-            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-            //    }
-            //    return cellValue;
-            //}).ToArray();
-
-            //// Other rows
-            //rowFull = table.Rows[rowIndex - 2].ItemArray.Select(cell =>
-            //{
-            //    string cellValue = cell.ToString();
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r")) // Check if the cell contains a line break
-            //    {
-            //        // Apply double quotes to surround the value and escape the inner double quotes
-            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-            //    }
-            //    return cellValue;
-            //}).ToArray();      
-
-            // Generic
-            //return cells.Select(cell =>
-            //{
-            //    string cellValue = cell.ToString();
-            //    if (cellValue.Contains("\n") || cellValue.Contains("\r") || cellValue.Contains(delimiter))
-            //    {
-            //        cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\"";
-            //    }
-            //    return (T)Convert.ChangeType(cellValue, typeof(T));
-            //}).ToArray();
-
-            if (cellValue.Contains("\n") 
-                || cellValue.Contains("\r")                
-                || cellValue.Contains(delimiter) 
-                || cellValue.Contains("\""))
+            try
             {
-                cellValue = "\"" + cellValue.Replace("\"", "\"\"") + "\""; // Apply ""
-            }
+                // Header with column names (for row 1)
+                var columnNames = Enumerable.Range(1, numColumns)
+                                            .Select(i => _features.GetNameColumn(i))
+                                            .ToArray();
 
-            if (_sheetHelper.ProhibitedItems != null && _sheetHelper.ProhibitedItems.Count > 0)
-            {
-                foreach (var item in _sheetHelper.ProhibitedItems)
+                // Buffer size for efficient writing
+                const int bufferSize = 65536; // 64KB buffer
+
+                using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize))
+                using (var streamWriter = new StreamWriter(fileStream, Encoding.UTF8, bufferSize))
                 {
-                    cellValue = cellValue.Replace(item.Key, item.Value);
-                }
-            }
+                    // Write the header to A1, B1, C1, etc.
+                    streamWriter.WriteLine(string.Join(delimiter, columnNames.Select((col, index) => $"{col}1")));
 
-            return cellValue;
+                    // Process in chunks to manage memory
+                    const int chunkSize = 100_000;
+                    int numChunks = (numRows + chunkSize - 2) / chunkSize;
+
+                    for (int chunk = 0; chunk < numChunks; chunk++)
+                    {
+                        // Start data at row 2 (header is row 1)
+                        int startRow = chunk * chunkSize + 2;
+                        int rowsInChunk = Math.Min(chunkSize, (numRows - 1) - chunk * chunkSize);
+
+                        // Generate lines for the current chunk
+                        for (int row = startRow; row < startRow + rowsInChunk; row++)
+                        {
+                            var cellReferences = columnNames.Select(col => $"{col}{row}");
+                            streamWriter.WriteLine(string.Join(delimiter, cellReferences));
+                        }
+
+                        Debug.WriteLine($"Processed chunk {chunk + 1}/{numChunks} (rows {startRow} to {startRow + rowsInChunk - 1})");
+                    }
+                }
+
+                Debug.WriteLine("CSV file generated successfully!");
+                Debug.WriteLine($"File path: {Path.GetFullPath(fileName)}");
+
+                return Path.GetFullPath(fileName);
+            }
+            catch (IOException ioEx)
+            {
+                Debug.WriteLine($"File I/O error: {ioEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error generating CSV file: {ex.Message}");
+                throw;
+            }
         }
 
+
+
     }
-
 }
-

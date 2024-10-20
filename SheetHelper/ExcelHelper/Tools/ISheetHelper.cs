@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 
 namespace SH.ExcelHelper.Tools
 {
@@ -18,7 +19,7 @@ namespace SH.ExcelHelper.Tools
         /// </summary>
         /// <param name="columnName">Column name. E.g.: "A"</param>
         /// <returns>Index. E.g.: "A" = 1</returns>
-        int GetIndexColumn(string columnName);
+        public int GetIndexColumn(string columnName);
 
 
         /// <summary>
@@ -26,8 +27,21 @@ namespace SH.ExcelHelper.Tools
         /// </summary>
         /// <param name="columnIndex"> Column index</param>
         /// <returns>Column name (e.g.: "AB")</returns>
-        string GetNameColumn(int columnIndex);
+        public string GetNameColumn(int columnIndex);
 
+        /// <summary>
+        /// Generates a CSV file with the specified number of rows and columns.
+        /// The file includes column headers and each cell is represented by its corresponding
+        /// column name and row number (e.g., "A1", "B2").
+        /// </summary>
+        /// <param name="fileName">The full path where the CSV file will be saved.</param>
+        /// <param name="numRows">The number of rows to generate.</param>
+        /// <param name="numColumns">The number of columns to generate.</param>
+        /// <param name="delimiter">The delimiter to use between columns (e.g., ',' or ';').</param>
+        /// <returns>The full path of the generated CSV file.</returns>
+        /// <exception cref="ArgumentException">Thrown if the file name, delimiter, or number of rows/columns are invalid.</exception>
+        /// <exception cref="IOException">Thrown if there are issues creating or writing to the file.</exception>
+        public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter);
 
         /// <summary>
         /// Unpacks a .GZ file.

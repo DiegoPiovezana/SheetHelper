@@ -47,7 +47,7 @@ namespace SH
 
 
 
-        /// <inheritdoc/>     
+        /// <inheritdoc/>
         public void CloseExcel(string? filterTitle = null)
         {
             try
@@ -64,7 +64,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/>  
+        /// <inheritdoc/>
         public int GetIndexColumn(string columnName)
         {
             try
@@ -82,7 +82,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
         public string GetNameColumn(int columnIndex)
         {
             try
@@ -100,7 +100,34 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
+        public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter)
+        {
+            try
+            {
+                //if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+                //if (numRows <= 0) throw new ArgumentException("Number of rows must be greater than zero.", nameof(numRows));
+                //if (numColumns <= 0) throw new ArgumentException("Number of columns must be greater than zero.", nameof(numColumns));
+                //if (string.IsNullOrWhiteSpace(delimiter)) throw new ArgumentException("Delimiter cannot be null or empty.", nameof(delimiter));
+
+                _validations.ValidateDestinationFile(fileName, nameof(GenerateCsv));
+                _validations.ValidateIntMin(numRows, nameof(numRows), nameof(GenerateCsv));
+                _validations.ValidateIntMin(numColumns, nameof(numColumns), nameof(GenerateCsv));
+                _validations.ValidateDelimiterInput(delimiter);
+
+                return _features.GenerateCsv(fileName, numRows, numColumns, delimiter);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
+            }
+        }
+
+        /// <inheritdoc/>
         public string? UnGZ(string gzFile, string pathDestination)
         {
             try
@@ -123,7 +150,7 @@ namespace SH
             }
         }
 
-        /// <inheritdoc/> 
+        /// <inheritdoc/>
         public string? UnZIP(string? zipFile, string pathDestination)
         {
             try

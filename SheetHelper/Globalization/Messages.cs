@@ -234,7 +234,7 @@ namespace SH.Globalization
             return CultureInfo.CurrentCulture.Name switch
             {
                 "pt-BR" => $"Invalid delimiter '{delimiter}'!",
-                _ => $"Separador '{delimiter}' é inválido!",
+                _ => $"Delimitador '{delimiter}' é inválido!",
             };
         }
 
