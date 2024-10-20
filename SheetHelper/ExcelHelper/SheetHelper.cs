@@ -89,62 +89,16 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
             }
-        }
-
-        /// <inheritdoc/>
-        public string? UnGZ(string gzFile, string pathDestination)
-        {
-            try
-            {
-                _validations.ValidateFileExists(gzFile, nameof(gzFile), nameof(UnGZ));
-                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnGZ));
-                return _features.UnGZ(gzFile, pathDestination);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(UnGZ), ex), ex);
-            }
-            finally
-            {
-                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
-            }
-        }
-
-        /// <inheritdoc/>
-        public string? UnZIP(string? zipFile, string pathDestination)
-        {
-            try
-            {
-                _validations.ValidateFileExists(zipFile, nameof(zipFile), nameof(UnZIP));
-                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnZIP));
-                return _features.UnZIP(zipFile, pathDestination);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(UnZIP), ex), ex);
-            }
-            finally
-            {
-                if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
-            }
-        }
+        }      
 
         /// <inheritdoc/> 
-        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
+        public string? Unzip(string? zipFile, string pathDestination, bool mandatory = true)
         {
             try
             {
                 _validations.ValidateFileExists(zipFile, nameof(zipFile), _validations.GetCallingMethodName(1));
-                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(UnzipAuto));
-                return _features.UnzipAuto(zipFile, pathDestination, mandatory);
+                _validations.ValidateDestinationFolder(pathDestination, nameof(pathDestination), nameof(Unzip));
+                return _features.Unzip(zipFile, pathDestination, mandatory);
             }
             catch (SHException)
             {
@@ -152,7 +106,7 @@ namespace SH
             }
             catch (Exception ex)
             {
-                throw new Exception(Messages.UnmappedException(nameof(UnzipAuto), ex), ex);
+                throw new Exception(Messages.UnmappedException(nameof(Unzip), ex), ex);
             }
             finally
             {
@@ -323,6 +277,24 @@ namespace SH
             catch (Exception ex)
             {
                 throw new Exception(Messages.UnmappedException(nameof(GetJsonDictionary), ex), ex);
+            }
+        }
+
+        /// <inheritdoc/>
+        public IDataReader? GetIDataReader(string? origin, string sheet = "1")
+        {
+            try
+            {
+                _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
+                return _features.GetIDataReader(origin, sheet);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetDataSet), ex), ex);
             }
         }
 

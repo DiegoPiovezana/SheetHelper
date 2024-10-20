@@ -36,7 +36,7 @@ namespace SH.ExcelHelper.Tools
         }
 
 
-
+        /// <inheritdoc/>
         public void CloseExcel(string? filterTitle = null)
         {
             //var excelProcesses = from p in Process.GetProcessesByName("EXCEL") select p;
@@ -63,7 +63,7 @@ namespace SH.ExcelHelper.Tools
             return _writing.GenerateCsv(fileName, numRows, numColumns, delimiter);
         }
 
-        public string? UnGZ(string gzFile, string pathDestination)
+        internal string? UnGZ(string gzFile, string pathDestination)
         {
             //try
             //{
@@ -94,8 +94,8 @@ namespace SH.ExcelHelper.Tools
             //    throw;
             //}
         }
-
-        public string? UnZIP(string? zipFile, string pathDestination)
+       
+        internal string? UnZIP(string? zipFile, string pathDestination)
         {
             //try
             //{
@@ -119,7 +119,8 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
-        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true)
+        /// <inheritdoc/>
+        public string? Unzip(string? zipFile, string pathDestination, bool mandatory = true)
         {
         //try
         //{
@@ -154,7 +155,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
-
+        /// <inheritdoc/>
         public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
         {
             //try
@@ -354,7 +355,7 @@ namespace SH.ExcelHelper.Tools
         {
             //try
             //{
-            origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+            origin = Unzip(origin, @".\SheetHelper\Extractions\", false);
             _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -370,6 +371,7 @@ namespace SH.ExcelHelper.Tools
             //    throw;
             //}
         }
+
 
         public IDataReader? GetIDataReader(string origin, string sheet = "1")
         {
@@ -545,7 +547,7 @@ namespace SH.ExcelHelper.Tools
             {
                 _sheetHelper.Progress = 5;
 
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                origin = Unzip(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 if (!_validations.CheckConvertNecessary(origin, destination, sheet, delimiter, columns, rows))
@@ -571,7 +573,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                origin = Unzip(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 var destinationsCollection = destinations as ICollection<string?>;
@@ -651,7 +653,7 @@ namespace SH.ExcelHelper.Tools
         {
             try
             {
-                origin = UnzipAuto(origin, @".\SheetHelper\Extractions\", false);
+                origin = Unzip(origin, @".\SheetHelper\Extractions\", false);
                 _validations.ValidateFileExists(origin, nameof(origin), nameof(Converter));
 
                 foreach (var sheet in GetAllSheets(origin, minRows, true))

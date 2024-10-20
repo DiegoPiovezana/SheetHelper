@@ -1256,9 +1256,9 @@ namespace TestSheetHelper
             sh.CloseExcel(null);
             sh.GetIndexColumn(null);
             sh.GetNameColumn(1);
-            sh.UnGZ(null, null);
-            sh.UnZIP(null, null);
-            sh.UnzipAuto(null, null, false);
+            //sh.UnGZ(null, null);
+            //sh.UnZIP(null, null);
+            sh.Unzip(null, null, false);
             sh.ConvertToDataRow(null, null);
             sh.GetRowArray(null);
             sh.GetAllSheets(null);

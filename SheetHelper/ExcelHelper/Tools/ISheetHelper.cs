@@ -31,24 +31,6 @@ namespace SH.ExcelHelper.Tools
 
 
         /// <summary>
-        /// Unpacks a .GZ file.
-        /// </summary>
-        /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
-        /// <param name="pathDestination">The directory where the uncompressed file will be saved (with or without the destination file name). E.g.: 'C:\\Files\\' or 'C:\\Files\\Converted.xlsx'</param>
-        /// <returns>The path of the uncompressed file if successful, otherwise null.</returns>
-        public string? UnGZ(string zipFile, string pathDestination);
-
-
-        /// <summary>
-        /// Extracts a .ZIP file.
-        /// </summary>
-        /// <param name="zipFile">The location and name of the compressed file. E.g.: 'C:\\Files\\Report.zip'</param>
-        /// <param name="pathDestination">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
-        /// <returns>The path of the extracted file.</returns>
-        public string? UnZIP(string? zipFile, string pathDestination);
-
-
-        /// <summary>
         /// Unzip a .zip or .gz file.
         /// <para>Please visit https://bit.ly/SheetHelper_Features to learn more.</para>
         /// </summary>
@@ -56,7 +38,7 @@ namespace SH.ExcelHelper.Tools
         /// <param name="pathDestination">The directory where the extracted file will be saved. E.g.: 'C:\\Files\\'</param>
         /// <param name="mandatory">If true, it indicates that the extraction must occur, otherwise, it will show an error. If false, if the conversion does not happen, nothing happens.</param>
         /// <returns>The path of the extracted file.</returns>
-        public string? UnzipAuto(string? zipFile, string pathDestination, bool mandatory = true);
+        public string? Unzip(string? zipFile, string pathDestination, bool mandatory = true);
 
 
         /// <summary>
@@ -143,6 +125,14 @@ namespace SH.ExcelHelper.Tools
         /// <exception cref="Exception">Thrown if an error occurs while serializing the dictionary to JSON.</exception>
         public string GetJsonDictionary(Dictionary<string, string> dictionary);
 
+        /// <summary>
+        /// Reads a specific sheet from an Excel file.
+        /// </summary>
+        /// <param name="origin">The path to the Excel file.</param>
+        /// <param name="sheet">The name or index (1-based) of the sheet to read.</param>
+        /// <returns>An IDataReader for the specified sheet.</returns>
+        /// <exception cref="ArgumentException">Thrown when the specified sheet is not found.</exception>
+        public IDataReader? GetIDataReader(string? origin, string? sheet = "1");
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.
