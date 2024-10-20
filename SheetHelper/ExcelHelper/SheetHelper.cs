@@ -62,43 +62,7 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(CloseExcel), ex), ex);
             }
-        }
-
-        /// <inheritdoc/>
-        public int GetIndexColumn(string columnName)
-        {
-            try
-            {
-                _validations.ValidateStringNullOrEmpty(columnName, nameof(columnName), nameof(GetIndexColumn));
-                return _features.GetIndexColumn(columnName);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetIndexColumn), ex), ex);
-            }
-        }
-
-        /// <inheritdoc/>
-        public string GetNameColumn(int columnIndex)
-        {
-            try
-            {
-                _validations.ValidateIntMin(columnIndex, nameof(columnIndex), nameof(GetNameColumn), 1);
-                return _features.GetNameColumn(columnIndex);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
-            }
-        }
+        }        
 
         /// <inheritdoc/>
         public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter)
@@ -197,6 +161,40 @@ namespace SH
         }
 
         /// <inheritdoc/> 
+        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        {
+            try
+            {
+                return _features.NormalizeText(text, replaceSpace, toLower);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(NormalizeText), ex), ex);
+            }
+        }
+
+        /// <inheritdoc/> 
+        public string FixItems(string items)
+        {
+            try
+            {
+                return _features.FixItems(items);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(FixItems), ex), ex);
+            }
+        }
+
+        /// <inheritdoc/> 
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             try
@@ -216,6 +214,42 @@ namespace SH
             finally
             {
                 if (Directory.Exists(@".\SheetHelper")) Directory.Delete(@".\SheetHelper", true);
+            }
+        }
+
+        /// <inheritdoc/>
+        public int GetIndexColumn(string columnName)
+        {
+            try
+            {
+                _validations.ValidateStringNullOrEmpty(columnName, nameof(columnName), nameof(GetIndexColumn));
+                return _features.GetIndexColumn(columnName);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetIndexColumn), ex), ex);
+            }
+        }
+
+        /// <inheritdoc/>
+        public string GetNameColumn(int columnIndex)
+        {
+            try
+            {
+                _validations.ValidateIntMin(columnIndex, nameof(columnIndex), nameof(GetNameColumn), 1);
+                return _features.GetNameColumn(columnIndex);
+            }
+            catch (SHException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
             }
         }
 
@@ -255,41 +289,7 @@ namespace SH
             {
                 throw new Exception(Messages.UnmappedException(nameof(GetAllSheets), ex), ex);
             }
-        }
-
-        /// <inheritdoc/> 
-        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
-        {
-            try
-            {
-                return _features.NormalizeText(text, replaceSpace, toLower);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(NormalizeText), ex), ex);
-            }
-        }
-
-        /// <inheritdoc/> 
-        public string FixItems(string items)
-        {
-            try
-            {
-                return _features.FixItems(items);
-            }
-            catch (SHException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Messages.UnmappedException(nameof(FixItems), ex), ex);
-            }
-        }
+        }        
 
         /// <inheritdoc/> 
         public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)

@@ -7,27 +7,13 @@ namespace SH.ExcelHelper.Tools
 {
     interface ISheetHelper
     {
+
         /// <summary>
         /// Terminates Excel processes. If a title keyword is provided, only Excel processes with window titles containing the specified keyword will be terminated.
         /// </summary>
         /// <param name="filterTitle">Optional keyword to filter Excel windows by title. If null or empty, all Excel processes will be terminated.</param>
         void CloseExcel(string? filterTitle = null);
 
-
-        /// <summary>
-        /// Receives the column name and returns the index in the worksheet
-        /// </summary>
-        /// <param name="columnName">Column name. E.g.: "A"</param>
-        /// <returns>Index. E.g.: "A" = 1</returns>
-        public int GetIndexColumn(string columnName);
-
-
-        /// <summary>
-        /// Gets the column name by index
-        /// </summary>
-        /// <param name="columnIndex"> Column index</param>
-        /// <returns>Column name (e.g.: "AB")</returns>
-        public string GetNameColumn(int columnIndex);
 
         /// <summary>
         /// Generates a CSV file with the specified number of rows and columns.
@@ -42,6 +28,7 @@ namespace SH.ExcelHelper.Tools
         /// <exception cref="ArgumentException">Thrown if the file name, delimiter, or number of rows/columns are invalid.</exception>
         /// <exception cref="IOException">Thrown if there are issues creating or writing to the file.</exception>
         public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter);
+
 
         /// <summary>
         /// Unpacks a .GZ file.
@@ -73,12 +60,48 @@ namespace SH.ExcelHelper.Tools
 
 
         /// <summary>
+        /// Normalizes the text by removing accents and spaces.
+        /// <para>Example: " Hot Café" => "hot_cafe" </para>
+        /// </summary>
+        /// <param name="text">Text to be normalized.</param>
+        /// <param name="replaceSpace">Character to replace spaces. E.g.: "_"</param>
+        /// <param name="toLower">If true, the text will be converted to lowercase.</param>
+        /// <returns>Text normalized.</returns>
+        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true);
+
+
+        /// <summary>
+        /// Fixes a string containing items by replacing line breaks and semicolons with commas,
+        /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
+        /// </summary>
+        /// <param name="items">The string containing items to be fixed.</param>
+        /// <returns>The fixed string with proper item separation. Example: "123123,13514,31234"</returns>
+        public string FixItems(string items);
+
+
+        /// <summary>
         /// Converts a string array to a DataRow and returns the resulting DataRow.
         /// </summary>
         /// <param name="row">The string array to be converted.</param>
         /// <param name="table">The target DataTable to which the new DataRow will be added.</param>
         /// <returns>The newly created DataRow populated with values from the string array.</returns>
         public DataRow ConvertToDataRow(string[] row, DataTable table);
+
+
+        /// <summary>
+        /// Receives the column name and returns the index in the worksheet
+        /// </summary>
+        /// <param name="columnName">Column name. E.g.: "A"</param>
+        /// <returns>Index. E.g.: "A" = 1</returns>
+        public int GetIndexColumn(string columnName);
+
+
+        /// <summary>
+        /// Gets the column name by index
+        /// </summary>
+        /// <param name="columnIndex"> Column index</param>
+        /// <returns>Column name (e.g.: "AB")</returns>
+        public string GetNameColumn(int columnIndex);
 
 
         /// <summary>
@@ -99,26 +122,6 @@ namespace SH.ExcelHelper.Tools
         /// <param name="formatName">If true, all spaces and special characters from tab names will be removed.</param>
         /// <returns>Dictionary containing the name of the tabs and the DataTable. If desired, consider using 'sheetDictionary.Values.ToList()' to obtain a list of DataTables.</returns>
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false);
-
-
-        /// <summary>
-        /// Normalizes the text by removing accents and spaces.
-        /// <para>Example: " Hot Café" => "hot_cafe" </para>
-        /// </summary>
-        /// <param name="text">Text to be normalized.</param>
-        /// <param name="replaceSpace">Character to replace spaces. E.g.: "_"</param>
-        /// <param name="toLower">If true, the text will be converted to lowercase.</param>
-        /// <returns>Text normalized.</returns>
-        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true);
-
-
-        /// <summary>
-        /// Fixes a string containing items by replacing line breaks and semicolons with commas,
-        /// removing spaces, single quotes, and double quotes, and ensuring proper comma separation.
-        /// </summary>
-        /// <param name="items">The string containing items to be fixed.</param>
-        /// <returns>The fixed string with proper item separation. Example: "123123,13514,31234"</returns>
-        public string FixItems(string items);
 
 
         /// <summary>

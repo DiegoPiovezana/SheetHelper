@@ -57,40 +57,6 @@ namespace SH.ExcelHelper.Tools
             }
         }
 
-        public int GetIndexColumn(string? columnName)
-        {
-            if (string.IsNullOrWhiteSpace(columnName)) throw new ArgumentException("Column name cannot be null or empty.");
-
-            int sum = 0;
-            foreach (var character in columnName)
-            {
-                if (character < 'A' || character > 'Z') throw new ArgumentException("Invalid character in column name.");
-                sum = sum * 26 + (character - 'A' + 1);
-            }
-
-            return sum;
-        }
-
-        public string GetNameColumn(int columnIndex)
-        {
-            //try
-            //{
-            string columnName = string.Empty;
-            while (columnIndex > 0)
-            {
-                int remainder = (columnIndex - 1) % 26;
-                columnName = Convert.ToChar('A' + remainder) + columnName;
-                columnIndex = (columnIndex - remainder) / 26;
-            }
-
-            return columnName;
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
-        }
-
         /// <inheritdoc/>
         public string GenerateCsv(string fileName, int numRows, int numColumns, string delimiter)
         {
@@ -188,6 +154,49 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+
+        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
+        {
+            //try
+            //{
+            if (string.IsNullOrEmpty(text?.Trim())) return "";
+
+            string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
+            StringBuilder stringBuilder = new();
+
+            foreach (char c in normalizedString)
+            {
+                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
+            }
+
+            if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+        }
+
+        public string FixItems(string items)
+        {
+            //try
+            //{
+            if (!string.IsNullOrEmpty(items))
+            {
+                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
+                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
+                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
+            }
+            return items; // "123123,13514,31234"
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+        }
+
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             //try
@@ -204,6 +213,41 @@ namespace SH.ExcelHelper.Tools
             }
 
             return newRow;
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+        }
+
+
+        public int GetIndexColumn(string? columnName)
+        {
+            if (string.IsNullOrWhiteSpace(columnName)) throw new ArgumentException("Column name cannot be null or empty.");
+
+            int sum = 0;
+            foreach (var character in columnName)
+            {
+                if (character < 'A' || character > 'Z') throw new ArgumentException("Invalid character in column name.");
+                sum = sum * 26 + (character - 'A' + 1);
+            }
+
+            return sum;
+        }
+
+        public string GetNameColumn(int columnIndex)
+        {
+            //try
+            //{
+            string columnName = string.Empty;
+            while (columnIndex > 0)
+            {
+                int remainder = (columnIndex - 1) % 26;
+                columnName = Convert.ToChar('A' + remainder) + columnName;
+                columnIndex = (columnIndex - remainder) / 26;
+            }
+
+            return columnName;
             //}
             //catch (Exception)
             //{
@@ -269,48 +313,6 @@ namespace SH.ExcelHelper.Tools
             }
 
             return sheetDictionary;
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
-        }
-
-        public string NormalizeText(string? text, char replaceSpace = '_', bool toLower = true)
-        {
-            //try
-            //{
-            if (string.IsNullOrEmpty(text?.Trim())) return "";
-
-            string normalizedString = text.Trim().Normalize(NormalizationForm.FormD);
-            StringBuilder stringBuilder = new();
-
-            foreach (char c in normalizedString)
-            {
-                UnicodeCategory unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != UnicodeCategory.NonSpacingMark) { stringBuilder.Append(c); }
-            }
-
-            if (toLower) return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace).ToLower();
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC).Replace(' ', replaceSpace);
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
-        }
-
-        public string FixItems(string items)
-        {
-            //try
-            //{
-            if (!string.IsNullOrEmpty(items))
-            {
-                items = items.Replace("\n", ",").Replace(";", ","); // Replace line breaks and semicolons with commas
-                items = Regex.Replace(items, @"\s+|['""]+", ""); // Remove spaces, single quotes, and double quotes
-                items = Regex.Replace(items, ",{2,}", ",").Trim(','); // Remove repeated commas and excess spaces
-            }
-            return items; // "123123,13514,31234"
             //}
             //catch (Exception)
             //{
