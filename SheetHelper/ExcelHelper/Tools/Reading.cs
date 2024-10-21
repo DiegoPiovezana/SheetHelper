@@ -5,15 +5,16 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SH.ExcelHelper.Tools
 {
     public class SheetReader : IDisposable
     {
         public Stream Stream { get; }
-        public IDataReader Reader { get; }
+        public IExcelDataReader Reader { get; }
 
-        public SheetReader(Stream stream, IDataReader reader)
+        public SheetReader(Stream stream, IExcelDataReader reader)
         {
             Stream = stream;
             Reader = reader;
@@ -30,8 +31,13 @@ namespace SH.ExcelHelper.Tools
     {
         internal SheetReader ReadSheet(string filePath, string sheet)
         {
-            var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
-            var reader = ExcelReaderFactory.CreateReader(stream);
+            FileStream? stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
+
+            IExcelDataReader? reader = Path.GetExtension(filePath).ToLower() switch
+            {
+                ".rpt" or ".txt" or ".csv" => ExcelReaderFactory.CreateCsvReader(stream),
+                _ => ExcelReaderFactory.CreateReader(stream) // .xlsx, .xls, .xlsb, .xlsm
+            };
 
             int sheetIndex = -1; // To track the index of the current sheet
             do

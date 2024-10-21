@@ -1,5 +1,7 @@
+using ExcelDataReader;
 using SH;
 using SH.Exceptions;
+using System.Data;
 
 namespace TestSheetHelper
 {
@@ -1506,7 +1508,7 @@ namespace TestSheetHelper
 
         /////////////////////////////////////////
 
-        
+
         [Test]
         public void ReadSheet_ValidSheetName_ReturnsIDataReader()
         {
@@ -1522,7 +1524,19 @@ namespace TestSheetHelper
             Assert.IsNotNull(shReader, "IDataReader should not be null.");
             Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
 
+            DataTable dt = shReader.Reader.AsDataSet().Tables[0];
             shReader.Dispose();
+
+            // Validating that the table was loaded correctly
+            Assert.IsNotNull(dt, "The DataTable was not loaded correctly.");
+            Assert.IsTrue(dt.Rows.Count > 0, "No rows were loaded from the spreadsheet.");
+
+            // Extracting the first row and validating values
+            var first = _sheetHelper.GetRowArray(dt);
+            Assert.That(first, Is.Not.Null, "Extracting the first line failed.");
+            Assert.AreEqual("100", first[99], "The value at position [99] is not '100' as expected.");
+
+
 
             testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsb");
 
@@ -1560,7 +1574,7 @@ namespace TestSheetHelper
         [Test]
         public void ReadSheet_ValidSheetIndex_ReturnsIDataReader()
         {
-            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.csv");         
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.csv");
 
             // Arrange
             string sheetIndex = "1"; // 1-based index for the first sheet
@@ -1571,11 +1585,11 @@ namespace TestSheetHelper
             // Assert
             Assert.IsNotNull(shReader, "IDataReader should not be null.");
             Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
-            
+
             testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsm");
 
             using var shReader2 = _sheetHelper.GetSheetReader(testFilePath, sheetIndex);
-           
+
             Assert.IsNotNull(shReader2, "IDataReader should not be null.");
             Assert.IsTrue(shReader2.Reader.Read(), "Reader should have data.");
         }
@@ -1595,7 +1609,7 @@ namespace TestSheetHelper
 
         [Test]
         public void ReadSheet_ValidManyBigSheet_ReturnsIDataReader()
-        {          
+        {
             string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ExcelBig_ManySheetBig_AB1048576.xlsx");
 
             // Arrange
@@ -1624,6 +1638,9 @@ namespace TestSheetHelper
             Assert.IsNotNull(shReader, "IDataReader should not be null.");
             Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
         }
+
+
+
 
     }
 }
