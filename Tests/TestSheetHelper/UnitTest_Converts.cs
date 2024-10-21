@@ -1504,6 +1504,126 @@ namespace TestSheetHelper
             Assert.Throws<ArgumentException>(() => _sheetHelper.GenerateCsv(fileName, numRows, numColumns, delimiter));
         }
 
+        /////////////////////////////////////////
+
+        
+        [Test]
+        public void ReadSheet_ValidSheetName_ReturnsIDataReader()
+        {
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsx");
+
+            // Arrange
+            string sheetName = "Sheet1"; // Replace with an actual sheet name in the test file
+
+            // Act
+            using var shReader = _sheetHelper.GetSheetReader(testFilePath, sheetName);
+
+            // Assert
+            Assert.IsNotNull(shReader, "IDataReader should not be null.");
+            Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
+
+            shReader.Dispose();
+
+            testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsb");
+
+            using var shReader2 = _sheetHelper.GetSheetReader(testFilePath, sheetName);
+
+            Assert.IsNotNull(shReader2, "IDataReader should not be null.");
+            Assert.IsTrue(shReader2.Reader.Read(), "Reader should have data.");
+
+            shReader2.Dispose();
+        }
+
+        [Test]
+        public void ReadSheet_ValidSheetEspecial_ReturnsIDataReader()
+        {
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\SeparadorPipeline_CabecalhoIrregular.txt");
+
+            // Arrange
+            string sheetName = "Sheet1"; // Replace with an actual sheet name in the test file
+
+            // Act
+            using var shReader = _sheetHelper.GetSheetReader(testFilePath, sheetName);
+
+            // Assert
+            Assert.IsNotNull(shReader, "IDataReader should not be null.");
+            Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
+
+            testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\SemCabecalho.csv");
+
+            using var reader2 = _sheetHelper.GetSheetReader(testFilePath, sheetName);
+
+            Assert.IsNotNull(reader2, "IDataReader should not be null.");
+            Assert.IsTrue(reader2.Reader.Read(), "Reader should have data.");
+        }
+
+        [Test]
+        public void ReadSheet_ValidSheetIndex_ReturnsIDataReader()
+        {
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.csv");         
+
+            // Arrange
+            string sheetIndex = "1"; // 1-based index for the first sheet
+
+            // Act
+            using var shReader = _sheetHelper.GetSheetReader(testFilePath, sheetIndex);
+
+            // Assert
+            Assert.IsNotNull(shReader, "IDataReader should not be null.");
+            Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
+            
+            testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsm");
+
+            using var shReader2 = _sheetHelper.GetSheetReader(testFilePath, sheetIndex);
+           
+            Assert.IsNotNull(shReader2, "IDataReader should not be null.");
+            Assert.IsTrue(shReader2.Reader.Read(), "Reader should have data.");
+        }
+
+        [Test]
+        public void ReadSheet_InvalidSheet_ThrowsArgumentException()
+        {
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ColunasExcel.xlsb");
+
+            // Arrange
+            string invalidSheet = "InvalidSheet"; // A sheet name that does not exist
+
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentException>(() => _sheetHelper.GetSheetReader(testFilePath, invalidSheet));
+            Assert.AreEqual($"Sheet '{invalidSheet}' not found.", exception.Message);
+        }
+
+        [Test]
+        public void ReadSheet_ValidManyBigSheet_ReturnsIDataReader()
+        {          
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\ExcelBig_ManySheetBig_AB1048576.xlsx");
+
+            // Arrange
+            string sheetIndex = "1"; // 1-based index for the first sheet
+
+            // Act
+            using var shReader = _sheetHelper.GetSheetReader(testFilePath, sheetIndex);
+
+            // Assert
+            Assert.IsNotNull(shReader, "IDataReader should not be null.");
+            Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
+        }
+
+        [Test]
+        public void ReadSheet_ValidBigCsv_ReturnsIDataReader()
+        {
+            string testFilePath = Path.Combine(desktopPath, $@"Tests\Converter\BigCsvGerado_5000000x20.csv");
+
+            // Arrange
+            string sheetIndex = "1"; // 1-based index for the first sheet
+
+            // Act
+            using var shReader = _sheetHelper.GetSheetReader(testFilePath, sheetIndex);
+
+            // Assert
+            Assert.IsNotNull(shReader, "IDataReader should not be null.");
+            Assert.IsTrue(shReader.Reader.Read(), "Reader should have data.");
+        }
 
     }
 }

@@ -180,6 +180,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public string FixItems(string items)
         {
             //try
@@ -198,6 +199,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public DataRow ConvertToDataRow(string[] row, DataTable table)
         {
             //try
@@ -221,7 +223,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
-
+        /// <inheritdoc/>
         public int GetIndexColumn(string? columnName)
         {
             if (string.IsNullOrWhiteSpace(columnName)) throw new ArgumentException("Column name cannot be null or empty.");
@@ -236,6 +238,7 @@ namespace SH.ExcelHelper.Tools
             return sum;
         }
 
+        /// <inheritdoc/>
         public string GetNameColumn(int columnIndex)
         {
             //try
@@ -256,6 +259,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public string[] GetRowArray(DataTable table, bool header = true, int indexRow = 0)
         {
             //try
@@ -286,6 +290,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public Dictionary<string, DataTable> GetAllSheets(string filePath, int minQtdRows = 0, bool formatName = false)
         {
             //try
@@ -321,6 +326,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public Dictionary<string, string>? GetDictionaryJson(string jsonTextItems)
         {
             //try
@@ -336,6 +342,7 @@ namespace SH.ExcelHelper.Tools
             //}
         }
 
+        /// <inheritdoc/>
         public string GetJsonDictionary(Dictionary<string, string> dictionary)
         {
             //try
@@ -349,6 +356,13 @@ namespace SH.ExcelHelper.Tools
             //{
             //    throw;
             //}
+        }
+
+        /// <inheritdoc/>
+        public SheetReader GetSheetReader(string origin, string sheet = "1")
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return _reading.ReadSheet(origin, sheet);
         }
 
         public DataSet GetDataSet(string? origin)
@@ -370,13 +384,7 @@ namespace SH.ExcelHelper.Tools
             //{
             //    throw;
             //}
-        }
-
-
-        public IDataReader? GetIDataReader(string origin, string sheet = "1")
-        {
-            return _reading.ReadSheet(origin, sheet);
-        }
+        }     
 
         public DataTable? GetDataTable(string origin, string sheet = "1")
         {

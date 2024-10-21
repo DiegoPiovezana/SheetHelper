@@ -2,17 +2,36 @@
 using SH.Exceptions;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace SH.ExcelHelper.Tools
 {
+    public class SheetReader : IDisposable
+    {
+        public Stream Stream { get; }
+        public IDataReader Reader { get; }
+
+        public SheetReader(Stream stream, IDataReader reader)
+        {
+            Stream = stream;
+            Reader = reader;
+        }
+
+        public void Dispose()
+        {
+            Reader?.Dispose();
+            Stream?.Dispose();
+        }
+    }
+
     internal class Reading
     {
-        internal IDataReader ReadSheet(string filePath, string sheet)
+        internal SheetReader ReadSheet(string filePath, string sheet)
         {
-            using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
-            using var reader = ExcelReaderFactory.CreateReader(stream);
+            var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
+            var reader = ExcelReaderFactory.CreateReader(stream);
 
             int sheetIndex = -1; // To track the index of the current sheet
             do
@@ -23,18 +42,18 @@ namespace SH.ExcelHelper.Tools
                 if (string.Equals(sheet, (sheetIndex + 1).ToString(), StringComparison.OrdinalIgnoreCase) || // Compare with index as string
                     string.Equals(reader.Name, sheet, StringComparison.OrdinalIgnoreCase)) // Compare with sheet name
                 {
-                    Console.WriteLine($"Reading sheet: {reader.Name}");
-                    //while (reader.Read())
+                    Debug.WriteLine($"Reading sheet: {reader.Name}");
+                    //while (reader.Read()) // Cells will be read as string
                     //{
-                    //    for (int i = 0; i < reader.FieldCount; i++)
-                    //    {
-                    //        Console.Write($"{reader.GetValue(i)} ");
-                    //    }
-                    //    Console.WriteLine();
+                    //    //for (int i = 0; i < reader.FieldCount; i++) // FieldCount is the number of columns
+                    //    //{
+                    //    //    Debug.Write($"{reader.GetValue(i)} ");
+                    //    //}
+                    //    //Debug.WriteLine("");
                     //}
                     //break;
 
-                    return reader;
+                    return new SheetReader(stream, reader);
                 }
             } while (reader.NextResult());
 

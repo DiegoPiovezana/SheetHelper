@@ -7,7 +7,6 @@ namespace SH.ExcelHelper.Tools
 {
     interface ISheetHelper
     {
-
         /// <summary>
         /// Terminates Excel processes. If a title keyword is provided, only Excel processes with window titles containing the specified keyword will be terminated.
         /// </summary>
@@ -126,13 +125,17 @@ namespace SH.ExcelHelper.Tools
         public string GetJsonDictionary(Dictionary<string, string> dictionary);
 
         /// <summary>
-        /// Reads a specific sheet from an Excel file.
+        /// Reads the specified sheet from the Excel file and returns both the stream and IDataReader for external manipulation.
+        /// The caller is responsible for disposing both the stream and the reader.
         /// </summary>
         /// <param name="origin">The path to the Excel file.</param>
-        /// <param name="sheet">The name or index (1-based) of the sheet to read.</param>
-        /// <returns>An IDataReader for the specified sheet.</returns>
-        /// <exception cref="ArgumentException">Thrown when the specified sheet is not found.</exception>
-        public IDataReader? GetIDataReader(string? origin, string? sheet = "1");
+        /// <param name="sheet">The sheet name or index (1-based) to read.</param>
+        /// <returns>A tuple containing the stream and the IDataReader.</returns>
+        /// <exception cref="ArgumentException">Thrown if the specified sheet is not found.</exception>
+        /// <remarks>
+        /// Important: The caller is responsible for closing/disposing the returned IDataReader and the underlying stream.
+        /// </remarks>
+        public SheetReader GetSheetReader(string? origin, string? sheet = "1");
 
         /// <summary>
         /// Reads the file and gets the dataset of worksheet.

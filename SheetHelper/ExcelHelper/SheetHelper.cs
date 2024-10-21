@@ -87,7 +87,7 @@ namespace SH
             }
             catch (Exception ex)
             {
-                throw new Exception(Messages.UnmappedException(nameof(GetNameColumn), ex), ex);
+                throw new Exception(Messages.UnmappedException(nameof(GenerateCsv), ex), ex);
             }
         }      
 
@@ -281,12 +281,13 @@ namespace SH
         }
 
         /// <inheritdoc/>
-        public IDataReader? GetIDataReader(string? origin, string sheet = "1")
+        public SheetReader? GetSheetReader(string? origin, string? sheet = "1")
         {
             try
             {
                 _validations.ValidateOriginFile(origin, nameof(origin), nameof(GetDataTable));
-                return _features.GetIDataReader(origin, sheet);
+                _validations.ValidateSheetIdInput(sheet);
+                return _features.GetSheetReader(origin, sheet);
             }
             catch (SHException)
             {
@@ -294,7 +295,7 @@ namespace SH
             }
             catch (Exception ex)
             {
-                throw new Exception(Messages.UnmappedException(nameof(GetDataSet), ex), ex);
+                throw new Exception(Messages.UnmappedException(nameof(GetSheetReader), ex), ex);
             }
         }
 
