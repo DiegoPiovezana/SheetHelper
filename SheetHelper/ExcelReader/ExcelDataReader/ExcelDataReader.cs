@@ -18,6 +18,7 @@ namespace ExcelDataReader
         private IEnumerator<Row> _rowIterator;
         private IEnumerator<TWorksheet> _cachedWorksheetIterator;
         private List<TWorksheet> _cachedWorksheets;
+        private int _idx;
 
         ~ExcelDataReader()
         {
@@ -104,12 +105,24 @@ namespace ExcelDataReader
         {
             if (RowCells == null)
                 throw new InvalidOperationException("No data exists for the row/column.");
-            
+
             return RowCells[i]?.Value;
         }
 
-        public int GetValues(object[] values) => throw new NotSupportedException();
-               
+        public int GetValues(object[] values)
+        {
+            if (RowCells == null)
+                throw new InvalidOperationException("No data exists for the row/column.");
+
+            int readingLenth = values.Length > FieldCount ? FieldCount : values.Length;
+            for (int i = 0; i < readingLenth; i++)
+            {
+                values[i] = RowCells[i]?.Value;
+            }
+
+            return readingLenth;
+        }
+
         public bool IsDBNull(int i) => GetValue(i) == null;
 
         public string GetNumberFormatString(int i)
@@ -190,7 +203,7 @@ namespace ExcelDataReader
         {
             if (RowCells == null)
                 throw new InvalidOperationException("No data exists for the row/column.");
-            
+
             return RowCells[i]?.Error;
         }
 
@@ -203,11 +216,13 @@ namespace ExcelDataReader
             _worksheetIterator = null;
             _rowIterator = null;
 
+            _idx = 0;
+
             ResetSheetData();
 
             if (Workbook != null)
             {
-                _worksheetIterator = ReadWorksheetsWithCache().GetEnumerator(); // Workbook.ReadWorksheets().GetEnumerator();
+                _worksheetIterator = ReadWorksheetsWithCache().GetEnumerator();
                 if (!_worksheetIterator.MoveNext())
                 {
                     _worksheetIterator.Dispose();
@@ -253,6 +268,9 @@ namespace ExcelDataReader
             }
 
             _rowIterator = _worksheetIterator.Current.ReadRows().GetEnumerator();
+
+            _idx++;
+
             return true;
         }
 
